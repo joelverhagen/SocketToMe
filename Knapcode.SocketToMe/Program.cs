@@ -1,11 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using Knapcode.SocketToMe.Dns;
 using Knapcode.SocketToMe.Dns.Enumerations;
-using Knapcode.SocketToMe.Dns.Exceptions;
 using Knapcode.SocketToMe.Socks;
 
 namespace Knapcode.SocketToMe
@@ -16,11 +16,10 @@ namespace Knapcode.SocketToMe
         {
             var dnsServers = new[]
             {
-                IPAddress.Parse("8.8.4.4"), // Google
+                IPAddress.Parse("8.8.4.4"), // Google   
                 IPAddress.Parse("8.8.8.8"), // Google
                 IPAddress.Parse("208.67.220.220"), // OpenDNS Home
                 IPAddress.Parse("208.67.222.222"), // OpenDNS Home
-                /*
                 IPAddress.Parse("89.233.43.71"), // censurfridns.dk
                 IPAddress.Parse("91.239.100.100"), // censurfridns.dk
                 IPAddress.Parse("8.20.247.20"), // Comodo Secure DNS
@@ -39,7 +38,6 @@ namespace Knapcode.SocketToMe
                 IPAddress.Parse("209.244.0.4"), // Level3
                 IPAddress.Parse("199.85.126.10"), // Norton ConnectSafe
                 IPAddress.Parse("199.85.127.10"), // Norton ConnectSafe
-
                 IPAddress.Parse("208.115.243.35"), // OpenNIC
                 IPAddress.Parse("216.87.84.211"), // OpenNIC
                 IPAddress.Parse("199.5.157.131"), // Public-Root
@@ -48,11 +46,11 @@ namespace Knapcode.SocketToMe
                 IPAddress.Parse("195.46.39.40"), // SafeDNS
                 IPAddress.Parse("208.76.50.50"), // SmartViper
                 IPAddress.Parse("208.76.51.51") // SmartViper
-                */
             };
 
+            var failures = new HashSet<IPAddress>();
+
             using (var stream = new FileStream("alexa_top_500_2014_12_07.txt", FileMode.Open))
-            // using (var stream = new FileStream("refined_tests.txt", FileMode.Open))
             using (var streamReader = new StreamReader(stream))
             {
                 string name;
@@ -68,6 +66,11 @@ namespace Knapcode.SocketToMe
 
                     foreach (IPAddress dnsServer in dnsServers)
                     {
+                        if (failures.Contains(dnsServer) || dnsServer.ToString() != "156.154.71.1")
+                        {
+                            continue;
+                        }
+
                         Console.Write("{0},{1},{2}", rank, name, dnsServer);
 
                         var dnsClient = new DnsClient
@@ -83,26 +86,21 @@ namespace Knapcode.SocketToMe
 
                         try
                         {
-                            var response = dnsClient.SendAsync(request).Result;
+                            dnsClient.SendAsync(request).Wait();
                             Console.WriteLine(",success");
-                            File.Delete("current.bin");
                         }
                         catch (AggregateException ae)
                         {
                             var e = ae.Flatten().InnerException as SocketException;
                             if (e != null)
                             {
+                                failures.Add(dnsServer);
                                 Console.WriteLine("," + e.Message);
                             }
                             else
                             {
                                 throw;
                             }
-                        }
-                        catch (InvalidDnsResponseException e)
-                        {
-                            File.WriteAllBytes("errors\\" + name + "-" + dnsServer + "-" + Guid.NewGuid() + ".bin", e.Content);
-                            Console.WriteLine("," + e.Message);
                         }
                     }
                 }

@@ -40,9 +40,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Dns\DnsRequestMessage.cs" />
+    <Compile Include="Dns\DnsResponseException.cs" />
     <Compile Include="Dns\Enumerations\DnssecAlgorithmType.cs" />
     <Compile Include="Dns\Enumerations\DnssecDigestType.cs" />
-    <Compile Include="Dns\Exceptions\InvalidDnsResponseException.cs" />
     <Compile Include="Dns\NameRecords\Zero.cs" />
     <Compile Include="Dns\Enumerations\RequestCode.cs" />
     <Compile Include="Dns\RawQuestion.cs" />
@@ -71,6 +71,8 @@
     <Compile Include="Dns\ResourceRecords\UnknownResourceRecord.cs" />
     <Compile Include="Extensions\ByteExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
+    <Compile Include="Extensions\SocketExtensions.cs" />
+    <Compile Include="Extensions\TaskExtensions.cs" />
     <Compile Include="HttpToSocks5Proxy.cs" />
     <Compile Include="Dns\Enumerations\Opcode.cs" />
     <Compile Include="Dns\NameRecords\NameRecord.cs" />
@@ -83,7 +85,9 @@
     <Compile Include="Dns\Enumerations\DnsType.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="alexa_top_500_2014_12_07.txt">
