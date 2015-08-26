@@ -130,7 +130,6 @@ namespace Knapcode.SocketToMe.Socks
             {
                 socket.Close();
                 string message = string.Format(
-                    CultureInfo.InvariantCulture,
                     "The SOCKS5 proxy responded with {0} bytes, instead of 2, during the handshake.",
                     read);
                 throw new Exception(message);
@@ -148,7 +147,6 @@ namespace Knapcode.SocketToMe.Socks
             {
                 socket.Close();
                 string message = string.Format(
-                    CultureInfo.InvariantCulture,
                     "The SOCKS5 proxy responded with 0x{0:x2}, which is an unexpected authentication method.",
                     responseBuffer[1]);
                 throw new Exception(message);
@@ -173,7 +171,6 @@ namespace Knapcode.SocketToMe.Socks
                 {
                     socket.Close();
                     string message = string.Format(
-                        CultureInfo.InvariantCulture,
                         "The SOCKS5 proxy responded with {0} bytes, instead of 2, during the username/password authentication.",
                         read);
                     throw new Exception(message);
@@ -183,7 +180,6 @@ namespace Knapcode.SocketToMe.Socks
                 {
                     socket.Close();
                     string message = string.Format(
-                        CultureInfo.InvariantCulture,
                         "The SOCKS5 proxy responded with 0x{0:x2}, instead of 0x{1:x2}, for the username/password authentication version number.",
                         responseBuffer[0],
                         UsernamePasswordVersion);
@@ -194,7 +190,6 @@ namespace Knapcode.SocketToMe.Socks
                 {
                     socket.Close();
                     string message = string.Format(
-                        CultureInfo.InvariantCulture,
                         "The SOCKS5 proxy responded with 0x{0:x2}, instead of 0x00, indicating a failure in username/password authentication.",
                         responseBuffer[0]);
                     throw new Exception(message);
@@ -226,7 +221,6 @@ namespace Knapcode.SocketToMe.Socks
             {
                 socket.Close();
                 string message = string.Format(
-                    CultureInfo.InvariantCulture,
                     "The SOCKS5 proxy responded with {0} bytes to the connect request. At least 7 bytes are expected.",
                     read);
                 throw new Exception(message);
@@ -238,7 +232,6 @@ namespace Knapcode.SocketToMe.Socks
             {
                 socket.Close();
                 string message = string.Format(
-                    CultureInfo.InvariantCulture,
                     "The SOCKS5 proxy responded with a unsuccessful reply type '{0}' (0x{1:x2}).",
                     responseBuffer[1] >= (byte) ReplyType.Unassigned ? ReplyType.Unassigned : (ReplyType) responseBuffer[1],
                     responseBuffer[1]);
@@ -249,7 +242,6 @@ namespace Knapcode.SocketToMe.Socks
             {
                 socket.Close();
                 string message = string.Format(
-                    CultureInfo.InvariantCulture,
                     "The SOCKS5 proxy responded with an unexpected reserved field value 0x{0:x2}. 0x00 was expected.",
                     responseBuffer[2]);
                 throw new Exception(message);
@@ -259,7 +251,6 @@ namespace Knapcode.SocketToMe.Socks
             {
                 socket.Close();
                 string message = string.Format(
-                    CultureInfo.InvariantCulture,
                     "The SOCKS5 proxy responded with an unexpected address type 0x{0:x2}.",
                     responseBuffer[3]);
                 throw new Exception(message);
@@ -276,7 +267,6 @@ namespace Knapcode.SocketToMe.Socks
                     {
                         socket.Close();
                         string message = string.Format(
-                            CultureInfo.InvariantCulture,
                             "The SOCKS5 proxy responded with an unexpected number of bytes ({0} bytes) when the address is an IPv4 address. 10 bytes were expected.",
                             read);
                         throw new Exception(message);
@@ -296,7 +286,6 @@ namespace Knapcode.SocketToMe.Socks
                     {
                         socket.Close();
                         string message = string.Format(
-                            CultureInfo.InvariantCulture,
                             "The SOCKS5 proxy responded with an unexpected number of bytes ({0} bytes) when the address is an IPv6 address. 22 bytes were expected.",
                             read);
                         throw new Exception(message);
@@ -308,7 +297,6 @@ namespace Knapcode.SocketToMe.Socks
                 default:
                     socket.Close();
                     string addressTypeNotImplementedMessage = string.Format(
-                        CultureInfo.InvariantCulture,
                         "The provided address type '{0}' is not yet implemented.",
                         bindAddressType);
                     throw new NotImplementedException(addressTypeNotImplementedMessage);
@@ -323,7 +311,6 @@ namespace Knapcode.SocketToMe.Socks
             {
                 socket.Close();
                 string message = string.Format(
-                    CultureInfo.InvariantCulture,
                     "The SOCKS5 proxy responded with 0x{0:x2}, instead of 0x{1:x2}, for the SOCKS version number.",
                     version,
                     SocksVersion);
@@ -336,7 +323,6 @@ namespace Knapcode.SocketToMe.Socks
             if (port > ushort.MaxValue || port < 1)
             {
                 string message = string.Format(
-                    CultureInfo.InvariantCulture,
                     "The port number {0} must be a positive number less than or equal to {1}.",
                     port,
                     ushort.MaxValue);

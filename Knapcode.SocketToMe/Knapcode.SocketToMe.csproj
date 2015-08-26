@@ -83,6 +83,7 @@
     <Compile Include="Dns\Enumerations\QuestionClass.cs" />
     <Compile Include="Dns\Enumerations\QuestionType.cs" />
     <Compile Include="Dns\Enumerations\ResponseCode.cs" />
+    <Compile Include="Socks\Socks4Client.cs" />
     <Compile Include="Socks\Socks5Client.cs" />
     <Compile Include="Dns\Enumerations\DnsType.cs" />
   </ItemGroup>
