@@ -17,19 +17,22 @@ namespace Knapcode.SocketToMe
         {
             // ======== SOCKS ========
             {
-                var endpoint = new IPEndPoint(IPAddress.Parse("67.191.26.153"), 8080); // SOCKS4
+                var endpoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9150); // SOCKS4
                 // var endpoint = new IPEndPoint(IPAddress.Parse("37.187.35.186"), 14555); // SOCKS5 (seems to not support IPV6)
                 // var endpoint = new IPEndPoint(IPAddress.Parse("67.201.33.70"), 9100); // SOCKS5 (seems to support IPV6)
 
                 // var client = new Socks5Client(endpoint);
                 var client = new Socks4Client();
-                var socket = client.ConnectToServer(endpoint);
+                var socketA = client.ConnectToServer(endpoint);
+                socketA = client.ConnectToDestination(socketA, new IPEndPoint(IPAddress.Parse("195.91.191.59"), 1080));
+                socketA = client.ConnectToDestination(socketA, new IPEndPoint(IPAddress.Parse("175.140.137.133"), 1080));
+                socketA = client.ConnectToDestination(socketA, new IPEndPoint(IPAddress.Parse("104.238.136.31"), 80));
 
-                socket = client.ConnectToDestination(socket, "icanhazip.com", 80);
+                // socket = client.ConnectToDestination(socket, "icanhazip.com", 80);
                 // socket = client.ConnectToDestination(socket, new IPEndPoint(IPAddress.Parse("2001:19f0:9000:8945::31"), 80));
-                // socket = client.ConnectToDestination(socket, new IPEndPoint(IPAddress.Parse("104.238.136.31"), 80));
-                
-                using (var proxiedStream = new NetworkStream(socket))
+
+
+                using (var proxiedStream = new NetworkStream(socketA))
                 using (var writer = new StreamWriter(proxiedStream, Encoding.ASCII))
                 using (var reader = new StreamReader(proxiedStream, Encoding.ASCII))
                 {
@@ -38,7 +41,7 @@ namespace Knapcode.SocketToMe
                     writer.WriteLine();
                     writer.Flush();
 
-                    var responseBuffer = new byte[socket.ReceiveBufferSize];
+                    var responseBuffer = new byte[socketA.ReceiveBufferSize];
                     int read = proxiedStream.Read(responseBuffer, 0, responseBuffer.Length);
                     Console.WriteLine(Encoding.ASCII.GetString(responseBuffer, 0, read));
                 }
