@@ -22,10 +22,12 @@ namespace Knapcode.SocketToMe
                 // var endpoint = new IPEndPoint(IPAddress.Parse("67.201.33.70"), 9100); // SOCKS5 (seems to support IPV6)
 
                 // var client = new Socks5Client(endpoint);
-                var client = new Socks4Client(endpoint);
-                // Socket socket = client.Connect("icanhazip.com", 80);
-                // Socket socket = client.Connect(new IPEndPoint(IPAddress.Parse("2001:19f0:9000:8945::31"), 80));
-                Socket socket = client.Connect(new IPEndPoint(IPAddress.Parse("104.238.136.31"), 80));
+                var client = new Socks4Client();
+                var socket = client.ConnectToServer(endpoint);
+
+                socket = client.ConnectToDestination(socket, "icanhazip.com", 80);
+                // socket = client.ConnectToDestination(socket, new IPEndPoint(IPAddress.Parse("2001:19f0:9000:8945::31"), 80));
+                // socket = client.ConnectToDestination(socket, new IPEndPoint(IPAddress.Parse("104.238.136.31"), 80));
                 
                 using (var proxiedStream = new NetworkStream(socket))
                 using (var writer = new StreamWriter(proxiedStream, Encoding.ASCII))
