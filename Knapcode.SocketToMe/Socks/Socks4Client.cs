@@ -55,15 +55,15 @@ namespace Knapcode.SocketToMe.Socks
             return ConnectToDestination(socket, connectBytes);
         }
 
-        private IEnumerable<byte> GetConnectBytes(IPEndPoint destinationEndpoint, string userId, Encoding userIdEncoding)
+        private IEnumerable<byte> GetConnectBytes(IPEndPoint endpoint, string userId, Encoding userIdEncoding)
         {
             userId = userId ?? string.Empty;
             userIdEncoding = userIdEncoding ?? Encoding.UTF8;
 
             return Enumerable.Empty<byte>()
                 .Concat(new[] {SocksVersion, (byte) CommandType.Connect})
-                .Concat(BitConverter.GetBytes(IPAddress.HostToNetworkOrder((short) destinationEndpoint.Port)))
-                .Concat(destinationEndpoint.Address.GetAddressBytes())
+                .Concat(BitConverter.GetBytes(IPAddress.HostToNetworkOrder((short) endpoint.Port)))
+                .Concat(endpoint.Address.GetAddressBytes())
                 .Concat(userIdEncoding.GetBytes(userId))
                 .Concat(NullTerminator);
         }
