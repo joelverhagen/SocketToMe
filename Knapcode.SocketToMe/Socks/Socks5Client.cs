@@ -12,19 +12,13 @@ namespace Knapcode.SocketToMe.Socks
     {
         private const byte SocksVersion = 0x05;
         private const byte UsernamePasswordVersion = 0x01;
-        private readonly byte[] _password;
 
-        private readonly IPEndPoint _socksEndpoint;
-        private readonly byte[] _username;
-
-        public Socks5Client(IPEndPoint socksEndpoint, NetworkCredential credential = null, Encoding credentialEncoding = null)
+        public Socket ConnectToServer(IPEndPoint socksEndpoint)
         {
             if (socksEndpoint == null)
             {
                 throw new ArgumentNullException(nameof(socksEndpoint));
             }
-
-            _socksEndpoint = socksEndpoint;
 
             if (socksEndpoint.AddressFamily != AddressFamily.InterNetwork && socksEndpoint.AddressFamily != AddressFamily.InterNetworkV6)
             {
@@ -34,39 +28,13 @@ namespace Knapcode.SocketToMe.Socks
                     socksEndpoint.AddressFamily);
                 throw new ArgumentException(message, nameof(socksEndpoint));
             }
-
-            if (credential != null)
-            {
-                credentialEncoding = credentialEncoding ?? Encoding.UTF8;
-
-                const string messageFormat = "The {0} in the provided credential encodes to {1} bytes. The maximum length is {2}.";
-                _username = credentialEncoding.GetBytes(credential.UserName);
-                if (_username.Length > byte.MaxValue)
-                {
-                    string message = string.Format(
-                        CultureInfo.InvariantCulture,
-                        messageFormat,
-                        "username",
-                        _username.Length,
-                        byte.MaxValue);
-                    throw new ArgumentException(message, nameof(credential));
-                }
-
-                _password = credentialEncoding.GetBytes(credential.Password);
-                if (_password.Length > byte.MaxValue)
-                {
-                    string message = string.Format(
-                        CultureInfo.InvariantCulture,
-                        messageFormat,
-                        "password",
-                        _password.Length,
-                        byte.MaxValue);
-                    throw new ArgumentException(message, nameof(credential));
-                }
-            }
+            
+            var socket = new Socket(socksEndpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            socket.Connect(socksEndpoint);
+            return socket;
         }
 
-        public Socket Connect(string name, int port)
+        public Socket ConnectToDestination(Socket socket, string name, int port, NetworkCredential credential = null, Encoding credentialEncoding = null)
         {
             ValidatePort(port, nameof(port));
 
@@ -76,17 +44,16 @@ namespace Knapcode.SocketToMe.Socks
                 .Concat(nameBytes)
                 .ToArray();
 
-            return Connect(AddressType.DomainName, addressBytes, port);
+            return Connect(socket, credential, credentialEncoding, AddressType.DomainName, addressBytes, port);
         }
 
-        public Socket Connect(IPEndPoint destination)
+        public Socket ConnectToDestination(Socket socket, IPEndPoint endpoint, NetworkCredential credential = null, Encoding credentialEncoding = null)
         {
-            ValidatePort(destination.Port, nameof(destination));
+            ValidatePort(endpoint.Port, nameof(endpoint));
 
             AddressType addressType;
-            byte[] addressBytes = destination.Address.GetAddressBytes();
-
-            switch (destination.AddressFamily)
+            byte[] addressBytes = endpoint.Address.GetAddressBytes();
+            switch (endpoint.AddressFamily)
             {
                 case AddressFamily.InterNetwork:
                     addressType = AddressType.IpV4;
@@ -98,113 +65,12 @@ namespace Knapcode.SocketToMe.Socks
                     throw new ArgumentException("The destination endpoint must be an IPv4 or IPv6 address.");
             }
 
-            return Connect(addressType, addressBytes, destination.Port);
+            return Connect(socket, credential, credentialEncoding, addressType, addressBytes, endpoint.Port);
         }
 
-        private Socket Handshake(out byte[] outResponseBuffer)
+        private Socket Connect(Socket socket, NetworkCredential credential, Encoding credentialEncoding, AddressType addressType, IEnumerable<byte> addressBytes, int port)
         {
-            // open the socket
-            var socket = new Socket(_socksEndpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            socket.Connect(_socksEndpoint);
-
-            // negotiate an authentication method
-            var authenticationMethods = new List<AuthenticationMethod> {AuthenticationMethod.NoAuthentication};
-            if (_username != null)
-            {
-                authenticationMethods.Add(AuthenticationMethod.UsernamePassword);
-            }
-
-            byte[] requestBuffer = Enumerable.Empty<byte>()
-                .Concat(new[] {SocksVersion, (byte) authenticationMethods.Count})
-                .Concat(authenticationMethods.Select(m => (byte) m))
-                .ToArray();
-            socket.Send(requestBuffer);
-            Console.WriteLine("SEND:    {0}", BitConverter.ToString(requestBuffer));
-
-            var responseBuffer = new byte[socket.ReceiveBufferSize];
-            outResponseBuffer = responseBuffer;
-            int read = socket.Receive(responseBuffer, 0, 2, SocketFlags.None);
-            Console.WriteLine("RECEIVE: {0}", BitConverter.ToString(responseBuffer, 0, read));
-
-            if (read != 2)
-            {
-                socket.Close();
-                string message = string.Format(
-                    "The SOCKS5 proxy responded with {0} bytes, instead of 2, during the handshake.",
-                    read);
-                throw new Exception(message);
-            }
-
-            ValidateSocksVersion(socket, responseBuffer[0]);
-
-            if (responseBuffer[1] == (byte) AuthenticationMethod.NoAcceptableMethods)
-            {
-                socket.Close();
-                throw new Exception("The SOCKS5 proxy does not support any of the client's authentication methods.");
-            }
-
-            if (authenticationMethods.All(m => responseBuffer[1] != (byte) m))
-            {
-                socket.Close();
-                string message = string.Format(
-                    "The SOCKS5 proxy responded with 0x{0:x2}, which is an unexpected authentication method.",
-                    responseBuffer[1]);
-                throw new Exception(message);
-            }
-
-            // if username/password authentication was decided on, run the sub-negotiation
-            if (responseBuffer[1] == (byte) AuthenticationMethod.UsernamePassword && _username != null)
-            {
-                requestBuffer = Enumerable.Empty<byte>()
-                    .Concat(new[] {UsernamePasswordVersion, (byte) _username.Length})
-                    .Concat(_username)
-                    .Concat(new[] {(byte) _password.Length})
-                    .Concat(_password)
-                    .ToArray();
-                socket.Send(requestBuffer, SocketFlags.None);
-                Console.WriteLine("SEND:    {0}", BitConverter.ToString(requestBuffer));
-
-                read = socket.Receive(responseBuffer, 0, 2, SocketFlags.None);
-                Console.WriteLine("RECEIVE: {0}", BitConverter.ToString(responseBuffer, 0, read));
-
-                if (read != 2)
-                {
-                    socket.Close();
-                    string message = string.Format(
-                        "The SOCKS5 proxy responded with {0} bytes, instead of 2, during the username/password authentication.",
-                        read);
-                    throw new Exception(message);
-                }
-
-                if (responseBuffer[0] != UsernamePasswordVersion)
-                {
-                    socket.Close();
-                    string message = string.Format(
-                        "The SOCKS5 proxy responded with 0x{0:x2}, instead of 0x{1:x2}, for the username/password authentication version number.",
-                        responseBuffer[0],
-                        UsernamePasswordVersion);
-                    throw new Exception(message);
-                }
-
-                if (responseBuffer[1] != 0)
-                {
-                    socket.Close();
-                    string message = string.Format(
-                        "The SOCKS5 proxy responded with 0x{0:x2}, instead of 0x00, indicating a failure in username/password authentication.",
-                        responseBuffer[0]);
-                    throw new Exception(message);
-                }
-
-
-            }
-
-            return socket;
-        }
-
-        private Socket Connect(AddressType addressType, IEnumerable<byte> addressBytes, int port)
-        {
-            byte[] responseBuffer;
-            Socket socket = Handshake(out responseBuffer);
+            byte[] responseBuffer = Handshake(socket, credential, credentialEncoding);
 
             byte[] requestBuffer = Enumerable.Empty<byte>()
                 .Concat(new[] {SocksVersion, (byte) CommandType.Connect, (byte) 0x00, (byte) addressType})
@@ -212,10 +78,8 @@ namespace Knapcode.SocketToMe.Socks
                 .Concat(BitConverter.GetBytes(IPAddress.HostToNetworkOrder((short) port)))
                 .ToArray();
             socket.Send(requestBuffer);
-            Console.WriteLine("SEND:    {0}", BitConverter.ToString(requestBuffer));
 
             int read = socket.Receive(responseBuffer);
-            Console.WriteLine("RECEIVE: {0}", BitConverter.ToString(responseBuffer, 0, read));
 
             if (read < 7)
             {
@@ -258,7 +122,6 @@ namespace Knapcode.SocketToMe.Socks
 
             object bindAddress;
             object bindPort;
-
             var bindAddressType = (AddressType)responseBuffer[3];
             switch (bindAddressType)
             {
@@ -303,6 +166,129 @@ namespace Knapcode.SocketToMe.Socks
             }
 
             return socket;
+        }
+
+        private byte[] Handshake(Socket socket, NetworkCredential credential, Encoding credentialEncoding)
+        {
+            byte[] username = null;
+            byte[] password = null;
+            if (credential != null)
+            {
+                credentialEncoding = credentialEncoding ?? Encoding.UTF8;
+
+                const string messageFormat = "The {0} in the provided credential encodes to {1} bytes. The maximum length is {2}.";
+                username = credentialEncoding.GetBytes(credential.UserName);
+                if (username.Length > byte.MaxValue)
+                {
+                    string message = string.Format(
+                        CultureInfo.InvariantCulture,
+                        messageFormat,
+                        "username",
+                        username.Length,
+                        byte.MaxValue);
+                    throw new ArgumentException(message, nameof(credential));
+                }
+
+                password = credentialEncoding.GetBytes(credential.Password);
+                if (password.Length > byte.MaxValue)
+                {
+                    string message = string.Format(
+                        CultureInfo.InvariantCulture,
+                        messageFormat,
+                        "password",
+                        password.Length,
+                        byte.MaxValue);
+                    throw new ArgumentException(message, nameof(credential));
+                }
+            }
+
+            // negotiate an authentication method
+            var authenticationMethods = new List<AuthenticationMethod> { AuthenticationMethod.NoAuthentication };
+            if (username != null)
+            {
+                authenticationMethods.Add(AuthenticationMethod.UsernamePassword);
+            }
+
+            byte[] requestBuffer = Enumerable.Empty<byte>()
+                .Concat(new[] { SocksVersion, (byte)authenticationMethods.Count })
+                .Concat(authenticationMethods.Select(m => (byte)m))
+                .ToArray();
+            socket.Send(requestBuffer);
+
+            var responseBuffer = new byte[socket.ReceiveBufferSize];
+            int read = socket.Receive(responseBuffer, 0, 2, SocketFlags.None);
+
+            if (read != 2)
+            {
+                socket.Close();
+                string message = string.Format(
+                    "The SOCKS5 proxy responded with {0} bytes, instead of 2, during the handshake.",
+                    read);
+                throw new Exception(message);
+            }
+
+            ValidateSocksVersion(socket, responseBuffer[0]);
+
+            if (responseBuffer[1] == (byte)AuthenticationMethod.NoAcceptableMethods)
+            {
+                socket.Close();
+                throw new Exception("The SOCKS5 proxy does not support any of the client's authentication methods.");
+            }
+
+            if (authenticationMethods.All(m => responseBuffer[1] != (byte)m))
+            {
+                socket.Close();
+                string message = string.Format(
+                    "The SOCKS5 proxy responded with 0x{0:x2}, which is an unexpected authentication method.",
+                    responseBuffer[1]);
+                throw new Exception(message);
+            }
+
+            // if username/password authentication was decided on, run the sub-negotiation
+            if (responseBuffer[1] == (byte)AuthenticationMethod.UsernamePassword && username != null)
+            {
+                requestBuffer = Enumerable.Empty<byte>()
+                    .Concat(new[] { UsernamePasswordVersion, (byte)username.Length })
+                    .Concat(username)
+                    .Concat(new[] { (byte)password.Length })
+                    .Concat(password)
+                    .ToArray();
+                socket.Send(requestBuffer, SocketFlags.None);
+                Console.WriteLine("SEND:    {0}", BitConverter.ToString(requestBuffer));
+
+                read = socket.Receive(responseBuffer, 0, 2, SocketFlags.None);
+                Console.WriteLine("RECEIVE: {0}", BitConverter.ToString(responseBuffer, 0, read));
+
+                if (read != 2)
+                {
+                    socket.Close();
+                    string message = string.Format(
+                        "The SOCKS5 proxy responded with {0} bytes, instead of 2, during the username/password authentication.",
+                        read);
+                    throw new Exception(message);
+                }
+
+                if (responseBuffer[0] != UsernamePasswordVersion)
+                {
+                    socket.Close();
+                    string message = string.Format(
+                        "The SOCKS5 proxy responded with 0x{0:x2}, instead of 0x{1:x2}, for the username/password authentication version number.",
+                        responseBuffer[0],
+                        UsernamePasswordVersion);
+                    throw new Exception(message);
+                }
+
+                if (responseBuffer[1] != 0)
+                {
+                    socket.Close();
+                    string message = string.Format(
+                        "The SOCKS5 proxy responded with 0x{0:x2}, instead of 0x00, indicating a failure in username/password authentication.",
+                        responseBuffer[0]);
+                    throw new Exception(message);
+                }
+            }
+
+            return responseBuffer;
         }
 
         private static void ValidateSocksVersion(Socket socket, byte version)
