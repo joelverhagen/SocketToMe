@@ -1,5 +1,5 @@
-﻿using Knapcode.SocketToMe.Dns;
-using Knapcode.SocketToMe.Dns.Enumerations;
+﻿using Knapcode.SocketToMe.Sandbox.Dns;
+using Knapcode.SocketToMe.Sandbox.Dns.Enumerations;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

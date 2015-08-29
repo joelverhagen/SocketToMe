@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Knapcode.SocketToMe.Sandbox;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Knapcode.SocketToMe.Tests

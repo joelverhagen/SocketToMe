@@ -1,5 +1,5 @@
 ﻿using System;
-using Knapcode.SocketToMe.Extensions;
+using Knapcode.SocketToMe.Sandbox.Extensions;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

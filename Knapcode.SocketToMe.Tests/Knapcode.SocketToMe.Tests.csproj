@@ -67,15 +67,14 @@
     <Compile Include="ByteStreamReaderTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Knapcode.SocketToMe\Knapcode.SocketToMe.csproj">
-      <Project>{3dd11e6d-dc48-42fd-a7de-2861fdd98c58}</Project>
-      <Name>Knapcode.SocketToMe</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Knapcode.SocketToMe.Sandbox\Knapcode.SocketToMe.Sandbox.csproj">
+      <Project>{3DD11E6D-DC48-42FD-A7DE-2861FDD98C58}</Project>
+      <Name>Knapcode.SocketToMe.Sandbox</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
