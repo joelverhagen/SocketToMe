@@ -21,7 +21,7 @@ namespace Knapcode.SocketToMe.Socks
         {
             if (socksEndpoint == null)
             {
-                throw new ArgumentNullException("socksEndpoint");
+                throw new ArgumentNullException(nameof(socksEndpoint));
             }
 
             _socksEndpoint = socksEndpoint;
@@ -32,7 +32,7 @@ namespace Knapcode.SocketToMe.Socks
                     CultureInfo.InvariantCulture,
                     "The SOCKS5 endpoint address family '{0}' is not valid. The address family must either be InterNetwork (IPv4) or InterNetworkV6 (IPv6).",
                     socksEndpoint.AddressFamily);
-                throw new ArgumentException(message, "socksEndpoint");
+                throw new ArgumentException(message, nameof(socksEndpoint));
             }
 
             if (credential != null)
@@ -49,7 +49,7 @@ namespace Knapcode.SocketToMe.Socks
                         "username",
                         _username.Length,
                         byte.MaxValue);
-                    throw new ArgumentException(message, "credential");
+                    throw new ArgumentException(message, nameof(credential));
                 }
 
                 _password = credentialEncoding.GetBytes(credential.Password);
@@ -61,14 +61,14 @@ namespace Knapcode.SocketToMe.Socks
                         "password",
                         _password.Length,
                         byte.MaxValue);
-                    throw new ArgumentException(message, "credential");
+                    throw new ArgumentException(message, nameof(credential));
                 }
             }
         }
 
         public Socket Connect(string name, int port)
         {
-            ValidatePort(port, "port");
+            ValidatePort(port, nameof(port));
 
             byte[] nameBytes = Encoding.ASCII.GetBytes(name);
             byte[] addressBytes = Enumerable.Empty<byte>()
@@ -79,14 +79,14 @@ namespace Knapcode.SocketToMe.Socks
             return Connect(AddressType.DomainName, addressBytes, port);
         }
 
-        public Socket Connect(IPEndPoint destinationEndpoint)
+        public Socket Connect(IPEndPoint destination)
         {
-            ValidatePort(destinationEndpoint.Port, "destinationEndpoint");
+            ValidatePort(destination.Port, nameof(destination));
 
             AddressType addressType;
-            byte[] addressBytes = destinationEndpoint.Address.GetAddressBytes();
+            byte[] addressBytes = destination.Address.GetAddressBytes();
 
-            switch (destinationEndpoint.AddressFamily)
+            switch (destination.AddressFamily)
             {
                 case AddressFamily.InterNetwork:
                     addressType = AddressType.IpV4;
@@ -98,7 +98,7 @@ namespace Knapcode.SocketToMe.Socks
                     throw new ArgumentException("The destination endpoint must be an IPv4 or IPv6 address.");
             }
 
-            return Connect(addressType, addressBytes, destinationEndpoint.Port);
+            return Connect(addressType, addressBytes, destination.Port);
         }
 
         private Socket Handshake(out byte[] outResponseBuffer)
