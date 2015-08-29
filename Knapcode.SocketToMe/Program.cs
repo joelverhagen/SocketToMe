@@ -1,24 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Net.Http;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Text;
-using Knapcode.SocketToMe.Dns;
-using Knapcode.SocketToMe.Dns.Enumerations;
 using Knapcode.SocketToMe.Socks;
 
 namespace Knapcode.SocketToMe
 {
     internal class Program
     {
-        private static void Main(string[] args)
+        private static void Main()
         {
-            // ======== SOCKS ========
             {
-                var endpoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9150); // SOCKS 4/4A/5
+                // Tor support SOCKS 4, 4A, and 5
+                var endpoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9150);
 
                 var client = new Socks5Client();
                 // var client = new Socks4Client();
