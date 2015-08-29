@@ -31,26 +31,26 @@ namespace Knapcode.SocketToMe.Socks
             return socket;
         }
 
-        public Socket ConnectToDestination(Socket socket, string destinationName, int port, string userId = null, Encoding userIdEncoding = null)
+        public Socket ConnectToDestination(Socket socket, string name, int port, string userId = null, Encoding userIdEncoding = null)
         {
             ValidatePort(port, nameof(port));
 
             var connectBytes = GetConnectBytes(new IPEndPoint(IPAddress.Parse("0.0.0.1"), port), userId, userIdEncoding)
-                .Concat(Encoding.ASCII.GetBytes(destinationName))
+                .Concat(Encoding.ASCII.GetBytes(name))
                 .Concat(NullTerminator);
 
             return ConnectToDestination(socket, connectBytes);
         }
 
-        public Socket ConnectToDestination(Socket socket, IPEndPoint destinationEndpoint, string userId = null, Encoding userIdEncoding = null)
+        public Socket ConnectToDestination(Socket socket, IPEndPoint endpoint, string userId = null, Encoding userIdEncoding = null)
         {
-            ValidatePort(destinationEndpoint.Port, nameof(destinationEndpoint));
-            if (destinationEndpoint.AddressFamily != AddressFamily.InterNetwork)
+            ValidatePort(endpoint.Port, nameof(endpoint));
+            if (endpoint.AddressFamily != AddressFamily.InterNetwork)
             {
-                throw new ArgumentException("The destination endpoint must be an IPv4 address.", nameof(destinationEndpoint));
+                throw new ArgumentException("The destination endpoint must be an IPv4 address.", nameof(endpoint));
             }
 
-            var connectBytes = GetConnectBytes(destinationEndpoint, userId, userIdEncoding);
+            var connectBytes = GetConnectBytes(endpoint, userId, userIdEncoding);
 
             return ConnectToDestination(socket, connectBytes);
         }
