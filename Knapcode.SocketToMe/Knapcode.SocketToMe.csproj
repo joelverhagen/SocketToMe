@@ -83,8 +83,6 @@
     <Compile Include="Dns\Enumerations\QuestionClass.cs" />
     <Compile Include="Dns\Enumerations\QuestionType.cs" />
     <Compile Include="Dns\Enumerations\ResponseCode.cs" />
-    <Compile Include="Socks\Socks4Client.cs" />
-    <Compile Include="Socks\Socks5Client.cs" />
     <Compile Include="Dns\Enumerations\DnsType.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -101,6 +99,12 @@
     <None Include="refined_tests.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Knapcode.SocketToMe.Socks\Knapcode.SocketToMe.Socks.csproj">
+      <Project>{0aa78d19-e02b-4600-ab98-c05c04dfc2fa}</Project>
+      <Name>Knapcode.SocketToMe.Socks</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
