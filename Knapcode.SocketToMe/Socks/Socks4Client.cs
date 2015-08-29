@@ -73,11 +73,9 @@ namespace Knapcode.SocketToMe.Socks
             // send the connect request
             var requestBuffer = connectBytes.ToArray();
             socket.Send(requestBuffer);
-            Console.WriteLine("SEND:    {0}", BitConverter.ToString(requestBuffer));
 
             var responseBuffer = new byte[8];
             var read = socket.Receive(responseBuffer);
-            Console.WriteLine("RECEIVE: {0}", BitConverter.ToString(responseBuffer, 0, read));
 
             // validate the response
             if (read != responseBuffer.Length)
