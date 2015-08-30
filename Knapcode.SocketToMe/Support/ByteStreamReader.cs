@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Knapcode.SocketToMe.Sandbox
+namespace Knapcode.SocketToMe.Support
 {
     public class ByteStreamReader
     {

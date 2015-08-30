@@ -39,8 +39,6 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ByteStreamReader.cs" />
-    <Compile Include="CustomHandler.cs" />
     <Compile Include="Dns\DnsRequestMessage.cs" />
     <Compile Include="Dns\DnsResponseException.cs" />
     <Compile Include="Dns\Enumerations\DnssecAlgorithmType.cs" />

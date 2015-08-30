@@ -7,45 +7,36 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Knapcode.SocketToMe.Support;
 
-namespace Knapcode.SocketToMe.Sandbox
+namespace Knapcode.SocketToMe.Http
 {
-    public class CustomHandler : HttpMessageHandler
+    public class NetworkHandler : HttpMessageHandler
     {
-        public const int DefaultBufferSize = 4096;
-
-        public CustomHandler()
-        {
-            BufferSize = DefaultBufferSize;
-        }
-
-        public int BufferSize { get; set; }
+        private const int BufferSize = 4096;
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            int bufferSize = BufferSize;
-
             if (request.RequestUri.Scheme == "https")
             {
                 throw new NotSupportedException("HTTPS is not supported.");
             }
-
-            // var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IPv4);
+            
             var tcpClient = new TcpClient(request.RequestUri.DnsSafeHost, request.RequestUri.Port);
             using (NetworkStream networkStream = tcpClient.GetStream())
             {
                 // send the request
-                await WriteRequestAsync(networkStream, bufferSize, request);
+                await WriteRequestAsync(networkStream, request);
 
                 // read the request
-                return await ReadResponseAsync(networkStream, bufferSize);
+                return await ReadResponseAsync(networkStream);
             }
         }
 
-        private async Task WriteRequestAsync(Stream stream, int bufferSize, HttpRequestMessage request)
+        private async Task WriteRequestAsync(Stream stream, HttpRequestMessage request)
         {
             byte[] bytes = null;
-            using (var writer = new StreamWriter(stream, new UTF8Encoding(false, true), bufferSize, true))
+            using (var writer = new StreamWriter(stream, new UTF8Encoding(false, true), BufferSize, true))
             {
                 await writer.WriteLineAsync(string.Format("{0} {1} HTTP/{2}", request.Method.Method, request.RequestUri.PathAndQuery, request.Version));
 
@@ -81,14 +72,14 @@ namespace Knapcode.SocketToMe.Sandbox
             return string.Format("{0}: {1}", header.Key, string.Join(",", header.Value));
         }
 
-        private async Task<HttpResponseMessage> ReadResponseAsync(Stream stream, int bufferSize)
+        private async Task<HttpResponseMessage> ReadResponseAsync(Stream stream)
         {
             // initialize the response
             var contentStream = new MemoryStream();
             var response = new HttpResponseMessage {Content = new StreamContent(contentStream)};
 
             // read the first line of the response
-            var reader = new ByteStreamReader(stream, bufferSize, false);
+            var reader = new ByteStreamReader(stream, BufferSize, false);
             string line = await reader.ReadLineAsync();
             string[] pieces = line.Split(new[] {' '}, 3);
             if (pieces[0] != "HTTP/1.1")
