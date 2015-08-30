@@ -7,7 +7,7 @@ using FluentAssertions;
 using Knapcode.SocketToMe.Support;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Knapcode.SocketToMe.Tests
+namespace Knapcode.SocketToMe.Tests.Support
 {
     [TestClass]
     public class ByteStreamReaderTests

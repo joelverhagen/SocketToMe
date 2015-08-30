@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Knapcode.SocketToMe.Sandbox.Tests", "Knapcode.SocketToMe.Sandbox.Tests\Knapcode.SocketToMe.Sandbox.Tests.csproj", "{E1C7368F-89B0-4F21-A18E-B196AA6BC014}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +34,10 @@ Global
 		{0AA78D19-E02B-4600-AB98-C05C04DFC2FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0AA78D19-E02B-4600-AB98-C05C04DFC2FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0AA78D19-E02B-4600-AB98-C05C04DFC2FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1C7368F-89B0-4F21-A18E-B196AA6BC014}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1C7368F-89B0-4F21-A18E-B196AA6BC014}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1C7368F-89B0-4F21-A18E-B196AA6BC014}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1C7368F-89B0-4F21-A18E-B196AA6BC014}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

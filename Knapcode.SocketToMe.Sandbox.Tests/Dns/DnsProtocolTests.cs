@@ -1,9 +1,9 @@
-﻿using Knapcode.SocketToMe.Sandbox.Dns;
+﻿using FluentAssertions;
+using Knapcode.SocketToMe.Sandbox.Dns;
 using Knapcode.SocketToMe.Sandbox.Dns.Enumerations;
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Knapcode.SocketToMe.Tests.Dns
+namespace Knapcode.SocketToMe.Sandbox.Tests.Dns
 {
     [TestClass]
     public class DnsProtocolTests

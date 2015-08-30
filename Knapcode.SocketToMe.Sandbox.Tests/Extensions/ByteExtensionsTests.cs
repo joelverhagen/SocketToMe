@@ -1,9 +1,9 @@
 ﻿using System;
-using Knapcode.SocketToMe.Sandbox.Extensions;
 using FluentAssertions;
+using Knapcode.SocketToMe.Sandbox.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Knapcode.SocketToMe.Tests.Extensions
+namespace Knapcode.SocketToMe.Sandbox.Tests.Extensions
 {
     [TestClass]
     public class ByteExtensionsTests
