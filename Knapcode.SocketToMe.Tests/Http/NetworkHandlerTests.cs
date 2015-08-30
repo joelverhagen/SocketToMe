@@ -44,6 +44,46 @@ namespace Knapcode.SocketToMe.Tests.Http
         }
 
         [TestMethod]
+        public async Task Post()
+        {
+            // ARRANGE
+            var ts = new TestState();
+            var form = new Dictionary<string, string>
+            {
+                { "foo", "7A0D6A40-8DCE-4F6F-B372-ADC12B7FB222" },
+                {"bar", "9C025D9D-9880-4C03-A251-A29D5EC4BF16" }
+            };
+            var request = new HttpRequestMessage(HttpMethod.Post, "http://httpbin.org/post")
+            {
+                Content = new FormUrlEncodedContent(form)
+            };
+
+            // ACT
+            var o = await ts.GetJsonResponse<JObject>(request);
+
+            // ASSERT
+            o.Response.StatusCode.Should().Be(HttpStatusCode.OK);
+            o.Content.Should().ContainKey("form");
+            o.Content["form"].ToObject<IDictionary<string, string>>().ShouldBeEquivalentTo(form);
+        }
+
+        [TestMethod]
+        public async Task IpAddressDestination()
+        {
+            // ARRANGE
+            var ts = new TestState();
+            var request = new HttpRequestMessage(HttpMethod.Get, "http://54.175.219.8/ip");
+            request.Headers.Host = "httpbin.org";
+
+            // ACT
+            var o = await ts.GetJsonResponse<IDictionary<string, string>>(request);
+
+            // ASSERT
+            o.Response.StatusCode.Should().Be(HttpStatusCode.OK);
+            IPAddress.Parse(o.Content["origin"]);
+        }
+
+        [TestMethod]
         public async Task Headers()
         {
             // ARRANGE
@@ -68,6 +108,36 @@ namespace Knapcode.SocketToMe.Tests.Http
                 headers.Should().ContainKey(header.Key);
                 headers[header.Key].Should().Be(header.Value);
             }
+        }
+
+        [TestMethod]
+        public async Task StatusCode()
+        {
+            // ARRANGE
+            var ts = new TestState();
+            var request = new HttpRequestMessage(HttpMethod.Get, "http://httpbin.org/status/409");
+
+            // ACT
+            var response = await ts.Client.SendAsync(request);
+
+            // ASSERT
+            response.StatusCode.Should().Be(HttpStatusCode.Conflict);
+            response.ReasonPhrase.Should().Be("Conflict");
+        }
+
+        [TestMethod]
+        public async Task Head()
+        {
+            // ARRANGE
+            var ts = new TestState();
+            var request = new HttpRequestMessage(HttpMethod.Head, "http://httpbin.org/ip");
+
+            // ACT
+            var response = await ts.Client.SendAsync(request);
+
+            // ASSERT
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.ReasonPhrase.Should().Be("OK");
         }
 
         private class TestState
