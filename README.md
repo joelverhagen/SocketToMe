@@ -47,3 +47,11 @@ using (var sslStream = new SslStream(proxiedStream))
     }
 }
 ```
+
+## Because I am forgetful
+
+- SOCKS
+  - Add `async` support to `Socks4Client` and `Socks5Client`
+- HTTP
+  - Add chunked support to `NetworkHandler`
+  - Add HTTPS support via `SslStream`
