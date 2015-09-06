@@ -26,14 +26,14 @@ namespace Knapcode.SocketToMe.Http
             using (NetworkStream networkStream = tcpClient.GetStream())
             {
                 // send the request
-                await WriteRequestAsync(networkStream, request);
+                await WriteRequestAsync(request, networkStream);
 
                 // read the request
-                return await ReadResponseAsync(networkStream);
+                return await ReadResponseAsync(request, networkStream);
             }
         }
 
-        private async Task WriteRequestAsync(Stream stream, HttpRequestMessage request)
+        private async Task WriteRequestAsync(HttpRequestMessage request, Stream stream)
         {
             byte[] bytes = null;
             using (var writer = new StreamWriter(stream, new UTF8Encoding(false, true), BufferSize, true))
@@ -72,39 +72,39 @@ namespace Knapcode.SocketToMe.Http
             return string.Format("{0}: {1}", header.Key, string.Join(",", header.Value));
         }
 
-        private async Task<HttpResponseMessage> ReadResponseAsync(Stream stream)
+        private async Task<HttpResponseMessage> ReadResponseAsync(HttpRequestMessage request, Stream stream)
         {
             // initialize the response
             var contentStream = new MemoryStream();
-            var response = new HttpResponseMessage {Content = new StreamContent(contentStream)};
+            var response = new HttpResponseMessage { Content = new StreamContent(contentStream) };
 
             // read the first line of the response
             var reader = new ByteStreamReader(stream, BufferSize, false);
             string line = await reader.ReadLineAsync();
-            string[] pieces = line.Split(new[] {' '}, 3);
+            string[] pieces = line.Split(new[] { ' ' }, 3);
             if (pieces[0] != "HTTP/1.1")
             {
                 throw new HttpRequestException("The HTTP version the response is not supported.");
             }
 
-            response.StatusCode = (HttpStatusCode) int.Parse(pieces[1]);
+            response.StatusCode = (HttpStatusCode)int.Parse(pieces[1]);
             response.ReasonPhrase = pieces[2];
 
             // read the headers
             while ((line = await reader.ReadLineAsync()) != null && line != string.Empty)
             {
-                pieces = line.Split(new[] {": "}, 2, StringSplitOptions.None);
+                pieces = line.Split(new[] { ": " }, 2, StringSplitOptions.None);
                 if (!response.Headers.TryAddWithoutValidation(pieces[0], pieces[1]))
                 {
                     response.Content.Headers.Add(pieces[0], pieces[1]);
                 }
             }
 
-            if (response.Content.Headers.ContentLength.HasValue)
+            if (request.Method != HttpMethod.Head && response.Content.Headers.ContentLength.HasValue)
             {
                 long contentLength = response.Content.Headers.ContentLength.Value;
                 var buffer = new byte[contentLength];
-                int read = await reader.ReadAsync(buffer, 0, (int) contentLength);
+                int read = await reader.ReadAsync(buffer, 0, (int)contentLength);
                 contentStream.Write(buffer, 0, read);
                 contentStream.Position = 0;
             }

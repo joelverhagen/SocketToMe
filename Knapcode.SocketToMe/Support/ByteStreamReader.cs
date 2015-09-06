@@ -41,6 +41,7 @@ namespace Knapcode.SocketToMe.Support
 
             var lineStream = new MemoryStream();
             int lineEndingPosition = 0;
+            bool lineFinished = false;
             while (lineEndingPosition < _lineEndingBuffer.Length && _bufferSize > 0)
             {
                 int endPosition;
@@ -52,6 +53,7 @@ namespace Knapcode.SocketToMe.Support
                         if (lineEndingPosition == _lineEndingBuffer.Length)
                         {
                             endPosition++;
+                            lineFinished = true;
                             break;
                         }
                     }
@@ -64,7 +66,7 @@ namespace Knapcode.SocketToMe.Support
                 lineStream.Write(_buffer, _position, endPosition - _position);
                 _position = endPosition;
 
-                if (endPosition == _bufferSize)
+                if (endPosition == _bufferSize && !lineFinished)
                 {
                     _bufferSize = await _stream.ReadAsync(_buffer, 0, _buffer.Length);
                     _position = 0;
@@ -72,7 +74,7 @@ namespace Knapcode.SocketToMe.Support
             }
 
             var line = _encoding.GetString(lineStream.GetBuffer(), 0, (int) lineStream.Length);
-            if (!_preserveLineEndings && line.EndsWith(_lineEnding))
+            if (!_preserveLineEndings && lineFinished)
             {
                 line = line.Substring(0, line.Length - _lineEnding.Length);
             }
@@ -82,21 +84,27 @@ namespace Knapcode.SocketToMe.Support
 
         public async Task<int> ReadAsync(byte[] buffer, int offset, int count)
         {
+            int read = 0;
             if (_bufferSize >= 0)
             {
-                count = Math.Min(count, _bufferSize - _position);
-                Buffer.BlockCopy(_buffer, _position, buffer, offset, count);
-                _position += count;
+                read = Math.Min(count, _bufferSize - _position);
+                Buffer.BlockCopy(_buffer, _position, buffer, offset, read);
+                count -= read;
+                offset += read;
+                _position += read;
 
                 if (_position == _bufferSize)
                 {
                     _bufferSize = -1;
                 }
-
-                return count;
             }
 
-            return await _stream.ReadAsync(buffer, offset, count);
+            if (count != 0)
+            {
+                read += await _stream.ReadAsync(buffer, offset, count);
+            }
+
+            return read;
         }
 
         private async Task EnsureFirstReadAsync()

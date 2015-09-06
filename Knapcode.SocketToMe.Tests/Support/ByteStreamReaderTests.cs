@@ -26,7 +26,7 @@ namespace Knapcode.SocketToMe.Tests.Support
 
             // ASSERT
             line1.Should().Be(ts.OneLine.First());
-            line2.Should().BeNull();
+            line2.Should().Be("");
             line3.Should().BeNull();
         }
 
@@ -120,12 +120,12 @@ namespace Knapcode.SocketToMe.Tests.Support
             public TestState()
             {
                 // data
-                OneLine = new[] { "First\r\n" };
-                TwoLines = new[] { "First\r\n", "Second\r\n" };
-                TrailingLineEndings = new[] {"First\r\n", "Second\r\n", "Third\r\n"};
+                OneLine = new[] { "First\r\n", "" };
+                TwoLines = new[] { "First\r\n", "Second\r\n", "" };
+                TrailingLineEndings = new[] {"First\r\n", "Second\r\n", "Third\r\n", "" };
                 NoTrailingLineEndings = new[] { "First\r\n", "Second\r\n", "Third" };
-                EmptyLine = new[] { "First\r\n", "\r\n", "Third\r\n" };
-                NonCrLfLineEndings = new[] { "This\ris\nthe first line\r\n", "Second\r\n" };
+                EmptyLine = new[] { "First\r\n", "\r\n", "Third\r\n", "" };
+                NonCrLfLineEndings = new[] { "This\ris\nthe first line\r\n", "Second\r\n", "" };
 
                 // dependencies
                 Stream = null;
@@ -226,11 +226,12 @@ namespace Knapcode.SocketToMe.Tests.Support
                 }
 
                 // ASSERT
-                actualLines.Should().HaveCount(expectedLines.Length);
                 for (int i = 0; i < expectedLines.Length; i++)
                 {
                     actualLines[i].Should().Be(expectedLines[i]);
                 }
+
+                actualLines.Should().HaveSameCount(expectedLines);
             }
         }
     }

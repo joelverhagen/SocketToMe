@@ -122,7 +122,7 @@ namespace Knapcode.SocketToMe.Tests.Http
 
             // ASSERT
             response.StatusCode.Should().Be(HttpStatusCode.Conflict);
-            response.ReasonPhrase.Should().Be("Conflict");
+            response.ReasonPhrase.Should().Be("CONFLICT");
         }
 
         [TestMethod]
