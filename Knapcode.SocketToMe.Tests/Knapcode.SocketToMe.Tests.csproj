@@ -75,6 +75,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Support\ByteStreamReaderTests.cs" />
     <Compile Include="Support\PartiallyBufferedStreamTests.cs" />
+    <Compile Include="Support\LimitedStreamTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

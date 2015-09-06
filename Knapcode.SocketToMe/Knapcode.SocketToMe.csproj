@@ -42,6 +42,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Socks\Socks4Client.cs" />
     <Compile Include="Socks\Socks5Client.cs" />
+    <Compile Include="Support\LimitedStream.cs" />
     <Compile Include="Support\PartiallyBufferedStream.cs" />
   </ItemGroup>
   <ItemGroup>
