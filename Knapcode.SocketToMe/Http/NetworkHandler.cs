@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -23,14 +24,13 @@ namespace Knapcode.SocketToMe.Http
             }
             
             var tcpClient = new TcpClient(request.RequestUri.DnsSafeHost, request.RequestUri.Port);
-            using (NetworkStream networkStream = tcpClient.GetStream())
-            {
-                // send the request
-                await WriteRequestAsync(request, networkStream);
+            NetworkStream networkStream = tcpClient.GetStream();
 
-                // read the request
-                return await ReadResponseAsync(request, networkStream);
-            }
+            // send the request
+            await WriteRequestAsync(request, networkStream);
+
+            // read the request
+            return await ReadResponseAsync(request, networkStream);
         }
 
         private async Task WriteRequestAsync(HttpRequestMessage request, Stream stream)
@@ -75,8 +75,7 @@ namespace Knapcode.SocketToMe.Http
         private async Task<HttpResponseMessage> ReadResponseAsync(HttpRequestMessage request, Stream stream)
         {
             // initialize the response
-            var contentStream = new MemoryStream();
-            var response = new HttpResponseMessage { Content = new StreamContent(contentStream) };
+            var response = new HttpResponseMessage();
 
             // read the first line of the response
             var reader = new ByteStreamReader(stream, BufferSize, false);
@@ -91,22 +90,26 @@ namespace Knapcode.SocketToMe.Http
             response.ReasonPhrase = pieces[2];
 
             // read the headers
+            response.Content = new ByteArrayContent(new byte[0]);
             while ((line = await reader.ReadLineAsync()) != null && line != string.Empty)
             {
                 pieces = line.Split(new[] { ": " }, 2, StringSplitOptions.None);
-                if (!response.Headers.TryAddWithoutValidation(pieces[0], pieces[1]))
-                {
-                    response.Content.Headers.Add(pieces[0], pieces[1]);
-                }
+                var headers = HttpHeaderCategories.IsContentHeader(pieces[0]) ? (HttpHeaders) response.Content.Headers : response.Headers;
+                headers.Add(pieces[0], pieces[1]);
             }
 
+            // read the content
             if (request.Method != HttpMethod.Head && response.Content.Headers.ContentLength.HasValue)
             {
-                long contentLength = response.Content.Headers.ContentLength.Value;
-                var buffer = new byte[contentLength];
-                int read = await reader.ReadAsync(buffer, 0, (int)contentLength);
-                contentStream.Write(buffer, 0, read);
-                contentStream.Position = 0;
+                var remainingStream = reader.GetRemainingStream();
+                var limitedStream = new LimitedStream(remainingStream, response.Content.Headers.ContentLength.Value);
+                var streamContent = new StreamContent(limitedStream);
+                foreach (var header in response.Content.Headers)
+                {
+                    streamContent.Headers.Add(header.Key, header.Value);
+                }
+
+                response.Content = streamContent;
             }
 
             return response;

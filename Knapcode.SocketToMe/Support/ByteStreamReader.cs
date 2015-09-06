@@ -30,6 +30,11 @@ namespace Knapcode.SocketToMe.Support
             _bufferSize = -1;
         }
 
+        public Stream GetRemainingStream()
+        {
+            return new PartiallyBufferedStream(_buffer, _position, _bufferSize - _position, _stream);
+        }
+
         public async Task<string> ReadLineAsync()
         {
             await EnsureFirstReadAsync();
