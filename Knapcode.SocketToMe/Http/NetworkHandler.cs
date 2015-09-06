@@ -93,7 +93,12 @@ namespace Knapcode.SocketToMe.Http
             response.Content = new ByteArrayContent(new byte[0]);
             while ((line = await reader.ReadLineAsync()) != null && line != string.Empty)
             {
-                pieces = line.Split(new[] { ": " }, 2, StringSplitOptions.None);
+                pieces = line.Split(new[] { ":" }, 2, StringSplitOptions.None);
+                if (pieces[1].StartsWith(" "))
+                {
+                    pieces[1] = pieces[1].Substring(1);
+                }
+
                 var headers = HttpHeaderCategories.IsContentHeader(pieces[0]) ? (HttpHeaders) response.Content.Headers : response.Headers;
                 headers.Add(pieces[0], pieces[1]);
             }
