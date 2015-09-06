@@ -115,6 +115,23 @@ namespace Knapcode.SocketToMe.Tests.Support
             await ts.VerifyAllLinesAsync(ts.NonCrLfLineEndings);
         }
 
+        [TestMethod]
+        public async Task It_Can_Return_Buffered_And_Remaining_Content_As_A_Stream()
+        {
+            // ARRANGE
+            var ts = new TestState();
+            ts.BufferSize = ts.TrailingLineEndings[0].Length + (ts.TrailingLineEndings[1].Length/2);
+            ts.Setup(ts.TrailingLineEndings);
+
+            // ACT
+            var line = await ts.Reader.ReadLineAsync();
+            var remaining = await new StreamReader(ts.Reader.GetRemainingStream()).ReadToEndAsync();
+
+            // ASSERT
+            line.Should().Be("First\r\n");
+            remaining.Should().Be("Second\r\nThird\r\n");
+        }
+
         private class TestState
         {
             public TestState()
