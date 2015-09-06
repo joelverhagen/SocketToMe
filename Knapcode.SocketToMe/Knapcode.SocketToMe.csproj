@@ -48,7 +48,17 @@
       <DependentUpon>ByteStreamReader.Read.tt</DependentUpon>
     </Compile>
     <Compile Include="Support\LimitedStream.cs" />
+    <Compile Include="Support\LimitedStream.Read.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>LimitedStream.Read.tt</DependentUpon>
+    </Compile>
     <Compile Include="Support\PartiallyBufferedStream.cs" />
+    <Compile Include="Support\PartiallyBufferedStream.Read.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PartiallyBufferedStream.Read.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Knapcode.SocketToMe.nuspec" />
@@ -57,6 +67,14 @@
     <Content Include="Support\ByteStreamReader.Read.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>ByteStreamReader.Read.cs</LastGenOutput>
+    </Content>
+    <Content Include="Support\LimitedStream.Read.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>LimitedStream.Read.cs</LastGenOutput>
+    </Content>
+    <Content Include="Support\PartiallyBufferedStream.Read.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>PartiallyBufferedStream.Read.cs</LastGenOutput>
     </Content>
   </ItemGroup>
   <ItemGroup>

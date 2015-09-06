@@ -1,0 +1,30 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension=".cs" #>
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace Knapcode.SocketToMe.Support
+{
+    public partial class LimitedStream
+    {
+<# foreach(bool isAsync in new[] { false, true })
+	{
+	#>
+        public override <#=(isAsync ? "async Task<" : "")#>int<#=(isAsync ? ">" : "")#> Read<#=(isAsync ? "Async" : "")#>(byte[] buffer, int offset, int count<#=(isAsync ? ", CancellationToken cancellationToken" : "")#>)
+        {
+            var limitedCount = (int) Math.Min(_length, count);
+            if (limitedCount == 0)
+            {
+                return 0;
+            }
+
+            var read = <#=(isAsync ? "await " : "")#>_innerStream.Read<#=(isAsync ? "Async" : "")#>(buffer, offset, limitedCount<#=(isAsync ? ", cancellationToken" : "")#>);
+            _length -= read;
+            return read;
+        }<#=(isAsync ? "" : "\r\n")#>
+<#
+	}
+	#>
+	}
+}

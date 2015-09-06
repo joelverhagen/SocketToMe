@@ -1,11 +1,9 @@
 ﻿using System;
 using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Knapcode.SocketToMe.Support
 {
-    public class LimitedStream : Stream
+    public partial class LimitedStream : Stream
     {
         private readonly Stream _innerStream;
         private long _length;
@@ -54,32 +52,6 @@ namespace Knapcode.SocketToMe.Support
         public override void SetLength(long value)
         {
             throw new NotSupportedException();
-        }
-
-        public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
-        {
-            var limitedCount = (int) Math.Min(_length, count);
-            if (limitedCount == 0)
-            {
-                return 0;
-            }
-
-            var read = await _innerStream.ReadAsync(buffer, offset, limitedCount, cancellationToken);
-            _length -= read;
-            return read;
-        }
-
-        public override int Read(byte[] buffer, int offset, int count)
-        {
-            var limitedCount = (int) Math.Min(_length, count);
-            if (limitedCount == 0)
-            {
-                return 0;
-            }
-
-            var read = _innerStream.Read(buffer, offset, limitedCount);
-            _length -= read;
-            return read;
         }
 
         public override void Write(byte[] buffer, int offset, int count)

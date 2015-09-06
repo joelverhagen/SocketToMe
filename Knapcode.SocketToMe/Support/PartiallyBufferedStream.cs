@@ -1,11 +1,9 @@
 ﻿using System;
 using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Knapcode.SocketToMe.Support
 {
-    public class PartiallyBufferedStream : Stream
+    public partial class PartiallyBufferedStream : Stream
     {
         private readonly byte[] _buffer;
         private int _offset;
@@ -58,28 +56,6 @@ namespace Knapcode.SocketToMe.Support
         public override void SetLength(long value)
         {
             throw new NotSupportedException();
-        }
-
-        public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
-        {
-            int read;
-            if (TryReadBuffer(buffer, offset, count, out read))
-            {
-                return read;
-            }
-
-            return await _innerStream.ReadAsync(buffer, offset, count, cancellationToken);
-        }
-
-        public override int Read(byte[] buffer, int offset, int count)
-        {
-            int read;
-            if (TryReadBuffer(buffer, offset, count, out read))
-            {
-                return read;
-            }
-
-            return _innerStream.Read(buffer, offset, count);
         }
 
         private bool TryReadBuffer(byte[] buffer, int offset, int count, out int read)

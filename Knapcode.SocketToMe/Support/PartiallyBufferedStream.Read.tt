@@ -1,0 +1,27 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension=".cs" #>
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace Knapcode.SocketToMe.Support
+{
+    public partial class PartiallyBufferedStream
+    {
+<# foreach(bool isAsync in new[] { false, true })
+	{
+	#>
+        public override <#=(isAsync ? "async Task<" : "")#>int<#=(isAsync ? ">" : "")#> Read<#=(isAsync ? "Async" : "")#>(byte[] buffer, int offset, int count<#=(isAsync ? ", CancellationToken cancellationToken" : "")#>)
+        {
+            int read;
+            if (TryReadBuffer(buffer, offset, count, out read))
+            {
+                return read;
+            }
+
+            return <#=(isAsync ? "await " : "")#>_innerStream.Read<#=(isAsync ? "Async" : "")#>(buffer, offset, count<#=(isAsync ? ", cancellationToken" : "")#>);
+        }<#=(isAsync ? "" : "\r\n")#>
+<#
+	}
+	#>
+	}
+}
