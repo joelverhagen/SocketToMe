@@ -74,37 +74,21 @@ namespace Knapcode.SocketToMe.Http
 
         private async Task<HttpResponseMessage> ReadResponseAsync(HttpRequestMessage request, Stream stream)
         {
-            // initialize the response
-            var response = new HttpResponseMessage();
+            ByteStreamReader reader = new ByteStreamReader(stream, BufferSize, false);
+            var response = await ReadResponseHeadAsync(reader);
+            ReadResponseBody(request, response, reader);
+            return response;
+        }
 
-            // read the first line of the response
-            var reader = new ByteStreamReader(stream, BufferSize, false);
-            string line = await reader.ReadLineAsync();
-            string[] pieces = line.Split(new[] { ' ' }, 3);
-            if (pieces[0] != "HTTP/1.1")
+        private static void ReadResponseBody(HttpRequestMessage request, HttpResponseMessage response, ByteStreamReader reader)
+        {
+            if (request.Method == HttpMethod.Head)
             {
-                throw new HttpRequestException("The HTTP version the response is not supported.");
+                return;
             }
 
-            response.StatusCode = (HttpStatusCode)int.Parse(pieces[1]);
-            response.ReasonPhrase = pieces[2];
-
-            // read the headers
-            response.Content = new ByteArrayContent(new byte[0]);
-            while ((line = await reader.ReadLineAsync()) != null && line != string.Empty)
-            {
-                pieces = line.Split(new[] { ":" }, 2, StringSplitOptions.None);
-                if (pieces[1].StartsWith(" "))
-                {
-                    pieces[1] = pieces[1].Substring(1);
-                }
-
-                var headers = HttpHeaderCategories.IsContentHeader(pieces[0]) ? (HttpHeaders) response.Content.Headers : response.Headers;
-                headers.Add(pieces[0], pieces[1]);
-            }
-
-            // read the content
-            if (request.Method != HttpMethod.Head && response.Content.Headers.ContentLength.HasValue)
+            // read the body with a content-length
+            if (response.Content.Headers.ContentLength.HasValue)
             {
                 var remainingStream = reader.GetRemainingStream();
                 var limitedStream = new LimitedStream(remainingStream, response.Content.Headers.ContentLength.Value);
@@ -116,7 +100,37 @@ namespace Knapcode.SocketToMe.Http
 
                 response.Content = streamContent;
             }
+        }
 
+        private static async Task<HttpResponseMessage> ReadResponseHeadAsync(ByteStreamReader reader)
+        {
+            // initialize the response
+            var response = new HttpResponseMessage();
+
+            // read the first line of the response
+            string line = await reader.ReadLineAsync();
+            string[] pieces = line.Split(new[] {' '}, 3);
+            if (pieces[0] != "HTTP/1.1")
+            {
+                throw new HttpRequestException("The HTTP version the response is not supported.");
+            }
+
+            response.StatusCode = (HttpStatusCode) int.Parse(pieces[1]);
+            response.ReasonPhrase = pieces[2];
+
+            // read the headers
+            response.Content = new ByteArrayContent(new byte[0]);
+            while ((line = await reader.ReadLineAsync()) != null && line != string.Empty)
+            {
+                pieces = line.Split(new[] {":"}, 2, StringSplitOptions.None);
+                if (pieces[1].StartsWith(" "))
+                {
+                    pieces[1] = pieces[1].Substring(1);
+                }
+
+                var headers = HttpHeaderCategories.IsContentHeader(pieces[0]) ? (HttpHeaders) response.Content.Headers : response.Headers;
+                headers.Add(pieces[0], pieces[1]);
+            }
             return response;
         }
     }
