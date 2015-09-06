@@ -53,5 +53,6 @@ using (var sslStream = new SslStream(proxiedStream))
 - SOCKS
   - Add `async` support to `Socks4Client` and `Socks5Client`
 - HTTP
-  - Add chunked support to `NetworkHandler`
-  - Add HTTPS support via `SslStream`
+  - Chunked response support
+  - HTTPS support via `SslStream`
+  - Arbitrary starting Socket
