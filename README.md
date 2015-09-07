@@ -80,12 +80,13 @@ using (var response = httpClient.GetAsync("https://icanhazip.com/").Result)
 ## TODO
 
 - SOCKS
-  - Add `async` support to `Socks4Client` and `Socks5Client`
+  - `async` support to `Socks4Client` and `Socks5Client`
 - HTTP
-  - Support client certificates
-  - Support HTTP/1.0
-  - Support chunked requests
+  - Client certificates
+  - HTTP/1.0
+  - Chunked requests
   - Gzip, deflate, etc.
-  - Add support for automatic redirects
+  - Automatic redirects
+  - HTTP and HTTPS proxies
 - Everywhere
-  - Add better cancellation token support
+  - Better cancellation token support
