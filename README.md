@@ -14,6 +14,8 @@ Fun with sockets in C#.
   - Chunked responses
   - Most of the features provided by `HttpClient`
   - Arbitrary sockets (e.g. connected to a SOCKS proxy server!)
+  - Automatic redirects (with `RedirectingHandler`)
+  - Automatic decompression (with `DecompressingHandler`)
 
 There's probably a lot of bugs with `NetworkHandler`... it's not very thoroughly tested.
 
@@ -85,8 +87,6 @@ using (var response = httpClient.GetAsync("https://icanhazip.com/").Result)
   - Client certificates
   - HTTP/1.0
   - Chunked requests
-  - Gzip, deflate, etc.
-  - Automatic redirects
   - HTTP and HTTPS proxies
 - Everywhere
   - Better cancellation token support
