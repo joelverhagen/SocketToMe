@@ -36,6 +36,12 @@
     <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Http\ChunkedStream.cs" />
+    <Compile Include="Http\ChunkedStream.Read.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ChunkedStream.Read.tt</DependentUpon>
+    </Compile>
     <Compile Include="Http\HttpHeaderCategories.cs" />
     <Compile Include="Support\ByteStreamReader.cs" />
     <Compile Include="Http\NetworkHandler.cs" />
@@ -64,6 +70,10 @@
     <None Include="Knapcode.SocketToMe.nuspec" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Http\ChunkedStream.Read.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ChunkedStream.Read.cs</LastGenOutput>
+    </Content>
     <Content Include="Support\ByteStreamReader.Read.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>ByteStreamReader.Read.cs</LastGenOutput>
