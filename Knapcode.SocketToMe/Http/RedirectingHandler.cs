@@ -35,8 +35,8 @@ namespace Knapcode.SocketToMe.Http
             AllowAutoRedirect = true;
             MaxAutomaticRedirections = 50;
             DisableInnerAutoRedirect = true;
-            DownloadContentOnRedirect = true;
-            KeepRedirectHistory = true;
+            DownloadContentOnRedirect = false;
+            KeepRedirectHistory = false;
         }
 
         /// <summary>Gets or sets a value that indicates whether the handler should follow redirection responses.</summary>
