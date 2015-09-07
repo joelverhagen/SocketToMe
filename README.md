@@ -2,7 +2,7 @@
 
 Fun with sockets in C#.
 
-## Details
+## Features
 
 - Connect to a SOCKS proxy server
   - SOCKS 4 and 4A: TCP CONNECT
@@ -10,6 +10,7 @@ Fun with sockets in C#.
 - Connect to an HTTP server without WinHTTP (e.g. HttpClientHandler)
   - Use the custom delegating handler `NetworkHandler` with `HttpClient`
   - HTTP/1.1
+  - HTTPS
   - Chunked responses
   - Most of the features provided by `HttpClient`
   - Arbitrary sockets (e.g. connected to a SOCKS proxy server!)
@@ -24,7 +25,7 @@ Install-Package Knapcode.SocketToMe
 
 ## Examples
 
-### HTTP Example
+### HTTP
 
 ```csharp
 using (var httpClient = new HttpClient(new NetworkHandler()))
@@ -35,7 +36,7 @@ using (var response = httpClient.GetAsync("http://icanhazip.com/").Result)
 }
 ```
 
-### SOCKS Example
+### SOCKS
 
 Talk to a website through Tor! Have [Tor Browser](https://www.torproject.org/download/download-easy.html.en) running at the same time to try this demo out. Port 9150 is the default port for Tor Browser.
 
@@ -76,7 +77,7 @@ using (var response = httpClient.GetAsync("https://icanhazip.com/").Result)
 }
 ```
 
-## Because I am forgetful
+## TODO
 
 - SOCKS
   - Add `async` support to `Socks4Client` and `Socks5Client`
