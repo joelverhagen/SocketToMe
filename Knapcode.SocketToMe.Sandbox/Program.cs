@@ -14,10 +14,10 @@ namespace Knapcode.SocketToMe.Sandbox
             var client = new Socks5Client();
 
             var socket = client.ConnectToServer(endpoint);
-            socket = client.ConnectToDestination(socket, "icanhazip.com", 80);
+            socket = client.ConnectToDestination(socket, "icanhazip.com", 443);
 
             var httpClient = new HttpClient(new NetworkHandler(socket));
-            var response = httpClient.GetAsync("http://icanhazip.com/").Result;
+            var response = httpClient.GetAsync("https://icanhazip.com/").Result;
 
             Console.WriteLine(response.Content.ReadAsStringAsync().Result);
         }
