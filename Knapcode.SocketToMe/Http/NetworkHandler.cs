@@ -15,7 +15,18 @@ namespace Knapcode.SocketToMe.Http
 {
     public class NetworkHandler : HttpMessageHandler
     {
+        private readonly Socket _socket;
         private const int BufferSize = 4096;
+
+        public NetworkHandler()
+        {
+            _socket = null;
+        }
+
+        public NetworkHandler(Socket socket)
+        {
+            _socket = socket;
+        }
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
@@ -41,10 +52,19 @@ namespace Knapcode.SocketToMe.Http
             }
         }
 
-        private static async Task<Stream> GetStreamAsync(HttpRequestMessage request)
+        private async Task<Stream> GetStreamAsync(HttpRequestMessage request)
         {
             // get the basic TCP stream
-            var tcpClient = new TcpClient(request.RequestUri.DnsSafeHost, request.RequestUri.Port);
+            var tcpClient = new TcpClient();
+            if (_socket != null)
+            {
+                tcpClient.Client = _socket;
+            }
+            else
+            {
+                await tcpClient.ConnectAsync(request.RequestUri.DnsSafeHost, request.RequestUri.Port);
+            }
+
             var httpStream = tcpClient.GetStream();
 
             // wrap in an SSL stream, if necessary

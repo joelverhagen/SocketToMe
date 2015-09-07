@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Sockets;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -16,6 +17,24 @@ namespace Knapcode.SocketToMe.Tests.Http
     [TestClass]
     public class NetworkHandlerTests
     {
+        [TestMethod]
+        public async Task CustomSocket()
+        {
+            // ARRANGE
+            var ts = new TestState();
+            ts.Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            ts.Socket.Connect("httpbin.org", 80);
+            var request = new HttpRequestMessage(HttpMethod.Get, "http://httpbin.org/ip");
+
+            // ACT
+            var response = await ts.Client.SendAsync(request);
+
+            // ASSERT
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var content = await response.Content.ReadAsStringAsync();
+            content.Should().NotBeNullOrWhiteSpace();
+        }
+
         [TestMethod]
         public async Task BasicFunctionality()
         {
@@ -36,14 +55,14 @@ namespace Knapcode.SocketToMe.Tests.Http
             o.Response.Headers.Should().NotBeNull();
             o.Response.Headers.Date.Should().HaveValue();
             o.Response.Headers.Date.Should().BeAfter(DateTime.MinValue);
-            
+
             o.Content.Should().NotBeNull();
             o.Response.Content.Headers.ContentType.ToString().Should().Be("application/json");
             o.Content.Should().HaveCount(1);
             o.Content.Should().ContainKey("origin");
             IPAddress.Parse(o.Content["origin"]);
         }
-        
+
         [TestMethod]
         public async Task KnownContentOverHttp()
         {
@@ -87,8 +106,8 @@ namespace Knapcode.SocketToMe.Tests.Http
             var ts = new TestState();
             var form = new Dictionary<string, string>
             {
-                { "foo", "7A0D6A40-8DCE-4F6F-B372-ADC12B7FB222" },
-                {"bar", "9C025D9D-9880-4C03-A251-A29D5EC4BF16" }
+                {"foo", "7A0D6A40-8DCE-4F6F-B372-ADC12B7FB222"},
+                {"bar", "9C025D9D-9880-4C03-A251-A29D5EC4BF16"}
             };
             var request = new HttpRequestMessage(HttpMethod.Post, "http://httpbin.org/post")
             {
@@ -183,7 +202,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             // ARRANGE
             var ts = new TestState();
             var request = new HttpRequestMessage(HttpMethod.Get, "http://httpbin.org/stream/2");
-            request.Headers.Add("x-sockettome-test", new[] { "71116259-F72C-4B6C-8F83-764B787628BA" });
+            request.Headers.Add("x-sockettome-test", new[] {"71116259-F72C-4B6C-8F83-764B787628BA"});
 
             // ACT
             var response = await ts.Client.SendAsync(request);
@@ -201,17 +220,27 @@ namespace Knapcode.SocketToMe.Tests.Http
             public TestState()
             {
                 // setup
-                Handler = new NetworkHandler();
-                Client = new HttpClient(Handler);
+                Socket = null; 
             }
 
-            public HttpClient Client { get; set; }
+            public Socket Socket { get; set; }
 
-            public NetworkHandler Handler { get; set; }
+            public HttpClient Client
+            {
+                get
+                {
+                    return new HttpClient(Handler);
+                }
+            }
+
+            public NetworkHandler Handler
+            {
+                get { return new NetworkHandler(Socket); }
+            }
 
             public async Task<ResponseAndContent<T>> GetJsonResponse<T>(HttpRequestMessage request)
             {
-                var response = await this.Client.SendAsync(request);
+                var response = await Client.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 return new ResponseAndContent<T>
                 {
