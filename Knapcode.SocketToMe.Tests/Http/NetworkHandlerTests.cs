@@ -214,6 +214,20 @@ namespace Knapcode.SocketToMe.Tests.Http
         }
 
         [TestMethod]
+        public async Task RequestMessage()
+        {
+            // ARRANGE
+            var ts = new TestState();
+            var request = new HttpRequestMessage(HttpMethod.Get, "http://httpbin.org/ip");
+
+            // ACT
+            var response = await ts.Client.SendAsync(request);
+
+            // ASSERT
+            response.RequestMessage.Should().BeSameAs(request);
+        }
+
+        [TestMethod]
         public async Task StatusCode()
         {
             // ARRANGE

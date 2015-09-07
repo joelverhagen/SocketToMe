@@ -120,15 +120,15 @@ namespace Knapcode.SocketToMe.Http
         private async Task<HttpResponseMessage> ReadResponseAsync(HttpRequestMessage request, Stream stream)
         {
             ByteStreamReader reader = new ByteStreamReader(stream, BufferSize, false);
-            var response = await ReadResponseHeadAsync(reader);
-            ReadResponseBody(request, response, reader);
+            var response = await ReadResponseHeadAsync(request, reader);
+            ReadResponseBody(response, reader);
             return response;
         }
 
-        private static async Task<HttpResponseMessage> ReadResponseHeadAsync(ByteStreamReader reader)
+        private static async Task<HttpResponseMessage> ReadResponseHeadAsync(HttpRequestMessage request, ByteStreamReader reader)
         {
             // initialize the response
-            var response = new HttpResponseMessage();
+            var response = new HttpResponseMessage { RequestMessage = request };
 
             // read the first line of the response
             string line = await reader.ReadLineAsync();
@@ -157,9 +157,9 @@ namespace Knapcode.SocketToMe.Http
             return response;
         }
 
-        private static void ReadResponseBody(HttpRequestMessage request, HttpResponseMessage response, ByteStreamReader reader)
+        private static void ReadResponseBody(HttpResponseMessage response, ByteStreamReader reader)
         {
-            if (request.Method == HttpMethod.Head)
+            if (response.RequestMessage.Method == HttpMethod.Head)
             {
                 reader.Dispose();
                 return;
