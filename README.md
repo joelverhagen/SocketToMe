@@ -56,3 +56,5 @@ using (var sslStream = new SslStream(proxiedStream))
   - Chunked response support
   - HTTPS support via `SslStream`
   - Arbitrary starting Socket
+- Everywhere
+  - Add better cancellation token support
