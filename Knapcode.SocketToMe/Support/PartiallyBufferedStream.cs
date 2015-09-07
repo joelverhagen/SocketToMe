@@ -6,6 +6,7 @@ namespace Knapcode.SocketToMe.Support
     public partial class PartiallyBufferedStream : Stream
     {
         private readonly byte[] _buffer;
+        private bool _disposed;
         private int _offset;
         private int _length;
         private readonly Stream _innerStream;
@@ -13,6 +14,7 @@ namespace Knapcode.SocketToMe.Support
         public PartiallyBufferedStream(byte[] buffer, int offset, int length, Stream innerStream)
         {
             _buffer = buffer;
+            _disposed = false;
             _offset = offset;
             _length = length;
             _innerStream = innerStream;
@@ -76,6 +78,15 @@ namespace Knapcode.SocketToMe.Support
         public override void Write(byte[] buffer, int offset, int count)
         {
             throw new NotSupportedException();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (!_disposed && disposing)
+            {
+                _innerStream.Dispose();
+                _disposed = true;
+            }
         }
     }
 }

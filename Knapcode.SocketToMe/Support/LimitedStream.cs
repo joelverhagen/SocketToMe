@@ -6,11 +6,13 @@ namespace Knapcode.SocketToMe.Support
     public partial class LimitedStream : Stream
     {
         private readonly Stream _innerStream;
+        private bool _disposed;
         private long _length;
 
         public LimitedStream(Stream innerStream, long length)
         {
             _innerStream = innerStream;
+            _disposed = false;
             _length = length;
         }
 
@@ -57,6 +59,15 @@ namespace Knapcode.SocketToMe.Support
         public override void Write(byte[] buffer, int offset, int count)
         {
             throw new NotSupportedException();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (!_disposed && disposing)
+            {
+                _innerStream.Dispose();
+                _disposed = true;
+            }
         }
     }
 }

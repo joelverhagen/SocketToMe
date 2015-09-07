@@ -1,9 +1,10 @@
+using System;
 using System.IO;
 using System.Text;
 
 namespace Knapcode.SocketToMe.Support
 {
-    public partial class ByteStreamReader
+    public partial class ByteStreamReader : IDisposable
     {
         private readonly Stream _stream;
         private readonly bool _preserveLineEndings;
@@ -12,6 +13,7 @@ namespace Knapcode.SocketToMe.Support
         private readonly byte[] _lineEndingBuffer;
         private readonly byte[] _buffer;
 
+        private bool _disposed;
         private int _position;
         private int _bufferSize;
 
@@ -24,6 +26,7 @@ namespace Knapcode.SocketToMe.Support
             _lineEndingBuffer = _encoding.GetBytes("\r\n");
             _buffer = new byte[bufferSize];
 
+            _disposed = false;
             _position = 0;
             _bufferSize = -1;
         }
@@ -31,6 +34,15 @@ namespace Knapcode.SocketToMe.Support
         public Stream GetRemainingStream()
         {
             return new PartiallyBufferedStream(_buffer, _position, _bufferSize - _position, _stream);
+        }
+
+        public void Dispose()
+        {
+            if (!_disposed)
+            {
+                _stream.Dispose();
+                _disposed = true;
+            }
         }
     }
 }

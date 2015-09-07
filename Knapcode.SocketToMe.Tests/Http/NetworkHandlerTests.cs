@@ -20,6 +20,51 @@ namespace Knapcode.SocketToMe.Tests.Http
     public class NetworkHandlerTests
     {
         [TestMethod]
+        public async Task DisposeResponseWithNoResponseBody()
+        {
+            // ARRANGE
+            var ts = new TestState();
+            var request = new HttpRequestMessage(HttpMethod.Head, "http://httpbin.org/ip");
+            var response = await ts.Client.SendAsync(request);
+
+            // ACT
+            Action action = () => response.Dispose();
+
+            // ACT, ASSERT
+            action.ShouldNotThrow();
+        }
+
+        [TestMethod]
+        public async Task DisposeResponseWithContentLengthBody()
+        {
+            // ARRANGE
+            var ts = new TestState();
+            var request = new HttpRequestMessage(HttpMethod.Get, "http://httpbin.org/ip");
+            var response = await ts.Client.SendAsync(request);
+
+            // ACT
+            Action action = () => response.Dispose();
+
+            // ACT, ASSERT
+            action.ShouldNotThrow();
+        }
+
+        [TestMethod]
+        public async Task DisposeResponseWithChunkedBody()
+        {
+            // ARRANGE
+            var ts = new TestState();
+            var request = new HttpRequestMessage(HttpMethod.Get, "http://httpbin.org/stream/2");
+            var response = await ts.Client.SendAsync(request);
+
+            // ACT
+            Action action = () => response.Dispose();
+
+            // ACT, ASSERT
+            action.ShouldNotThrow();
+        }
+
+        [TestMethod]
         public async Task CustomSocket()
         {
             // ARRANGE
