@@ -65,6 +65,36 @@ namespace Knapcode.SocketToMe.Tests.Http
         }
 
         [TestMethod]
+        public async Task Gzip()
+        {
+            // ARRANGE
+            var ts = new TestState { DecompressingHandler = new DecompressingHandler { AutomaticDecompression = DecompressionMethods.GZip } };
+            var request = new HttpRequestMessage(HttpMethod.Get, "http://httpbin.org/gzip");
+
+            // ACT
+            var response = await ts.GetJsonResponse<JObject>(request);
+
+            // ASSERT
+            response.Response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.Content["gzipped"].ToObject<bool>().Should().BeTrue();
+        }
+
+        [TestMethod]
+        public async Task Deflate()
+        {
+            // ARRANGE
+            var ts = new TestState { DecompressingHandler = new DecompressingHandler { AutomaticDecompression = DecompressionMethods.Deflate } };
+            var request = new HttpRequestMessage(HttpMethod.Get, "http://httpbin.org/deflate");
+
+            // ACT
+            var response = await ts.GetJsonResponse<JObject>(request);
+
+            // ASSERT
+            response.Response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.Content["deflated"].ToObject<bool>().Should().BeTrue();
+        }
+
+        [TestMethod]
         public async Task CustomSocket()
         {
             // ARRANGE
@@ -348,8 +378,11 @@ namespace Knapcode.SocketToMe.Tests.Http
             public TestState()
             {
                 // setup
-                Socket = null; 
+                Socket = null;
+                DecompressingHandler = null;
             }
+
+            public DecompressingHandler DecompressingHandler { get; set; }
 
             public Socket Socket { get; set; }
 
@@ -357,7 +390,14 @@ namespace Knapcode.SocketToMe.Tests.Http
             {
                 get
                 {
-                    return new HttpClient(Handler);
+                    HttpMessageHandler handler = Handler;
+                    if (DecompressingHandler != null)
+                    {
+                        DecompressingHandler.InnerHandler = handler;
+                        handler = DecompressingHandler;
+                    }
+
+                    return new HttpClient(handler);
                 }
             }
 

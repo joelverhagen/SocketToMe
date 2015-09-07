@@ -77,21 +77,21 @@ namespace Knapcode.SocketToMe.Http
             }
 
             // include the header in the stream that gets decompressed
-            var chainedStream = new PartiallyBufferedStream(header, 0, 2, responseStream);
+            var encodedStream = new PartiallyBufferedStream(header, 0, 2, responseStream);
 
             // try to decode the response
             Stream decodeStream = null;
             var contentEncoding = response.Content.Headers.ContentEncoding.First();
-            if (contentEncoding.Equals(ContentEncodings[DecompressionMethods.GZip], StringComparison.OrdinalIgnoreCase))
+            if (AutomaticDecompression.HasFlag(DecompressionMethods.GZip) && contentEncoding.Equals(ContentEncodings[DecompressionMethods.GZip], StringComparison.OrdinalIgnoreCase))
             {
                 // let gzip compress the stream, and exclude the Content-Encoding header
-                decodeStream = new GZipStream(chainedStream, CompressionMode.Decompress);
+                decodeStream = new GZipStream(encodedStream, CompressionMode.Decompress);
             }
-            else if (contentEncoding.Equals(ContentEncodings[DecompressionMethods.Deflate], StringComparison.OrdinalIgnoreCase))
+            else if (AutomaticDecompression.HasFlag(DecompressionMethods.Deflate) && contentEncoding.Equals(ContentEncodings[DecompressionMethods.Deflate], StringComparison.OrdinalIgnoreCase))
             {
                 // decompress the stream as raw DEFLATE or zlib, depending on the header
                 var noHeader = header[0] != ValidZlibCmfByte || !ValidZlibFlgBytes.Contains(header[1]);
-                decodeStream = noHeader ? new DeflateStream(chainedStream, CompressionMode.Decompress) : new DeflateStream(responseStream, CompressionMode.Decompress);
+                decodeStream = noHeader ? new DeflateStream(encodedStream, CompressionMode.Decompress) : new DeflateStream(responseStream, CompressionMode.Decompress);
             }
 
             if (decodeStream != null)
