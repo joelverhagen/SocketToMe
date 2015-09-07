@@ -73,22 +73,22 @@
     <None Include="Knapcode.SocketToMe.nuspec" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Http\ChunkedStream.Read.tt">
+    <None Include="Http\ChunkedStream.Read.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>ChunkedStream.Read.cs</LastGenOutput>
-    </Content>
-    <Content Include="Support\ByteStreamReader.Read.tt">
+    </None>
+    <None Include="Support\ByteStreamReader.Read.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>ByteStreamReader.Read.cs</LastGenOutput>
-    </Content>
-    <Content Include="Support\LimitedStream.Read.tt">
+    </None>
+    <None Include="Support\LimitedStream.Read.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>LimitedStream.Read.cs</LastGenOutput>
-    </Content>
-    <Content Include="Support\PartiallyBufferedStream.Read.tt">
+    </None>
+    <None Include="Support\PartiallyBufferedStream.Read.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>PartiallyBufferedStream.Read.cs</LastGenOutput>
-    </Content>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
