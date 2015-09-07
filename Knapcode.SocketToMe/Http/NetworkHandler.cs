@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Security;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -18,24 +19,38 @@ namespace Knapcode.SocketToMe.Http
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            if (request.RequestUri.Scheme == "https")
+            if (request.RequestUri.Scheme.Equals("http", StringComparison.OrdinalIgnoreCase) && request.RequestUri.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase))
             {
-                throw new NotSupportedException("HTTPS is not supported.");
+                throw new NotSupportedException("Only HTTP and HTTPS are supported.");
             }
 
             if (request.Version != new Version(1, 1))
             {
                 throw new NotSupportedException("Only HTTP/1.1 is supported.");
             }
-            
+
+            // get the TCP stream
             var tcpClient = new TcpClient(request.RequestUri.DnsSafeHost, request.RequestUri.Port);
-            NetworkStream networkStream = tcpClient.GetStream();
+            var httpStream = tcpClient.GetStream();
+
+            // wrap in an SSL stream, if necessary
+            Stream stream;
+            if (request.RequestUri.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase))
+            {
+                var httpsStream = new SslStream(httpStream);
+                await httpsStream.AuthenticateAsClientAsync(request.RequestUri.DnsSafeHost);
+                stream = httpsStream;
+            }
+            else
+            {
+                stream = httpStream;
+            }
 
             // send the request
-            await WriteRequestAsync(request, networkStream);
+            await WriteRequestAsync(request, stream);
 
             // read the request
-            return await ReadResponseAsync(request, networkStream);
+            return await ReadResponseAsync(request, stream);
         }
 
         private async Task WriteRequestAsync(HttpRequestMessage request, Stream stream)

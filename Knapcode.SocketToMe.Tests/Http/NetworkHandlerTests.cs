@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Knapcode.SocketToMe.Http;
@@ -41,6 +42,42 @@ namespace Knapcode.SocketToMe.Tests.Http
             o.Content.Should().HaveCount(1);
             o.Content.Should().ContainKey("origin");
             IPAddress.Parse(o.Content["origin"]);
+        }
+        
+        [TestMethod]
+        public async Task KnownContentOverHttp()
+        {
+            // ARRANGE
+            var ts = new TestState();
+            var request = new HttpRequestMessage(HttpMethod.Get, "http://httpbin.org/user-agent");
+            request.Headers.Add("User-Agent", "SocketToMe/B3C5B340-D620-472E-B97B-769ECADD0CD3");
+
+            // ACT
+            var response = await ts.Client.SendAsync(request);
+
+            // ASSERT
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var content = await response.Content.ReadAsStringAsync();
+            content = Regex.Replace(content, @"\s+", "");
+            content.Should().Be(@"{""user-agent"":""SocketToMe/B3C5B340-D620-472E-B97B-769ECADD0CD3""}");
+        }
+
+        [TestMethod]
+        public async Task KnownContentOverHttps()
+        {
+            // ARRANGE
+            var ts = new TestState();
+            var request = new HttpRequestMessage(HttpMethod.Get, "https://httpbin.org/user-agent");
+            request.Headers.Add("User-Agent", "SocketToMe/B3C5B340-D620-472E-B97B-769ECADD0CD3");
+
+            // ACT
+            var response = await ts.Client.SendAsync(request);
+
+            // ASSERT
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var content = await response.Content.ReadAsStringAsync();
+            content = Regex.Replace(content, @"\s+", "");
+            content.Should().Be(@"{""user-agent"":""SocketToMe/B3C5B340-D620-472E-B97B-769ECADD0CD3""}");
         }
 
         [TestMethod]

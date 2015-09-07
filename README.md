@@ -53,7 +53,9 @@ using (var sslStream = new SslStream(proxiedStream))
 - SOCKS
   - Add `async` support to `Socks4Client` and `Socks5Client`
 - HTTP
-  - HTTPS support via `SslStream`
+  - Support client certificates
+  - Support HTTP/1.0
+  - Support HTTP/2.0
   - Arbitrary starting Socket
 - Everywhere
   - Add better cancellation token support
