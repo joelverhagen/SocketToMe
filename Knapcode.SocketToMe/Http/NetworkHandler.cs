@@ -22,6 +22,11 @@ namespace Knapcode.SocketToMe.Http
             {
                 throw new NotSupportedException("HTTPS is not supported.");
             }
+
+            if (request.Version != new Version(1, 1))
+            {
+                throw new NotSupportedException("Only HTTP/1.1 is supported.");
+            }
             
             var tcpClient = new TcpClient(request.RequestUri.DnsSafeHost, request.RequestUri.Port);
             NetworkStream networkStream = tcpClient.GetStream();
