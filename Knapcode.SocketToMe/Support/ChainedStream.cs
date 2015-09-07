@@ -8,6 +8,7 @@ namespace Knapcode.SocketToMe.Support
     {
         private readonly bool _disposeOnCompletion;
         private readonly IEnumerator<Stream> _streams;
+        private bool _disposed;
         private bool _finished;
         private bool _started;
 
@@ -15,6 +16,7 @@ namespace Knapcode.SocketToMe.Support
         {
             _started = false;
             _finished = false;
+            _disposed = false;
             _streams = streams.GetEnumerator();
             _disposeOnCompletion = disposeOnCompletion;
         }
@@ -62,6 +64,24 @@ namespace Knapcode.SocketToMe.Support
         public override void Write(byte[] buffer, int offset, int count)
         {
             throw new NotSupportedException();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (!_started && !_streams.MoveNext())
+                {
+                    _disposed = true;
+                    return;
+                }
+
+                do
+                {
+                    _streams.Current.Dispose();
+                } while (_streams.MoveNext());
+                _disposed = true;
+            }
         }
     }
 }

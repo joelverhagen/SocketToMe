@@ -17,6 +17,83 @@ namespace Knapcode.SocketToMe.Tests.Support
     {
         private static readonly byte[] BytesA = Encoding.ASCII.GetBytes("ABCD");
         private static readonly byte[] BytesB = Encoding.ASCII.GetBytes("1234");
+        [TestMethod, TestCategory("Unit")]
+        public void DisposeWithNoStreams()
+        {
+            // ARRANGE
+            var chain = new ChainedStream(Enumerable.Empty<Stream>());
+            Action action = () => chain.Dispose();
+
+            // ACT, ASSERT
+            action.ShouldNotThrow();
+        }
+
+        [TestMethod, TestCategory("Unit")]
+        public void DisposeWhenNotStarted()
+        {
+            // ARRANGE
+            var streamA = new DisposedStream(8);
+            var streamB = new DisposedStream(8);
+            var chain = new ChainedStream(new[] { streamA, streamB });
+
+            // ACT
+            chain.Dispose();
+
+            // ASSERT
+            streamA.Disposed.Should().BeTrue();
+            streamB.Disposed.Should().BeTrue();
+        }
+
+        [TestMethod, TestCategory("Unit")]
+        public void DisposeWhenOneStarted()
+        {
+            // ARRANGE
+            var streamA = new DisposedStream(8);
+            var streamB = new DisposedStream(8);
+            var chain = new ChainedStream(new[] { streamA, streamB });
+            chain.Read(new byte[4], 0, 4);
+
+            // ACT
+            chain.Dispose();
+
+            // ASSERT
+            streamA.Disposed.Should().BeTrue();
+            streamB.Disposed.Should().BeTrue();
+        }
+
+        [TestMethod, TestCategory("Unit")]
+        public void DisposeWhenOneFinished()
+        {
+            // ARRANGE
+            var streamA = new DisposedStream(8);
+            var streamB = new DisposedStream(8);
+            var chain = new ChainedStream(new[] { streamA, streamB });
+            chain.Read(new byte[12], 0, 12);
+
+            // ACT
+            chain.Dispose();
+
+            // ASSERT
+            streamA.Disposed.Should().BeTrue();
+            streamB.Disposed.Should().BeTrue();
+        }
+
+        [TestMethod, TestCategory("Unit")]
+        public void DisposeWhenAllFinished()
+        {
+            // ARRANGE
+            var streamA = new DisposedStream(8);
+            var streamB = new DisposedStream(8);
+            var chain = new ChainedStream(new[] { streamA, streamB });
+            chain.Read(new byte[16], 0, 16);
+
+            // ACT
+            chain.Dispose();
+
+            // ASSERT
+            streamA.Disposed.Should().BeTrue();
+            streamB.Disposed.Should().BeTrue();
+        }
 
         [TestMethod, TestCategory("Unit")]
         public void Read_WithNoStreams_ReturnsZero()
