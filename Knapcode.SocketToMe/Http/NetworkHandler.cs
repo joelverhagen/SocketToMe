@@ -108,7 +108,7 @@ namespace Knapcode.SocketToMe.Http
 
             if (bytes != null)
             {
-                await request.Content.CopyToAsync(stream);
+                await new MemoryStream(bytes).CopyToAsync(stream);
             }
         }
 

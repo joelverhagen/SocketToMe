@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Sockets;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -197,7 +199,7 @@ namespace Knapcode.SocketToMe.Tests.Http
         }
 
         [TestMethod]
-        public async Task Chunked()
+        public async Task ChunkedResponse()
         {
             // ARRANGE
             var ts = new TestState();
@@ -213,6 +215,73 @@ namespace Knapcode.SocketToMe.Tests.Http
             var lines = content.Trim().Split('\n');
             lines.Should().HaveCount(2);
             lines.Should().Contain(l => l.Contains("71116259-F72C-4B6C-8F83-764B787628BA"));
+        }
+
+        [TestMethod]
+        public async Task Form()
+        {
+            // ARRANGE
+            var ts = new TestState();
+            var request = new HttpRequestMessage(HttpMethod.Post, "http://httpbin.org/post");
+            var expectedForm = new Dictionary<string, string>
+            {
+                { "foo", "9FEF809B-C5B6-4CDC-8F06-79C122BD71D5" },
+                { "bar", "A400DB56-AFED-474B-A515-B371F29D78D9" }
+            };
+            request.Content = new FormUrlEncodedContent(expectedForm);
+
+            // ACT
+            var response = await ts.GetJsonResponse<JObject>(request);
+
+            // ASSERT
+            var actualForm = response.Content["form"].ToObject<IDictionary<string, string>>();
+            actualForm.ShouldBeEquivalentTo(expectedForm);
+        }
+
+        [TestMethod]
+        public async Task FileUpload()
+        {
+            // ARRANGE
+            var ts = new TestState();
+            var request = new HttpRequestMessage(HttpMethod.Post, "http://httpbin.org/post");
+            var content = new MultipartFormDataContent();
+
+            var expectedForm = new Dictionary<string, string>
+            {
+                {"foo", "9FEF809B-C5B6-4CDC-8F06-79C122BD71D5"},
+                {"bar", "A400DB56-AFED-474B-A515-B371F29D78D9"}
+            };
+            foreach (var pair in expectedForm)
+            {
+                content.Add(new StringContent(pair.Value), pair.Key);
+            }
+
+            var fileContent = new MemoryStream(Encoding.ASCII.GetBytes("This is the file content."));
+            content.Add(new StreamContent(fileContent)
+            {
+                Headers =
+                {
+                    ContentDisposition = new ContentDispositionHeaderValue("attachment")
+                    {
+                        FileName = "FileName.txt",
+                        Name = "Name.txt"
+                    }
+                }
+            });
+            request.Content = content;
+
+            // ACT
+            var response = await ts.GetJsonResponse<JObject>(request);
+
+            // ASSERT
+            var actualForm = response.Content["form"].ToObject<IDictionary<string, string>>();
+            actualForm.ShouldBeEquivalentTo(expectedForm);
+
+            var actualFiles = response.Content["files"].ToObject<IDictionary<string, string>>();
+            actualFiles.ShouldBeEquivalentTo(new Dictionary<string, string>
+            {
+                {"Name.txt", "This is the file content."}
+            });
         }
 
         private class TestState
