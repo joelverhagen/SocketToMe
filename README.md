@@ -86,5 +86,6 @@ using (var response = httpClient.GetAsync("https://icanhazip.com/").Result)
   - Support HTTP/1.0
   - Support chunked requests
   - Gzip, deflate, etc.
+  - Add support for automatic redirects
 - Everywhere
   - Add better cancellation token support
