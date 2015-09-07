@@ -31,5 +31,5 @@ namespace Knapcode.SocketToMe.Support
             _length -= read;
             return read;
         }
-	}
+    }
 }

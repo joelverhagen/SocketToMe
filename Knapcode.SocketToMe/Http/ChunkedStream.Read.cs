@@ -15,12 +15,12 @@ namespace Knapcode.SocketToMe.Http
                 _remaining = _chunkSize;
             }
 
-			int read = 0;
+            int read = 0;
             if(_remaining > 0)
             {
-				int actualCount = Math.Min(count, _remaining);
-				read = _byteStreamReader.Read(buffer, offset, actualCount);
-				_remaining -= read;
+                int actualCount = Math.Min(count, _remaining);
+                read = _byteStreamReader.Read(buffer, offset, actualCount);
+                _remaining -= read;
             }
 
             if (_remaining == 0)
@@ -40,12 +40,12 @@ namespace Knapcode.SocketToMe.Http
                 _remaining = _chunkSize;
             }
 
-			int read = 0;
+            int read = 0;
             if(_remaining > 0)
             {
-				int actualCount = Math.Min(count, _remaining);
-				read = await _byteStreamReader.ReadAsync(buffer, offset, actualCount);
-				_remaining -= read;
+                int actualCount = Math.Min(count, _remaining);
+                read = await _byteStreamReader.ReadAsync(buffer, offset, actualCount);
+                _remaining -= read;
             }
 
             if (_remaining == 0)
@@ -55,5 +55,5 @@ namespace Knapcode.SocketToMe.Http
 
             return read;
         }
-	}
+    }
 }

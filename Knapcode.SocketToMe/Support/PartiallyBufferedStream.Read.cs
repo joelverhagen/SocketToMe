@@ -26,5 +26,5 @@ namespace Knapcode.SocketToMe.Support
 
             return await _innerStream.ReadAsync(buffer, offset, count, cancellationToken);
         }
-	}
+    }
 }

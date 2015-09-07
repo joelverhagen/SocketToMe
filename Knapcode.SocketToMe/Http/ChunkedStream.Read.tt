@@ -9,8 +9,8 @@ namespace Knapcode.SocketToMe.Http
     public partial class ChunkedStream
     {
 <# foreach(bool isAsync in new[] { false, true })
-	{
-	#>
+    {
+    #>
         public override <#=(isAsync ? "async Task<" : "")#>int<#=(isAsync ? ">" : "")#> Read<#=(isAsync ? "Async" : "")#>(byte[] buffer, int offset, int count<#=(isAsync ? ", CancellationToken cancellationToken" : "")#>)
         {
             if (_remaining <= 0)
@@ -20,12 +20,12 @@ namespace Knapcode.SocketToMe.Http
                 _remaining = _chunkSize;
             }
 
-			int read = 0;
+            int read = 0;
             if(_remaining > 0)
             {
-				int actualCount = Math.Min(count, _remaining);
-				read = <#=(isAsync ? "await " : "")#>_byteStreamReader.Read<#=(isAsync ? "Async" : "")#>(buffer, offset, actualCount);
-				_remaining -= read;
+                int actualCount = Math.Min(count, _remaining);
+                read = <#=(isAsync ? "await " : "")#>_byteStreamReader.Read<#=(isAsync ? "Async" : "")#>(buffer, offset, actualCount);
+                _remaining -= read;
             }
 
             if (_remaining == 0)
@@ -36,7 +36,7 @@ namespace Knapcode.SocketToMe.Http
             return read;
         }<#=(isAsync ? "" : "\r\n")#>
 <#
-	}
-	#>
-	}
+    }
+    #>
+    }
 }

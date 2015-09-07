@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace Knapcode.SocketToMe.Support
 {
     public partial class ByteStreamReader
-	{
+    {
         public string ReadLine()
         {
             EnsureFirstRead();

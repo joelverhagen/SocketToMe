@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 namespace Knapcode.SocketToMe.Support
 {
     public partial class ByteStreamReader
-	{
+    {
 <# foreach(bool isAsync in new[] { false, true })
-	{
-	#>
+    {
+    #>
         public <#=(isAsync ? "async Task<" : "")#>string<#=(isAsync ? ">" : "")#> ReadLine<#=(isAsync ? "Async" : "")#>()
         {
             <#=(isAsync ? "await " : "")#>EnsureFirstRead<#=(isAsync ? "Async" : "")#>();
@@ -96,7 +96,7 @@ namespace Knapcode.SocketToMe.Support
             }
         }<#=(isAsync ? "" : "\r\n")#>
 <#
-	}
-	#>
+    }
+    #>
     }
 }

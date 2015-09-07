@@ -9,8 +9,8 @@ namespace Knapcode.SocketToMe.Support
     public partial class LimitedStream
     {
 <# foreach(bool isAsync in new[] { false, true })
-	{
-	#>
+    {
+    #>
         public override <#=(isAsync ? "async Task<" : "")#>int<#=(isAsync ? ">" : "")#> Read<#=(isAsync ? "Async" : "")#>(byte[] buffer, int offset, int count<#=(isAsync ? ", CancellationToken cancellationToken" : "")#>)
         {
             var limitedCount = (int) Math.Min(_length, count);
@@ -24,7 +24,7 @@ namespace Knapcode.SocketToMe.Support
             return read;
         }<#=(isAsync ? "" : "\r\n")#>
 <#
-	}
-	#>
-	}
+    }
+    #>
+    }
 }
