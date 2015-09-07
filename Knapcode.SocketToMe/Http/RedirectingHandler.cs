@@ -8,15 +8,11 @@ using System.Threading.Tasks;
 
 namespace Knapcode.SocketToMe.Http
 {
-    /// <summary>
-    /// A delegating handler that handles HTTP redirects (301, 302, 303, 307, and 308).
-    /// </summary>
+    /// <summary>A delegating handler that handles HTTP redirects (301, 302, 303, 307, and 308).</summary>
     public class RedirectingHandler : DelegatingHandler
     {
-        /// <summary>
-        /// The property key used to access the list of responses in <see cref="HttpRequestMessage.Properties"/>.
-        /// </summary>
-        public const string RedirectHistoryKey = "Knapcode.KitchenSink.Http.Handlers.RedirectingHandler.RedirectHistory";
+        /// <summary>The property key used to access the list of responses in <see cref="HttpRequestMessage.Properties" />.</summary>
+        public const string RedirectHistoryKey = "Knapcode.SocketToMe.Http.RedirectingHandler.RedirectHistory";
 
         private static readonly ISet<HttpStatusCode> RedirectStatusCodes = new HashSet<HttpStatusCode>(new[]
         {
@@ -33,10 +29,7 @@ namespace Knapcode.SocketToMe.Http
             (HttpStatusCode) 308
         });
 
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RedirectingHandler"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="RedirectingHandler" /> class.</summary>
         public RedirectingHandler()
         {
             AllowAutoRedirect = true;
@@ -46,28 +39,24 @@ namespace Knapcode.SocketToMe.Http
             KeepRedirectHistory = true;
         }
 
-        /// <summary>
-        /// Gets or sets a value that indicates whether the handler should follow redirection responses.
-        /// </summary>
+        /// <summary>Gets or sets a value that indicates whether the handler should follow redirection responses.</summary>
         public bool AllowAutoRedirect { get; set; }
 
-        /// <summary>
-        /// Gets or sets the maximum number of redirects that the handler follows.
-        /// </summary>
+        /// <summary>Gets or sets the maximum number of redirects that the handler follows.</summary>
         public int MaxAutomaticRedirections { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether the response body should be downloaded before each redirection.
-        /// </summary>
+        /// <summary>Gets or sets a value indicating whether the response body should be downloaded before each redirection.</summary>
         public bool DownloadContentOnRedirect { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating inner redirections on <see cref="HttpClientHandler"/> and <see cref="RedirectingHandler"/> should be disabled.
+        ///     Gets or sets a value indicating inner redirections on <see cref="HttpClientHandler" /> and
+        ///     <see cref="RedirectingHandler" /> should be disabled.
         /// </summary>
         public bool DisableInnerAutoRedirect { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the response history should be saved to the <see cref="HttpResponseMessage.RequestMessage"/> properties with the key of <see cref="RedirectHistoryKey"/>.
+        ///     Gets or sets a value indicating whether the response history should be saved to the
+        ///     <see cref="HttpResponseMessage.RequestMessage" /> properties with the key of <see cref="RedirectHistoryKey" />.
         /// </summary>
         public bool KeepRedirectHistory { get; set; }
 
@@ -76,7 +65,7 @@ namespace Knapcode.SocketToMe.Http
             if (DisableInnerAutoRedirect)
             {
                 // find the inner-most handler
-                HttpMessageHandler innerHandler = InnerHandler;
+                var innerHandler = InnerHandler;
                 while (innerHandler is DelegatingHandler)
                 {
                     var redirectingHandler = innerHandler as RedirectingHandler;
@@ -99,7 +88,7 @@ namespace Knapcode.SocketToMe.Http
             HttpContent requestBody = null;
             if (AllowAutoRedirect && request.Content != null)
             {
-                byte[] buffer = await request.Content.ReadAsByteArrayAsync();
+                var buffer = await request.Content.ReadAsByteArrayAsync();
                 requestBody = new ByteArrayContent(buffer);
                 foreach (var header in request.Content.Headers)
                 {
@@ -108,16 +97,16 @@ namespace Knapcode.SocketToMe.Http
             }
 
             // make a copy of the request headers
-            KeyValuePair<string, string[]>[] requestHeaders = request
+            var requestHeaders = request
                 .Headers
                 .Select(p => new KeyValuePair<string, string[]>(p.Key, p.Value.ToArray()))
                 .ToArray();
 
             // send the initial request
-            HttpResponseMessage response = await base.SendAsync(request, cancellationToken);
+            var response = await base.SendAsync(request, cancellationToken);
             var responses = new List<HttpResponseMessage>();
 
-            int redirectCount = 0;
+            var redirectCount = 0;
             string locationString;
             while (AllowAutoRedirect && redirectCount < MaxAutomaticRedirections && TryGetRedirectLocation(response, out locationString))
             {
@@ -131,7 +120,7 @@ namespace Knapcode.SocketToMe.Http
                     throw new InvalidOperationException("A response recieved from the inner handler did not have a request message.");
                 }
 
-                Uri previousRequestUri = response.RequestMessage.RequestUri;
+                var previousRequestUri = response.RequestMessage.RequestUri;
 
                 // Credit where credit is due: https://github.com/kennethreitz/requests/blob/master/requests/sessions.py
                 // allow redirection without a scheme
@@ -149,7 +138,7 @@ namespace Knapcode.SocketToMe.Http
                 }
 
                 // override previous method
-                HttpMethod nextMethod = response.RequestMessage.Method;
+                var nextMethod = response.RequestMessage.Method;
                 if ((response.StatusCode == HttpStatusCode.Moved && nextMethod == HttpMethod.Post) ||
                     (response.StatusCode == HttpStatusCode.Found && nextMethod != HttpMethod.Head) ||
                     (response.StatusCode == HttpStatusCode.SeeOther && nextMethod != HttpMethod.Head))
