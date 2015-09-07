@@ -55,12 +55,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ByteStreamReader.Read.tt</DependentUpon>
     </Compile>
-    <Compile Include="Support\ChainedStream.cs" />
-    <Compile Include="Support\ChainedStream.Read.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ChainedStream.Read.tt</DependentUpon>
-    </Compile>
     <Compile Include="Support\LimitedStream.cs" />
     <Compile Include="Support\LimitedStream.Read.cs">
       <AutoGen>True</AutoGen>
@@ -85,10 +79,6 @@
     <Content Include="Support\ByteStreamReader.Read.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>ByteStreamReader.Read.cs</LastGenOutput>
-    </Content>
-    <Content Include="Support\ChainedStream.Read.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>ChainedStream.Read.cs</LastGenOutput>
     </Content>
     <Content Include="Support\LimitedStream.Read.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
