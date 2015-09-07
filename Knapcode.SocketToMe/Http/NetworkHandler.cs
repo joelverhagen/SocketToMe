@@ -19,6 +19,17 @@ namespace Knapcode.SocketToMe.Http
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
+            ValidateRequest(request);
+
+            var stream = await GetStreamAsync(request);
+
+            await WriteRequestAsync(request, stream);
+
+            return await ReadResponseAsync(request, stream);
+        }
+
+        private static void ValidateRequest(HttpRequestMessage request)
+        {
             if (request.RequestUri.Scheme.Equals("http", StringComparison.OrdinalIgnoreCase) && request.RequestUri.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase))
             {
                 throw new NotSupportedException("Only HTTP and HTTPS are supported.");
@@ -28,15 +39,6 @@ namespace Knapcode.SocketToMe.Http
             {
                 throw new NotSupportedException("Only HTTP/1.1 is supported.");
             }
-
-            // get the stream
-            var stream = await GetStreamAsync(request);
-
-            // send the request
-            await WriteRequestAsync(request, stream);
-
-            // read the request
-            return await ReadResponseAsync(request, stream);
         }
 
         private static async Task<Stream> GetStreamAsync(HttpRequestMessage request)
