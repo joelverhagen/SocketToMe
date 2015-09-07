@@ -75,7 +75,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             var response = await ts.GetJsonResponse<JObject>(request);
 
             // ASSERT
-            response.Response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.Message.StatusCode.Should().Be(HttpStatusCode.OK);
             response.Content["gzipped"].ToObject<bool>().Should().BeTrue();
         }
 
@@ -90,8 +90,23 @@ namespace Knapcode.SocketToMe.Tests.Http
             var response = await ts.GetJsonResponse<JObject>(request);
 
             // ASSERT
-            response.Response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.Message.StatusCode.Should().Be(HttpStatusCode.OK);
             response.Content["deflated"].ToObject<bool>().Should().BeTrue();
+        }
+
+        [TestMethod]
+        public async Task Redirect()
+        {
+            // ARRANGE
+            var ts = new TestState { RedirectingHandler = new RedirectingHandler() };
+            var request = new HttpRequestMessage(HttpMethod.Get, "http://httpbin.org/redirect/10");
+
+            // ACT
+            var response = await ts.GetJsonResponse<JObject>(request);
+
+            // ASSERT
+            response.Message.RequestMessage.RequestUri.Should().Be(new Uri("http://httpbin.org/get"));
+            response.Message.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
         [TestMethod]
@@ -123,18 +138,18 @@ namespace Knapcode.SocketToMe.Tests.Http
             var o = await ts.GetJsonResponse<IDictionary<string, string>>(request);
 
             // ASSERT
-            o.Response.Should().NotBeNull();
+            o.Message.Should().NotBeNull();
 
-            o.Response.StatusCode.Should().Be(HttpStatusCode.OK);
-            o.Response.ReasonPhrase.Should().Be("OK");
-            o.Response.Version.ToString().Should().Be("1.1");
+            o.Message.StatusCode.Should().Be(HttpStatusCode.OK);
+            o.Message.ReasonPhrase.Should().Be("OK");
+            o.Message.Version.ToString().Should().Be("1.1");
 
-            o.Response.Headers.Should().NotBeNull();
-            o.Response.Headers.Date.Should().HaveValue();
-            o.Response.Headers.Date.Should().BeAfter(DateTime.MinValue);
+            o.Message.Headers.Should().NotBeNull();
+            o.Message.Headers.Date.Should().HaveValue();
+            o.Message.Headers.Date.Should().BeAfter(DateTime.MinValue);
 
             o.Content.Should().NotBeNull();
-            o.Response.Content.Headers.ContentType.ToString().Should().Be("application/json");
+            o.Message.Content.Headers.ContentType.ToString().Should().Be("application/json");
             o.Content.Should().HaveCount(1);
             o.Content.Should().ContainKey("origin");
             IPAddress.Parse(o.Content["origin"]);
@@ -195,7 +210,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             var o = await ts.GetJsonResponse<JObject>(request);
 
             // ASSERT
-            o.Response.StatusCode.Should().Be(HttpStatusCode.OK);
+            o.Message.StatusCode.Should().Be(HttpStatusCode.OK);
             o.Content.Should().ContainKey("form");
             o.Content["form"].ToObject<IDictionary<string, string>>().ShouldBeEquivalentTo(form);
         }
@@ -212,7 +227,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             var o = await ts.GetJsonResponse<IDictionary<string, string>>(request);
 
             // ASSERT
-            o.Response.StatusCode.Should().Be(HttpStatusCode.OK);
+            o.Message.StatusCode.Should().Be(HttpStatusCode.OK);
             IPAddress.Parse(o.Content["origin"]);
         }
 
@@ -380,7 +395,10 @@ namespace Knapcode.SocketToMe.Tests.Http
                 // setup
                 Socket = null;
                 DecompressingHandler = null;
+                RedirectingHandler = null;
             }
+
+            public RedirectingHandler RedirectingHandler { get; set; }
 
             public DecompressingHandler DecompressingHandler { get; set; }
 
@@ -391,6 +409,13 @@ namespace Knapcode.SocketToMe.Tests.Http
                 get
                 {
                     HttpMessageHandler handler = Handler;
+
+                    if (RedirectingHandler != null)
+                    {
+                        RedirectingHandler.InnerHandler = handler;
+                        handler = RedirectingHandler;
+                    }
+
                     if (DecompressingHandler != null)
                     {
                         DecompressingHandler.InnerHandler = handler;
@@ -412,7 +437,7 @@ namespace Knapcode.SocketToMe.Tests.Http
                 var json = await response.Content.ReadAsStringAsync();
                 return new ResponseAndContent<T>
                 {
-                    Response = response,
+                    Message = response,
                     Content = JsonConvert.DeserializeObject<T>(json)
                 };
             }
@@ -420,7 +445,7 @@ namespace Knapcode.SocketToMe.Tests.Http
 
         private class ResponseAndContent<T>
         {
-            public HttpResponseMessage Response { get; set; }
+            public HttpResponseMessage Message { get; set; }
             public T Content { get; set; }
         }
     }
