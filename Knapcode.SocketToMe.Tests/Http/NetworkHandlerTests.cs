@@ -140,6 +140,25 @@ namespace Knapcode.SocketToMe.Tests.Http
             response.ReasonPhrase.Should().Be("OK");
         }
 
+        [TestMethod]
+        public async Task Chunked()
+        {
+            // ARRANGE
+            var ts = new TestState();
+            var request = new HttpRequestMessage(HttpMethod.Get, "http://httpbin.org/stream/2");
+            request.Headers.Add("x-sockettome-test", new[] { "71116259-F72C-4B6C-8F83-764B787628BA" });
+
+            // ACT
+            var response = await ts.Client.SendAsync(request);
+
+            // ASSERT
+            response.Headers.TransferEncodingChunked.Should().BeTrue();
+            var content = await response.Content.ReadAsStringAsync();
+            var lines = content.Trim().Split('\n');
+            lines.Should().HaveCount(2);
+            lines.Should().Contain(l => l.Contains("71116259-F72C-4B6C-8F83-764B787628BA"));
+        }
+
         private class TestState
         {
             public TestState()

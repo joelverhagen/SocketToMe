@@ -87,18 +87,31 @@ namespace Knapcode.SocketToMe.Http
                 return;
             }
 
-            // read the body with a content-length
-            if (response.Content.Headers.ContentLength.HasValue)
+            HttpContent content = null;
+            if (response.Headers.TransferEncodingChunked.GetValueOrDefault(false))
             {
+                // read the body with chunked transfer encoding
+                var remainingStream = reader.GetRemainingStream();
+                var chunkedStream = new ChunkedStream(remainingStream);
+                content = new StreamContent(chunkedStream);
+            }
+            else if (response.Content.Headers.ContentLength.HasValue)
+            {
+                // read the body with a content-length
                 var remainingStream = reader.GetRemainingStream();
                 var limitedStream = new LimitedStream(remainingStream, response.Content.Headers.ContentLength.Value);
-                var streamContent = new StreamContent(limitedStream);
+                content = new StreamContent(limitedStream);
+            }
+
+            if (content != null)
+            {
+                // copy over the content headers
                 foreach (var header in response.Content.Headers)
                 {
-                    streamContent.Headers.Add(header.Key, header.Value);
+                    content.Headers.Add(header.Key, header.Value);
                 }
 
-                response.Content = streamContent;
+                response.Content = content;
             }
         }
 
