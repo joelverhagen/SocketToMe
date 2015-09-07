@@ -55,6 +55,5 @@ using (var sslStream = new SslStream(proxiedStream))
 - HTTP
   - Support client certificates
   - Support HTTP/1.0
-  - Arbitrary starting Socket
 - Everywhere
   - Add better cancellation token support
