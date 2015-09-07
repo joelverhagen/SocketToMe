@@ -29,28 +29,31 @@ namespace Knapcode.SocketToMe.Http
                 throw new NotSupportedException("Only HTTP/1.1 is supported.");
             }
 
-            // get the TCP stream
-            var tcpClient = new TcpClient(request.RequestUri.DnsSafeHost, request.RequestUri.Port);
-            var httpStream = tcpClient.GetStream();
-
-            // wrap in an SSL stream, if necessary
-            Stream stream;
-            if (request.RequestUri.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase))
-            {
-                var httpsStream = new SslStream(httpStream);
-                await httpsStream.AuthenticateAsClientAsync(request.RequestUri.DnsSafeHost);
-                stream = httpsStream;
-            }
-            else
-            {
-                stream = httpStream;
-            }
+            // get the stream
+            var stream = await GetStreamAsync(request);
 
             // send the request
             await WriteRequestAsync(request, stream);
 
             // read the request
             return await ReadResponseAsync(request, stream);
+        }
+
+        private static async Task<Stream> GetStreamAsync(HttpRequestMessage request)
+        {
+            // get the basic TCP stream
+            var tcpClient = new TcpClient(request.RequestUri.DnsSafeHost, request.RequestUri.Port);
+            var httpStream = tcpClient.GetStream();
+
+            // wrap in an SSL stream, if necessary
+            if (request.RequestUri.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase))
+            {
+                var httpsStream = new SslStream(httpStream);
+                await httpsStream.AuthenticateAsClientAsync(request.RequestUri.DnsSafeHost);
+                return httpsStream;
+            }
+
+            return httpStream;
         }
 
         private async Task WriteRequestAsync(HttpRequestMessage request, Stream stream)
