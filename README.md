@@ -7,8 +7,14 @@ Fun with sockets in C#.
 - Connect to a SOCKS proxy server
   - SOCKS 4 and 4A: TCP CONNECT
   - SOCKS 5: TCP CONNECT with optional username and password authentication
+- Connect to an HTTP server without WinHTTP (e.g. HttpClientHandler)
+  - Use the custom delegating handler `NetworkHandler` with `HttpClient`
+  - HTTP/1.1
+  - Chunked responses
+  - Most of the features provided by `HttpClient`
+  - Arbitrary sockets (e.g. connected to a SOCKS proxy server!)
 
-Don't get too excited. You have to write your own HTTP stack if you want to send HTTP traffic over SOCKS. .NET Framework has no support for swapping out transport layer details (e.g. a TCP socket) in their HTTP clients. Thanks a lot WinHTTP...
+There's probably a lot of bugs with `NetworkHandler`... it's not very thoroughly tested.
 
 ## Install
 
@@ -78,5 +84,6 @@ using (var response = httpClient.GetAsync("https://icanhazip.com/").Result)
   - Support client certificates
   - Support HTTP/1.0
   - Support chunked requests
+  - Gzip, deflate, etc.
 - Everywhere
   - Add better cancellation token support
