@@ -66,14 +66,18 @@ namespace Knapcode.SocketToMe.Http
             var responseStream = await response.Content.ReadAsStreamAsync();
             var header = new byte[2];
             var headerLength = await responseStream.ReadAsync(header, 0, 2, cancellationToken);
-            // TODO: handle headerLength == 1
-            if (headerLength == 0)
+            if (headerLength == 1)
+            {
+                headerLength += await responseStream.ReadAsync(header, 1, 2, cancellationToken);
+            }
+            
+            if (headerLength < 2)
             {
                 return response;
             }
 
             // include the header in the stream that gets decompressed
-            var chainedStream = new ChainedStream(new[] {new MemoryStream(header), responseStream});
+            var chainedStream = new PartiallyBufferedStream(header, 0, 2, responseStream);
 
             // try to decode the response
             Stream decodeStream = null;
