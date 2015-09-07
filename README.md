@@ -24,8 +24,6 @@ Install-Package Knapcode.SocketToMe
 
 ## Examples
 
-Talk to a website through Tor! Have [Tor Browser](https://www.torproject.org/download/download-easy.html.en) running at the same time to try this demo out. Port 9150 is the default port for Tor Browser.
-
 ### HTTP Example
 
 ```csharp
@@ -38,6 +36,8 @@ using (var response = httpClient.GetAsync("http://icanhazip.com/").Result)
 ```
 
 ### SOCKS Example
+
+Talk to a website through Tor! Have [Tor Browser](https://www.torproject.org/download/download-easy.html.en) running at the same time to try this demo out. Port 9150 is the default port for Tor Browser.
 
 ```csharp
 // Tor support SOCKS 4, 4A, and 5
