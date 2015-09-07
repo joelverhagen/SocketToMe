@@ -42,7 +42,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ChunkedStream.Read.tt</DependentUpon>
     </Compile>
+    <Compile Include="Http\DecompressingHandler.cs" />
     <Compile Include="Http\HttpHeaderCategories.cs" />
+    <Compile Include="Http\RedirectingHandler.cs" />
     <Compile Include="Support\ByteStreamReader.cs" />
     <Compile Include="Http\NetworkHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -53,6 +55,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ByteStreamReader.Read.tt</DependentUpon>
     </Compile>
+    <Compile Include="Support\ChainedStream.cs" />
     <Compile Include="Support\LimitedStream.cs" />
     <Compile Include="Support\LimitedStream.Read.cs">
       <AutoGen>True</AutoGen>
