@@ -13,19 +13,39 @@ using Knapcode.SocketToMe.Support;
 
 namespace Knapcode.SocketToMe.Http
 {
+    /// <summary>Gets a connected socket for the provided request.</summary>
+    /// <param name="request">The HTTP request message.</param>
+    /// <returns>The connected socket.</returns>
+    public delegate Socket GetSocket(HttpRequestMessage request);
+
+    /// <summary>Asynchronously gets a connected socket for the provided request.</summary>
+    /// <param name="request">The HTTP request message.</param>
+    /// <returns>The task resulting in the connected socket.</returns>
+    public delegate Task<Socket> GetSocketAsync(HttpRequestMessage request);
+
     public class NetworkHandler : HttpMessageHandler
     {
-        private readonly Socket _socket;
+        private readonly GetSocketAsync _getSocketAsync;
         private const int BufferSize = 4096;
 
         public NetworkHandler()
         {
-            _socket = null;
+            _getSocketAsync = null;
         }
 
         public NetworkHandler(Socket socket)
         {
-            _socket = socket;
+            _getSocketAsync = r => Task.FromResult(socket);
+        }
+
+        public NetworkHandler(GetSocket getSocket)
+        {
+            _getSocketAsync = r => Task.FromResult(getSocket(r));
+        }
+
+        public NetworkHandler(GetSocketAsync getSocketAsync)
+        {
+            _getSocketAsync = getSocketAsync;
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -56,9 +76,9 @@ namespace Knapcode.SocketToMe.Http
         {
             // get the basic TCP stream
             var tcpClient = new TcpClient();
-            if (_socket != null)
+            if (_getSocketAsync != null)
             {
-                tcpClient.Client = _socket;
+                tcpClient.Client = await _getSocketAsync(request);
             }
             else
             {

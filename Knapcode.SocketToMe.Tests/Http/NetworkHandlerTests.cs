@@ -128,6 +128,54 @@ namespace Knapcode.SocketToMe.Tests.Http
         }
 
         [TestMethod]
+        public async Task CustomSocketDelegate()
+        {
+            // ARRANGE
+            var ts = new TestState
+            {
+                GetSocket = r =>
+                {
+                    var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                    socket.Connect("httpbin.org", 80);
+                    return socket;
+                }
+            };
+            var request = new HttpRequestMessage(HttpMethod.Get, "http://httpbin.org/ip");
+
+            // ACT
+            var response = await ts.Client.SendAsync(request);
+
+            // ASSERT
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var content = await response.Content.ReadAsStringAsync();
+            content.Should().NotBeNullOrWhiteSpace();
+        }
+
+        [TestMethod]
+        public async Task CustomSocketAsyncDelegate()
+        {
+            // ARRANGE
+            var ts = new TestState
+            {
+                GetSocketAsync = r =>
+                {
+                    var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                    socket.Connect("httpbin.org", 80);
+                    return Task.FromResult(socket);
+                }
+            };
+            var request = new HttpRequestMessage(HttpMethod.Get, "http://httpbin.org/ip");
+
+            // ACT
+            var response = await ts.Client.SendAsync(request);
+
+            // ASSERT
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var content = await response.Content.ReadAsStringAsync();
+            content.Should().NotBeNullOrWhiteSpace();
+        }
+
+        [TestMethod]
         public async Task BasicFunctionality()
         {
             // ARRANGE
@@ -394,9 +442,15 @@ namespace Knapcode.SocketToMe.Tests.Http
             {
                 // setup
                 Socket = null;
+                GetSocket = null;
+                GetSocketAsync = null;
                 DecompressingHandler = null;
                 RedirectingHandler = null;
             }
+
+            public GetSocketAsync GetSocketAsync { get; set; }
+
+            public GetSocket GetSocket { get; set; }
 
             public RedirectingHandler RedirectingHandler { get; set; }
 
@@ -428,7 +482,25 @@ namespace Knapcode.SocketToMe.Tests.Http
 
             public NetworkHandler Handler
             {
-                get { return new NetworkHandler(Socket); }
+                get
+                {
+                    if (Socket != null)
+                    {
+                        return new NetworkHandler(Socket);
+                    }
+
+                    if (GetSocket != null)
+                    {
+                        return new NetworkHandler(GetSocket);
+                    }
+
+                    if (GetSocketAsync != null)
+                    {
+                        return new NetworkHandler(GetSocketAsync);
+                    }
+
+                    return new NetworkHandler();
+                }
             }
 
             public async Task<ResponseAndContent<T>> GetJsonResponse<T>(HttpRequestMessage request)
