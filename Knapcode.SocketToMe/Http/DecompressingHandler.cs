@@ -104,7 +104,7 @@ namespace Knapcode.SocketToMe.Http
                         continue;
                     }
 
-                    decompressedContent.Headers.Add(pair.Key, pair.Value);
+                    decompressedContent.Headers.TryAddWithoutValidation(pair.Key, pair.Value);
                 }
 
                 response.Content = decompressedContent;

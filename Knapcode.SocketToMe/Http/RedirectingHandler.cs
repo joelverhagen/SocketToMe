@@ -92,7 +92,7 @@ namespace Knapcode.SocketToMe.Http
                 requestBody = new ByteArrayContent(buffer);
                 foreach (var header in request.Content.Headers)
                 {
-                    requestBody.Headers.Add(header.Key, header.Value);
+                    requestBody.Headers.TryAddWithoutValidation(header.Key, header.Value);
                 }
             }
 
@@ -161,7 +161,7 @@ namespace Knapcode.SocketToMe.Http
 
                 foreach (var header in requestHeaders)
                 {
-                    nextRequest.Headers.Add(header.Key, header.Value);
+                    nextRequest.Headers.TryAddWithoutValidation(header.Key, header.Value);
                 }
 
                 foreach (var pair in request.Properties)

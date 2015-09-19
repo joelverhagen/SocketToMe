@@ -152,7 +152,7 @@ namespace Knapcode.SocketToMe.Http
                 }
 
                 var headers = HttpHeaderCategories.IsContentHeader(pieces[0]) ? (HttpHeaders)response.Content.Headers : response.Headers;
-                headers.Add(pieces[0], pieces[1]);
+                headers.TryAddWithoutValidation(pieces[0], pieces[1]);
             }
             return response;
         }
@@ -186,7 +186,7 @@ namespace Knapcode.SocketToMe.Http
                 // copy over the content headers
                 foreach (var header in response.Content.Headers)
                 {
-                    content.Headers.Add(header.Key, header.Value);
+                    content.Headers.TryAddWithoutValidation(header.Key, header.Value);
                 }
 
                 response.Content = content;
