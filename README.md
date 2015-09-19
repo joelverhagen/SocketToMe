@@ -88,5 +88,6 @@ using (var response = httpClient.GetAsync("https://icanhazip.com/").Result)
   - HTTP/1.0
   - Chunked requests
   - HTTP and HTTPS proxies
+  - Connection pools (Keep-Alive)
 - Everywhere
   - Better cancellation token support
