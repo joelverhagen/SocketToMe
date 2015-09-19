@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Knapcode.SocketToMe</id>
-    <version>0.3.1</version>
+    <version>0.3.2</version>
     <title>Knapcode.SocketToMe</title>
     <authors>Joel Verhagen</authors>
     <licenseUrl>https://raw.githubusercontent.com/joelverhagen/SocketToMe/master/LICENSE</licenseUrl>
@@ -10,9 +10,10 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Fun with sockets in C#.</description>
     <releaseNotes>
-* 0.3.1 Fix the defaults of RedirectingHandler
-* 0.3.0 Add HTTP automatic redirects and decompression
-* 0.2.0 HTTP support with arbitrary sockets
+* 0.3.2 Add headers without validation.
+* 0.3.1 Fix the defaults of RedirectingHandler.
+* 0.3.0 Add HTTP automatic redirects and decompression.
+* 0.2.0 HTTP support with arbitrary sockets.
 * 0.1.0 Initial release with SOCKS 4, 4A, and 5 support.
     </releaseNotes>
     <copyright>Copyright (c) 2015 Joel Verhagen</copyright>
