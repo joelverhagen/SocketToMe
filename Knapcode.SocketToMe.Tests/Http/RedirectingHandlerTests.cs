@@ -138,7 +138,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             // ARRANGE
             const int redirectCount = 5;
             const HttpStatusCode statusCode = HttpStatusCode.TemporaryRedirect;
-            var client = GetHttpClient(redirectCount: redirectCount, statusCode: statusCode);
+            var client = GetHttpClient(redirectCount: redirectCount, statusCode: statusCode, configure: h => h.KeepRedirectHistory = true);
             var request = GetRequest();
 
             // ACT
