@@ -117,8 +117,7 @@ namespace Knapcode.SocketToMe.Http
         {
             return ContentHeaderSet.Contains(header);
         }
-
-        [Flags]
+        
         private enum HeaderCategory
         {
             General,
