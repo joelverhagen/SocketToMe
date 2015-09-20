@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Knapcode.SocketToMe</id>
-    <version>0.4.0</version>
+    <version>0.4.1</version>
     <title>Knapcode.SocketToMe</title>
     <authors>Joel Verhagen</authors>
     <licenseUrl>https://raw.githubusercontent.com/joelverhagen/SocketToMe/master/LICENSE</licenseUrl>
@@ -10,6 +10,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Fun with sockets in C#.</description>
     <releaseNotes>
+* 0.4.1 Make HttpHeaderCategories compatibile with Mono.
 * 0.4.0 Add delegate for NetworkHandler to fetch a socket.
 * 0.3.2 Add headers without validation.
 * 0.3.1 Fix the defaults of RedirectingHandler.
