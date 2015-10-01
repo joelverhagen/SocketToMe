@@ -89,6 +89,5 @@ using (var response = httpClient.GetAsync("https://icanhazip.com/").Result)
   - Chunked requests
   - HTTP and HTTPS proxies
   - Connection pools (Keep-Alive)
-  - Cookies
 - Everywhere
   - Better cancellation token support
