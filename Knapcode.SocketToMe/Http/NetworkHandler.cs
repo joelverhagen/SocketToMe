@@ -105,7 +105,11 @@ namespace Knapcode.SocketToMe.Http
             {
                 await writer.WriteLineAsync(string.Format("{0} {1} HTTP/{2}", request.Method.Method, request.RequestUri.PathAndQuery, request.Version));
 
-                await writer.WriteLineAsync(string.Format("Host: {0}", request.RequestUri.Host));
+                if (!request.Headers.Contains("Host"))
+                {
+                    await writer.WriteLineAsync(string.Format("Host: {0}", request.RequestUri.Host));
+                }
+
                 foreach (var header in request.Headers)
                 {
                     await writer.WriteLineAsync(GetHeader(header));
