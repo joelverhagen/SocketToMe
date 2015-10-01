@@ -11,6 +11,11 @@ namespace Knapcode.SocketToMe.Http
         private const string CookieKey = "Cookie";
         private const string SetCookieKey = "Set-Cookie";
 
+        public CookieHandler()
+        {
+            this.CookieContainer = new CookieContainer();
+        }
+
         public CookieContainer CookieContainer { get; set; }
 
         protected async override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
