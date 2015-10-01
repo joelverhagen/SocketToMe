@@ -16,6 +16,7 @@ Fun with sockets in C#.
   - Arbitrary sockets (e.g. connected to a SOCKS proxy server!)
   - Automatic redirects (with `RedirectingHandler`)
   - Automatic decompression (with `DecompressingHandler`)
+  - Cookies (with `CookieHandler`)
 
 There's probably a lot of bugs with `NetworkHandler`... it's not very thoroughly tested.
 
