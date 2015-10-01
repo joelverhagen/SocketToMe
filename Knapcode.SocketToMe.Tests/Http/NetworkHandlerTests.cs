@@ -65,6 +65,29 @@ namespace Knapcode.SocketToMe.Tests.Http
         }
 
         [TestMethod]
+        public async Task Cookies()
+        {
+            // ARRANGE
+            var ts = new TestState { CookieHandler = new CookieHandler(), RedirectingHandler = new RedirectingHandler() };
+
+            // ACT
+            await ts.GetJsonResponse<JObject>(new HttpRequestMessage(HttpMethod.Get, "http://httpbin.org/cookies/set?a=1&b=2A"));
+            await ts.GetJsonResponse<JObject>(new HttpRequestMessage(HttpMethod.Get, "http://httpbin.org/cookies/set?b=2B"));
+            await ts.GetJsonResponse<JObject>(new HttpRequestMessage(HttpMethod.Get, "http://httpbin.org/cookies/set?c=3"));
+            await ts.GetJsonResponse<JObject>(new HttpRequestMessage(HttpMethod.Get, "http://httpbin.org/cookies/delete?c"));
+            await ts.GetJsonResponse<JObject>(new HttpRequestMessage(HttpMethod.Get, "http://httpbin.org/cookies/delete?d"));
+            var response = await ts.GetJsonResponse<JObject>(new HttpRequestMessage(HttpMethod.Get, "http://httpbin.org/cookies"));
+
+            // ASSERT
+            var cookies = response.Content["cookies"].ToObject<IDictionary<string, string>>();
+            cookies.ShouldBeEquivalentTo(new Dictionary<string, string>
+            {
+                {"a", "1"},
+                {"b", "2B"}
+            });
+        }
+
+        [TestMethod]
         public async Task Gzip()
         {
             // ARRANGE
@@ -286,7 +309,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             var ts = new TestState();
             var request = new HttpRequestMessage(HttpMethod.Get, "http://httpbin.org/headers");
             request.Headers.UserAgent.Add(new ProductInfoHeaderValue("Foo", "Bar"));
-            request.Headers.Add("x-sockettome-test", new[] {"ABBF9526-C07F-45A6-BE6C-2BE7E7B616F6", "CE8E3A72-9D2A-4284-966E-124713DE967F"});
+            request.Headers.Add("x-sockettome-test", new[] { "ABBF9526-C07F-45A6-BE6C-2BE7E7B616F6", "CE8E3A72-9D2A-4284-966E-124713DE967F" });
             var expectedHeaders = new Dictionary<string, string>
             {
                 {"Host", "httpbin.org"},
@@ -356,7 +379,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             // ARRANGE
             var ts = new TestState();
             var request = new HttpRequestMessage(HttpMethod.Get, "http://httpbin.org/stream/2");
-            request.Headers.Add("x-sockettome-test", new[] {"71116259-F72C-4B6C-8F83-764B787628BA"});
+            request.Headers.Add("x-sockettome-test", new[] { "71116259-F72C-4B6C-8F83-764B787628BA" });
 
             // ACT
             var response = await ts.Client.SendAsync(request);
@@ -438,6 +461,8 @@ namespace Knapcode.SocketToMe.Tests.Http
 
         private class TestState
         {
+            private HttpClient _client;
+
             public TestState()
             {
                 // setup
@@ -446,7 +471,10 @@ namespace Knapcode.SocketToMe.Tests.Http
                 GetSocketAsync = null;
                 DecompressingHandler = null;
                 RedirectingHandler = null;
+                CookieHandler = null;
             }
+
+            public CookieHandler CookieHandler { get; set; }
 
             public GetSocketAsync GetSocketAsync { get; set; }
 
@@ -462,21 +490,32 @@ namespace Knapcode.SocketToMe.Tests.Http
             {
                 get
                 {
-                    HttpMessageHandler handler = Handler;
-
-                    if (RedirectingHandler != null)
+                    if (_client == null)
                     {
-                        RedirectingHandler.InnerHandler = handler;
-                        handler = RedirectingHandler;
+                        HttpMessageHandler handler = Handler;
+
+                        if (CookieHandler != null)
+                        {
+                            CookieHandler.InnerHandler = handler;
+                            handler = CookieHandler;
+                        }
+
+                        if (RedirectingHandler != null)
+                        {
+                            RedirectingHandler.InnerHandler = handler;
+                            handler = RedirectingHandler;
+                        }
+
+                        if (DecompressingHandler != null)
+                        {
+                            DecompressingHandler.InnerHandler = handler;
+                            handler = DecompressingHandler;
+                        }
+
+                        _client = new HttpClient(handler);
                     }
 
-                    if (DecompressingHandler != null)
-                    {
-                        DecompressingHandler.InnerHandler = handler;
-                        handler = DecompressingHandler;
-                    }
-
-                    return new HttpClient(handler);
+                    return _client;
                 }
             }
 
