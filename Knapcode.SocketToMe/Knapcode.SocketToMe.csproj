@@ -42,6 +42,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ChunkedStream.Read.tt</DependentUpon>
     </Compile>
+    <Compile Include="Http\CookieHandler.cs" />
     <Compile Include="Http\DecompressingHandler.cs" />
     <Compile Include="Http\Extensions.cs" />
     <Compile Include="Http\HttpHeaderCategories.cs" />
