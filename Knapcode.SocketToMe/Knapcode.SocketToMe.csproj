@@ -69,6 +69,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>PartiallyBufferedStream.Read.tt</DependentUpon>
     </Compile>
+    <Compile Include="Support\Tcp.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Knapcode.SocketToMe.nuspec" />

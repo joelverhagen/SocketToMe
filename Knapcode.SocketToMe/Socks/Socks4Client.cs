@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using Knapcode.SocketToMe.Support;
 
 namespace Knapcode.SocketToMe.Socks
 {
@@ -14,21 +15,9 @@ namespace Knapcode.SocketToMe.Socks
         private const byte ReplyVersion = 0x00;
         private static readonly byte[] NullTerminator = {0x0};
 
-        public Socket ConnectToServer(IPEndPoint socksEndpoint)
+        public Socket ConnectToServer(IPEndPoint endpoint)
         {
-            if (socksEndpoint.AddressFamily != AddressFamily.InterNetwork)
-            {
-                var message = string.Format(
-                    CultureInfo.InvariantCulture,
-                    "The SOCKS4 endpoint address family '{0}' is not valid. The address family be InterNetwork (IPv4).",
-                    socksEndpoint.AddressFamily);
-                throw new ArgumentException(message, nameof(socksEndpoint));
-            }
-
-            var socket = new Socket(socksEndpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            socket.Connect(socksEndpoint);
-
-            return socket;
+            return Tcp.ConnectToServer(endpoint, new[] {AddressFamily.InterNetwork});
         }
 
         public Socket ConnectToDestination(Socket socket, string name, int port, string userId = null, Encoding userIdEncoding = null)
