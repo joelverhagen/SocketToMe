@@ -46,6 +46,7 @@
     <Compile Include="Http\DecompressingHandler.cs" />
     <Compile Include="Http\Extensions.cs" />
     <Compile Include="Http\HttpHeaderCategories.cs" />
+    <Compile Include="Http\HttpSocketClient.cs" />
     <Compile Include="Http\RedirectingHandler.cs" />
     <Compile Include="Support\ByteStreamReader.cs" />
     <Compile Include="Http\NetworkHandler.cs" />
