@@ -100,7 +100,7 @@ namespace Knapcode.SocketToMe.Sandbox
 
         private static async Task HttpConnectExampleAsync(int privoxyPort)
         {
-            var socket = Tcp.ConnectToServer("localhost", privoxyPort);
+            var socket = Tcp.ConnectToServer("127.0.0.1", privoxyPort);
             var httpSocketClient = new HttpSocketClient();
 
             var connectRequest = new HttpRequestMessage(new HttpMethod("CONNECT"), "http://icanhazip.com/");
