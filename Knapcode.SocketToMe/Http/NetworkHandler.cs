@@ -2,6 +2,7 @@ using System.Net.Http;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Knapcode.SocketToMe.Support;
 
 namespace Knapcode.SocketToMe.Http
 {
@@ -49,9 +50,7 @@ namespace Knapcode.SocketToMe.Http
             }
             else
             {
-                var tcpClient = new TcpClient();
-                await tcpClient.ConnectAsync(request.RequestUri.DnsSafeHost, request.RequestUri.Port);
-                socket = tcpClient.Client;
+                socket = await Tcp.ConnectToServerAsync(request.RequestUri.DnsSafeHost, request.RequestUri.Port);
             }
 
             var stream = await _httpSocketClient.GetStreamAsync(socket, request);

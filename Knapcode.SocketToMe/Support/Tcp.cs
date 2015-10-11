@@ -16,11 +16,25 @@ namespace Knapcode.SocketToMe.Support
             { AddressFamily.InterNetworkV6, "IPv6" }
         };
 
+        public static Socket ConnectToServer(string hostname, int port)
+        {
+            var tcpClient = new TcpClient();
+            tcpClient.Connect(hostname, port);
+            return tcpClient.Client;
+        }
+
         public static Socket ConnectToServer(IPEndPoint endpoint, IEnumerable<AddressFamily> addressFamilies)
         {
             ValidateEndpoint(endpoint, addressFamilies);
             var tcpClient = new TcpClient();
             tcpClient.Connect(endpoint.Address, endpoint.Port);
+            return tcpClient.Client;
+        }
+
+        public static async Task<Socket> ConnectToServerAsync(string hostname, int port)
+        {
+            var tcpClient = new TcpClient();
+            await tcpClient.ConnectAsync(hostname, port);
             return tcpClient.Client;
         }
 
