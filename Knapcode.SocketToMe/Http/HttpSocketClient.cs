@@ -15,6 +15,10 @@ namespace Knapcode.SocketToMe.Http
     public class HttpSocketClient
     {
         private const int BufferSize = 4096;
+        private static readonly HttpMethod ConnectMethod = new HttpMethod("CONNECT");
+        private static readonly ISet<HttpMethod> MethodsWithoutHostHeader = new HashSet<HttpMethod> { ConnectMethod };
+        private static readonly ISet<HttpMethod> MethodsWithoutRequestBody = new HashSet<HttpMethod> { ConnectMethod, HttpMethod.Head };
+        private static readonly ISet<HttpMethod> MethodsWithoutResponseBody = new HashSet<HttpMethod> { ConnectMethod, HttpMethod.Head };
 
         public async Task<Stream> GetStreamAsync(Socket socket, HttpRequestMessage request)
         {
@@ -36,16 +40,19 @@ namespace Knapcode.SocketToMe.Http
         {
             ValidateRequest(request);
 
-            await WriteRequestAsync(request, stream);
+            await WriteRequestAsync(stream, request);
         }
 
         public async Task<HttpResponseMessage> ReceiveResponseAsync(Stream stream, HttpRequestMessage request)
         {
             ByteStreamReader reader = new ByteStreamReader(stream, BufferSize, false);
 
-            var response = await ReadResponseHeadAsync(request, reader);
+            var response = await ReadResponseHeadAsync(reader, request);
 
-            ReadResponseBody(response, reader);
+            if (!MethodsWithoutResponseBody.Contains(request.Method))
+            {
+                ReadResponseBody(reader, response);
+            }
 
             return response;
         }
@@ -63,16 +70,17 @@ namespace Knapcode.SocketToMe.Http
             }
         }
 
-        private async Task WriteRequestAsync(HttpRequestMessage request, Stream stream)
+        private async Task WriteRequestAsync(Stream stream, HttpRequestMessage request)
         {
             byte[] bytes = null;
             using (var writer = new StreamWriter(stream, new UTF8Encoding(false, true), BufferSize, true))
             {
-                await writer.WriteLineAsync(string.Format("{0} {1} HTTP/{2}", request.Method.Method, request.RequestUri.PathAndQuery, request.Version));
-
-                if (!request.Headers.Contains("Host"))
+                var location = request.Method != ConnectMethod ? request.RequestUri.PathAndQuery : $"{request.RequestUri.DnsSafeHost}:{request.RequestUri.Port}";
+                await writer.WriteLineAsync($"{request.Method.Method} {location} HTTP/{request.Version}");
+                
+                if (!request.Headers.Contains("Host") && !MethodsWithoutHostHeader.Contains(request.Method))
                 {
-                    await writer.WriteLineAsync(string.Format("Host: {0}", request.RequestUri.Host));
+                    await writer.WriteLineAsync($"Host: {request.RequestUri.Host}");
                 }
 
                 foreach (var header in request.Headers)
@@ -80,7 +88,7 @@ namespace Knapcode.SocketToMe.Http
                     await writer.WriteLineAsync(GetHeader(header));
                 }
 
-                if (request.Content != null)
+                if (request.Content != null && !MethodsWithoutRequestBody.Contains(request.Method))
                 {
                     bytes = await request.Content.ReadAsByteArrayAsync();
                     request.Content.Headers.ContentLength = bytes.Length;
@@ -105,10 +113,10 @@ namespace Knapcode.SocketToMe.Http
 
         private string GetHeader(KeyValuePair<string, IEnumerable<string>> header)
         {
-            return string.Format("{0}: {1}", header.Key, string.Join(",", header.Value));
+            return $"{header.Key}: {string.Join(",", header.Value)}";
         }
 
-        private async Task<HttpResponseMessage> ReadResponseHeadAsync(HttpRequestMessage request, ByteStreamReader reader)
+        private async Task<HttpResponseMessage> ReadResponseHeadAsync(ByteStreamReader reader, HttpRequestMessage request)
         {
             // initialize the response
             var response = new HttpResponseMessage { RequestMessage = request };
@@ -141,14 +149,8 @@ namespace Knapcode.SocketToMe.Http
             return response;
         }
 
-        private void ReadResponseBody(HttpResponseMessage response, ByteStreamReader reader)
+        private void ReadResponseBody(ByteStreamReader reader, HttpResponseMessage response)
         {
-            if (response.RequestMessage.Method == HttpMethod.Head)
-            {
-                reader.Dispose();
-                return;
-            }
-
             HttpContent content = null;
             if (response.Headers.TransferEncodingChunked.GetValueOrDefault(false))
             {
