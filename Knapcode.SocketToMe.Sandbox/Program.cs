@@ -32,7 +32,7 @@ namespace Knapcode.SocketToMe.Sandbox
             await SocksExampleAsync(torSocksPort);
             Console.WriteLine();
 
-            Console.WriteLine("## HTTP and SOCKS ##");
+            Console.WriteLine("## HTTPS and SOCKS ##");
             await HttpSocksExampleAsync(torSocksPort);
             Console.WriteLine();
 
