@@ -107,12 +107,13 @@ namespace Knapcode.SocketToMe.Sandbox
             var connectStream = await httpSocketClient.GetStreamAsync(socket, connectRequest);
             await httpSocketClient.SendRequestAsync(connectStream, connectRequest);
             var receiveResponse = await httpSocketClient.ReceiveResponseAsync(connectStream, connectRequest);
-            Console.WriteLine($"{(int)receiveResponse.StatusCode} {receiveResponse.ReasonPhrase}");
+            Console.WriteLine("{0} {1}", (int)receiveResponse.StatusCode, receiveResponse.ReasonPhrase);
 
             var getRequest = new HttpRequestMessage(HttpMethod.Get, "http://icanhazip.com/");
             var getStream = await httpSocketClient.GetStreamAsync(socket, getRequest);
             await httpSocketClient.SendRequestAsync(getStream, getRequest);
             var getResponse = await httpSocketClient.ReceiveResponseAsync(getStream, getRequest);
+            Console.WriteLine("{0} {1}", (int)getResponse.StatusCode, getResponse.ReasonPhrase);
             Console.WriteLine((await getResponse.Content.ReadAsStringAsync()).Trim());
         }
     }
