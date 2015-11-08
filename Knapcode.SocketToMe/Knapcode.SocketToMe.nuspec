@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Knapcode.SocketToMe</id>
-    <version>0.5.0</version>
+    <version>0.6.0</version>
     <title>Knapcode.SocketToMe</title>
     <authors>Joel Verhagen</authors>
     <licenseUrl>https://raw.githubusercontent.com/joelverhagen/SocketToMe/master/LICENSE</licenseUrl>
