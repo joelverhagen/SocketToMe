@@ -20,30 +20,28 @@ namespace Knapcode.SocketToMe.Sandbox
 
         private static async Task MainAsync()
         {
-            int torSocksPort = 9150;
-            int privoxyPort = 8118;
-            await StartTorAndPrivoxyAsync(torSocksPort, privoxyPort);
+            await StartTorAndPrivoxyAsync();
 
             Console.WriteLine("## HTTP ##");
             await HttpExampleAsync();
             Console.WriteLine();
 
             Console.WriteLine("## SOCKS ##");
-            await SocksExampleAsync(torSocksPort);
+            await SocksExampleAsync();
             Console.WriteLine();
 
             Console.WriteLine("## HTTPS and SOCKS ##");
-            await HttpSocksExampleAsync(torSocksPort);
+            await HttpSocksExampleAsync();
             Console.WriteLine();
 
             Console.WriteLine("## HTTP CONNECT ##");
-            await HttpConnectExampleAsync(privoxyPort);
+            await HttpConnectExampleAsync();
             Console.WriteLine();
         }
 
-        private static async Task StartTorAndPrivoxyAsync(int torSocksPort, int privoxyPort)
+        private static async Task StartTorAndPrivoxyAsync()
         {
-            var settings = new TorSharpSettings { TorSocksPort = torSocksPort, PrivoxyPort = privoxyPort };
+            var settings = new TorSharpSettings { TorSocksPort = 9150, PrivoxyPort = 8118 };
             var fetcher = new TorSharpToolFetcher(settings, new HttpClient());
             await fetcher.FetchAsync();
 
@@ -61,10 +59,10 @@ namespace Knapcode.SocketToMe.Sandbox
             }
         }
 
-        private static async Task SocksExampleAsync(int torSocksPort)
+        private static async Task SocksExampleAsync()
         {
             // Tor support SOCKS 4, 4A, and 5
-            var socksEndpoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), torSocksPort);
+            var socksEndpoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9150);
             var socks5Client = new Socks5Client();
             var socket = socks5Client.ConnectToServer(socksEndpoint);
             socket = socks5Client.ConnectToDestination(socket, "icanhazip.com", 80);
@@ -82,10 +80,10 @@ namespace Knapcode.SocketToMe.Sandbox
             }
         }
 
-        private static async Task HttpSocksExampleAsync(int torSocksPort)
+        private static async Task HttpSocksExampleAsync()
         {
             // Tor support SOCKS 4, 4A, and 5
-            var socksEndpoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), torSocksPort);
+            var socksEndpoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9150);
             var socks5Client = new Socks5Client();
             var socket = socks5Client.ConnectToServer(socksEndpoint);
             socket = socks5Client.ConnectToDestination(socket, "icanhazip.com", 443);
@@ -98,9 +96,9 @@ namespace Knapcode.SocketToMe.Sandbox
             }
         }
 
-        private static async Task HttpConnectExampleAsync(int privoxyPort)
+        private static async Task HttpConnectExampleAsync()
         {
-            var socket = Tcp.ConnectToServer("127.0.0.1", privoxyPort);
+            var socket = Tcp.ConnectToServer("127.0.0.1", 8118);
             var httpSocketClient = new HttpSocketClient();
 
             var connectRequest = new HttpRequestMessage(new HttpMethod("CONNECT"), "http://icanhazip.com/");

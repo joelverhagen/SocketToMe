@@ -17,6 +17,7 @@ Fun with sockets in C#.
   - Automatic redirects (with `RedirectingHandler`)
   - Automatic decompression (with `DecompressingHandler`)
   - Cookies (with `CookieHandler`)
+  - HTTP CONNECT
 
 There's probably a lot of bugs with `NetworkHandler`... it's not very thoroughly tested.
 
@@ -32,10 +33,10 @@ Install-Package Knapcode.SocketToMe
 
 ```csharp
 using (var httpClient = new HttpClient(new NetworkHandler()))
-using (var response = httpClient.GetAsync("http://icanhazip.com/").Result)
+using (var response = await httpClient.GetAsync("http://icanhazip.com/"))
 {
     Console.WriteLine("{0} {1}", (int) response.StatusCode, response.ReasonPhrase);
-    Console.WriteLine(response.Content.ReadAsStringAsync().Result.Trim());
+    Console.WriteLine((await response.Content.ReadAsStringAsync()).Trim());
 }
 ```
 
@@ -59,11 +60,11 @@ using (var reader = new StreamReader(proxiedStream))
     writer.WriteLine();
     writer.Flush();
 
-    Console.WriteLine(reader.ReadToEnd().Trim());
+    Console.WriteLine((await reader.ReadToEndAsync()).Trim());
 }
 ```
 
-### HTTP + SOCKS
+### HTTPS and SOCKS
 
 ```csharp
 // Tor support SOCKS 4, 4A, and 5
@@ -73,11 +74,48 @@ var socket = socks5Client.ConnectToServer(socksEndpoint);
 socket = socks5Client.ConnectToDestination(socket, "icanhazip.com", 443);
 
 using (var httpClient = new HttpClient(new NetworkHandler(socket)))
-using (var response = httpClient.GetAsync("https://icanhazip.com/").Result)
+using (var response = await httpClient.GetAsync("https://icanhazip.com/"))
 {
     Console.WriteLine("{0} {1}", (int)response.StatusCode, response.ReasonPhrase);
-    Console.WriteLine(response.Content.ReadAsStringAsync().Result.Trim());
+    Console.WriteLine((await response.Content.ReadAsStringAsync()).Trim());
 }
+```
+
+### HTTPS and SOCKS
+
+```csharp
+// Tor support SOCKS 4, 4A, and 5
+var socksEndpoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9150);
+var socks5Client = new Socks5Client();
+var socket = socks5Client.ConnectToServer(socksEndpoint);
+socket = socks5Client.ConnectToDestination(socket, "icanhazip.com", 443);
+
+using (var httpClient = new HttpClient(new NetworkHandler(socket)))
+using (var response = await httpClient.GetAsync("https://icanhazip.com/"))
+{
+    Console.WriteLine("{0} {1}", (int)response.StatusCode, response.ReasonPhrase);
+    Console.WriteLine((await response.Content.ReadAsStringAsync()).Trim());
+}
+```
+
+### HTTP CONNECT
+
+```csharp
+var socket = Tcp.ConnectToServer("127.0.0.1", 8118);
+var httpSocketClient = new HttpSocketClient();
+
+var connectRequest = new HttpRequestMessage(new HttpMethod("CONNECT"), "http://icanhazip.com/");
+var connectStream = await httpSocketClient.GetStreamAsync(socket, connectRequest);
+await httpSocketClient.SendRequestAsync(connectStream, connectRequest);
+var receiveResponse = await httpSocketClient.ReceiveResponseAsync(connectStream, connectRequest);
+Console.WriteLine("{0} {1}", (int)receiveResponse.StatusCode, receiveResponse.ReasonPhrase);
+
+var getRequest = new HttpRequestMessage(HttpMethod.Get, "http://icanhazip.com/");
+var getStream = await httpSocketClient.GetStreamAsync(socket, getRequest);
+await httpSocketClient.SendRequestAsync(getStream, getRequest);
+var getResponse = await httpSocketClient.ReceiveResponseAsync(getStream, getRequest);
+Console.WriteLine("{0} {1}", (int)getResponse.StatusCode, getResponse.ReasonPhrase);
+Console.WriteLine((await getResponse.Content.ReadAsStringAsync()).Trim());
 ```
 
 ## TODO
