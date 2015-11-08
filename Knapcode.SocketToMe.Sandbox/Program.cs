@@ -13,6 +13,9 @@ namespace Knapcode.SocketToMe.Sandbox
 {
     public class Program
     {
+        private const int SocksPort = 9150;
+        private const int HttpConnectPort = 8118;
+
         private static void Main()
         {
             MainAsync().Wait();
@@ -41,7 +44,7 @@ namespace Knapcode.SocketToMe.Sandbox
 
         private static async Task StartTorAndPrivoxyAsync()
         {
-            var settings = new TorSharpSettings { TorSocksPort = 9150, PrivoxyPort = 8118 };
+            var settings = new TorSharpSettings { TorSocksPort = SocksPort, PrivoxyPort = HttpConnectPort };
             var fetcher = new TorSharpToolFetcher(settings, new HttpClient());
             await fetcher.FetchAsync();
 
@@ -61,8 +64,7 @@ namespace Knapcode.SocketToMe.Sandbox
 
         private static async Task SocksExampleAsync()
         {
-            // Tor support SOCKS 4, 4A, and 5
-            var socksEndpoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9150);
+            var socksEndpoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), SocksPort);
             var socks5Client = new Socks5Client();
             var socket = socks5Client.ConnectToServer(socksEndpoint);
             socket = socks5Client.ConnectToDestination(socket, "icanhazip.com", 80);
@@ -82,8 +84,7 @@ namespace Knapcode.SocketToMe.Sandbox
 
         private static async Task HttpSocksExampleAsync()
         {
-            // Tor support SOCKS 4, 4A, and 5
-            var socksEndpoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9150);
+            var socksEndpoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), SocksPort);
             var socks5Client = new Socks5Client();
             var socket = socks5Client.ConnectToServer(socksEndpoint);
             socket = socks5Client.ConnectToDestination(socket, "icanhazip.com", 443);
@@ -98,7 +99,7 @@ namespace Knapcode.SocketToMe.Sandbox
 
         private static async Task HttpConnectExampleAsync()
         {
-            var socket = Tcp.ConnectToServer("127.0.0.1", 8118);
+            var socket = Tcp.ConnectToServer("127.0.0.1", HttpConnectPort);
             var httpSocketClient = new HttpSocketClient();
 
             var connectRequest = new HttpRequestMessage(new HttpMethod("CONNECT"), "http://icanhazip.com/");

@@ -45,8 +45,7 @@ using (var response = await httpClient.GetAsync("http://icanhazip.com/"))
 Talk to a website through Tor! Have [Tor Browser](https://www.torproject.org/download/download-easy.html.en) running at the same time to try this demo out. Port 9150 is the default port for Tor Browser.
 
 ```csharp
-// Tor support SOCKS 4, 4A, and 5
-var socksEndpoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9150);
+var socksEndpoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), SocksPort);
 var socks5Client = new Socks5Client();
 var socket = socks5Client.ConnectToServer(socksEndpoint);
 socket = socks5Client.ConnectToDestination(socket, "icanhazip.com", 80);
@@ -67,25 +66,7 @@ using (var reader = new StreamReader(proxiedStream))
 ### HTTPS and SOCKS
 
 ```csharp
-// Tor support SOCKS 4, 4A, and 5
-var socksEndpoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9150);
-var socks5Client = new Socks5Client();
-var socket = socks5Client.ConnectToServer(socksEndpoint);
-socket = socks5Client.ConnectToDestination(socket, "icanhazip.com", 443);
-
-using (var httpClient = new HttpClient(new NetworkHandler(socket)))
-using (var response = await httpClient.GetAsync("https://icanhazip.com/"))
-{
-    Console.WriteLine("{0} {1}", (int)response.StatusCode, response.ReasonPhrase);
-    Console.WriteLine((await response.Content.ReadAsStringAsync()).Trim());
-}
-```
-
-### HTTPS and SOCKS
-
-```csharp
-// Tor support SOCKS 4, 4A, and 5
-var socksEndpoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9150);
+var socksEndpoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), SocksPort);
 var socks5Client = new Socks5Client();
 var socket = socks5Client.ConnectToServer(socksEndpoint);
 socket = socks5Client.ConnectToDestination(socket, "icanhazip.com", 443);
@@ -101,7 +82,7 @@ using (var response = await httpClient.GetAsync("https://icanhazip.com/"))
 ### HTTP CONNECT
 
 ```csharp
-var socket = Tcp.ConnectToServer("127.0.0.1", 8118);
+var socket = Tcp.ConnectToServer("127.0.0.1", HttpConnectPort);
 var httpSocketClient = new HttpSocketClient();
 
 var connectRequest = new HttpRequestMessage(new HttpMethod("CONNECT"), "http://icanhazip.com/");
