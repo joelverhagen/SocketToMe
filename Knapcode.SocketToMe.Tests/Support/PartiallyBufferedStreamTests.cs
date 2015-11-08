@@ -3,14 +3,13 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Knapcode.SocketToMe.Support;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Knapcode.SocketToMe.Tests.Support
 {
-    [TestClass]
     public class PartiallyBufferedStreamTests
     {
-        [TestMethod]
+        [Fact]
         public void It_Reads_Synchronously()
         {
             // ARRANGE
@@ -25,7 +24,7 @@ namespace Knapcode.SocketToMe.Tests.Support
             content.Should().Be("barFOOBAR");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task It_Reads_Asynchronously()
         {
             // ARRANGE

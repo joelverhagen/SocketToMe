@@ -10,16 +10,15 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Knapcode.SocketToMe.Http;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Xunit;
 
 namespace Knapcode.SocketToMe.Tests.Http
 {
-    [TestClass]
     public class NetworkHandlerTests
     {
-        [TestMethod]
+        [Fact]
         public async Task DisposeResponseWithNoResponseBody()
         {
             // ARRANGE
@@ -34,7 +33,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             action.ShouldNotThrow();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task DisposeResponseWithContentLengthBody()
         {
             // ARRANGE
@@ -49,7 +48,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             action.ShouldNotThrow();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task DisposeResponseWithChunkedBody()
         {
             // ARRANGE
@@ -64,7 +63,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             action.ShouldNotThrow();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task Cookies()
         {
             // ARRANGE
@@ -87,7 +86,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             });
         }
 
-        [TestMethod]
+        [Fact]
         public async Task Gzip()
         {
             // ARRANGE
@@ -102,7 +101,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             response.Content["gzipped"].ToObject<bool>().Should().BeTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task Deflate()
         {
             // ARRANGE
@@ -117,7 +116,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             response.Content["deflated"].ToObject<bool>().Should().BeTrue();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task Redirect()
         {
             // ARRANGE
@@ -132,7 +131,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             response.Message.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task CustomSocket()
         {
             // ARRANGE
@@ -150,7 +149,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             content.Should().NotBeNullOrWhiteSpace();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task CustomSocketDelegate()
         {
             // ARRANGE
@@ -174,7 +173,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             content.Should().NotBeNullOrWhiteSpace();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task CustomSocketAsyncDelegate()
         {
             // ARRANGE
@@ -198,7 +197,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             content.Should().NotBeNullOrWhiteSpace();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task BasicFunctionality()
         {
             // ARRANGE
@@ -226,7 +225,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             IPAddress.Parse(o.Content["origin"]);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task KnownContentOverHttp()
         {
             // ARRANGE
@@ -244,7 +243,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             content.Should().Be(@"{""user-agent"":""SocketToMe/B3C5B340-D620-472E-B97B-769ECADD0CD3""}");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task KnownContentOverHttps()
         {
             // ARRANGE
@@ -262,7 +261,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             content.Should().Be(@"{""user-agent"":""SocketToMe/B3C5B340-D620-472E-B97B-769ECADD0CD3""}");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task Post()
         {
             // ARRANGE
@@ -286,7 +285,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             o.Content["form"].ToObject<IDictionary<string, string>>().ShouldBeEquivalentTo(form);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task IpAddressDestination()
         {
             // ARRANGE
@@ -302,7 +301,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             IPAddress.Parse(o.Content["origin"]);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task Headers()
         {
             // ARRANGE
@@ -329,7 +328,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task RequestMessage()
         {
             // ARRANGE
@@ -343,7 +342,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             response.RequestMessage.Should().BeSameAs(request);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task StatusCode()
         {
             // ARRANGE
@@ -358,7 +357,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             response.ReasonPhrase.Should().Be("CONFLICT");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task Head()
         {
             // ARRANGE
@@ -373,7 +372,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             response.ReasonPhrase.Should().Be("OK");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ChunkedResponse()
         {
             // ARRANGE
@@ -392,7 +391,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             lines.Should().Contain(l => l.Contains("71116259-F72C-4B6C-8F83-764B787628BA"));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task Form()
         {
             // ARRANGE
@@ -413,7 +412,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             actualForm.ShouldBeEquivalentTo(expectedForm);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task FileUpload()
         {
             // ARRANGE

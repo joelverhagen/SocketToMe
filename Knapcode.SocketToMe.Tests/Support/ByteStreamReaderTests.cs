@@ -5,14 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Knapcode.SocketToMe.Support;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Knapcode.SocketToMe.Tests.Support
 {
-    [TestClass]
     public class ByteStreamReaderTests
     {
-        [TestMethod]
+        [Fact]
         public async Task It_Returns_Null_After_Reading_The_Last_Line()
         {
             // ARRANGE
@@ -30,7 +29,7 @@ namespace Knapcode.SocketToMe.Tests.Support
             line3.Should().BeNull();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task It_Can_Trim_Line_Endings()
         {
             // ARRANGE
@@ -44,7 +43,7 @@ namespace Knapcode.SocketToMe.Tests.Support
             ts.OneLine.First().Trim().Should().Be(line);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task It_Returns_All_Contents_With_A_Small_Buffer()
         {
             // ARRANGE
@@ -54,7 +53,7 @@ namespace Knapcode.SocketToMe.Tests.Support
             await ts.VerifyReadLineThenReadBytesAsync(ts.TrailingLineEndings, 1);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task It_Returns_All_Contents_With_A_Large_Buffer()
         {
             // ARRANGE
@@ -64,7 +63,7 @@ namespace Knapcode.SocketToMe.Tests.Support
             await ts.VerifyReadLineThenReadBytesAsync(ts.TrailingLineEndings, ts.GetLength(ts.TrailingLineEndings) * 2);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task It_Returns_Correct_Line_With_Large_Buffer()
         {
             // ARRANGE
@@ -75,7 +74,7 @@ namespace Knapcode.SocketToMe.Tests.Support
             await ts.VerifyAllLinesAsync(ts.TwoLines);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task It_Can_Read_All_Lines_With_Trailing_Line_Endings()
         {
             // ARRANGE
@@ -85,7 +84,7 @@ namespace Knapcode.SocketToMe.Tests.Support
             await ts.VerifyAllLinesAsync(ts.TrailingLineEndings);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task It_Can_Read_All_Lines_With_No_Trailing_Line_Endings()
         {
             // ARRANGE
@@ -95,7 +94,7 @@ namespace Knapcode.SocketToMe.Tests.Support
             await ts.VerifyAllLinesAsync(ts.NoTrailingLineEndings);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task It_Can_Read_All_Lines_With_An_Empty_Line()
         {
             // ARRANGE
@@ -105,7 +104,7 @@ namespace Knapcode.SocketToMe.Tests.Support
             await ts.VerifyAllLinesAsync(ts.EmptyLine);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task It_Can_Read_All_Lines_While_Ignoring_Non_Cr_Lf_Line_Endings()
         {
             // ARRANGE
@@ -115,7 +114,7 @@ namespace Knapcode.SocketToMe.Tests.Support
             await ts.VerifyAllLinesAsync(ts.NonCrLfLineEndings);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task It_Can_Return_Buffered_And_Remaining_Content_As_A_Stream()
         {
             // ARRANGE

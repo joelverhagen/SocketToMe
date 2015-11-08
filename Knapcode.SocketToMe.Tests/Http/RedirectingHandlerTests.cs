@@ -8,16 +8,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Knapcode.SocketToMe.Http;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Moq.Protected;
+using Xunit;
 
 namespace Knapcode.SocketToMe.Tests.Http
 {
-    [TestClass]
     public class RedirectingHandlerTests
     {
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SendAsync_WithTooManyRedirects_StopsRedirecting()
         {
             // ARRANGE
@@ -35,7 +34,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             httpResponseMessage.StatusCode.Should().Be(statusCode);
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public void SendAsync_WithResponseAndNoRequest_ThrowsException()
         {
             // ARRANGE
@@ -62,7 +61,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             action.ShouldThrow<InvalidOperationException>().And.Message.Should().Contain("did not have a request message");
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SendAsync_WithNoLocationHeader_DoesNotRedirect()
         {
             // ARRANGE
@@ -79,7 +78,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             httpResponseMessage.StatusCode.Should().Be(statusCode);
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SendAsync_WithDisabledRedirect_DoesNotRedirect()
         {
             // ARRANGE
@@ -96,7 +95,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             httpResponseMessage.StatusCode.Should().Be(statusCode);
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SendAsync_WithDisabledHistory_DoesKeepHistory()
         {
             // ARRANGE
@@ -110,7 +109,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             httpResponseMessage.RequestMessage.Properties.ContainsKey(RedirectingHandler.RedirectHistoryKey).Should().BeFalse();
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SendAsync_WithContentHeaders_CopiesContentHeaders()
         {
             // ARRANGE
@@ -132,7 +131,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             values.Should().BeEquivalentTo(headerValue);
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SendAsync_WithRedirects_KeepsHistory()
         {
             // ARRANGE
@@ -154,7 +153,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             responses.Skip(redirectCount).Take(1).Should().OnlyContain(r => r.StatusCode == HttpStatusCode.OK);
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SendAsync_WithHeaders_CopiesHeaders()
         {
             // ARRANGE
@@ -174,7 +173,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             values.Should().BeEquivalentTo(headerValue);
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SendAsync_WithNoSchemeInRedirect_UsesRequestUriScheme()
         {
             // ARRANGE
@@ -189,7 +188,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             httpResponseMessage.RequestMessage.RequestUri.Should().Be(new Uri("https://www.example.com/2"));
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SendAsync_WithRelativeRedirect_ResolvedAgainstRequestUri()
         {
             // ARRANGE
@@ -204,7 +203,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             httpResponseMessage.RequestMessage.RequestUri.Should().Be(new Uri("https://www.example.com/1/2/c/d.txt"));
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SendAsync_WithPostAnd301_MakesGetRequest()
         {
             await SendAsync_WithRedirect_MakesSubsequentRequest(
@@ -215,7 +214,7 @@ namespace Knapcode.SocketToMe.Tests.Http
                 null);
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SendAsync_WithPutAnd301_DuplicatesRequestWithoutContent()
         {
             await SendAsync_WithRedirect_MakesSubsequentRequest(
@@ -226,7 +225,7 @@ namespace Knapcode.SocketToMe.Tests.Http
                 null);
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SendAsync_WithDeleteAnd301_DuplicatesRequestWithoutContent()
         {
             await SendAsync_WithRedirect_MakesSubsequentRequest(
@@ -237,19 +236,19 @@ namespace Knapcode.SocketToMe.Tests.Http
                 null);
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SendAsync_WithGetAnd301_DuplicatesRequest()
         {
             await SendAsync_WithRedirect_DuplicatesRequest(HttpMethod.Get, null, HttpStatusCode.Moved);
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SendAsync_WithHeadAnd301_DuplicatesRequest()
         {
             await SendAsync_WithRedirect_DuplicatesRequest(HttpMethod.Head, null, HttpStatusCode.Moved);
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SendAsync_WithPostAnd302_MakesGetRequest()
         {
             await SendAsync_WithRedirect_MakesSubsequentRequest(
@@ -260,7 +259,7 @@ namespace Knapcode.SocketToMe.Tests.Http
                 null);
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SendAsync_WithPutAnd302_MakesGetRequest()
         {
             await SendAsync_WithRedirect_MakesSubsequentRequest(
@@ -271,7 +270,7 @@ namespace Knapcode.SocketToMe.Tests.Http
                 null);
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SendAsync_WithDeleteAnd302_MakesGetRequest()
         {
             await SendAsync_WithRedirect_MakesSubsequentRequest(
@@ -282,19 +281,19 @@ namespace Knapcode.SocketToMe.Tests.Http
                 null);
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SendAsync_WithGetAnd302_DuplicatesRequest()
         {
             await SendAsync_WithRedirect_DuplicatesRequest(HttpMethod.Get, null, HttpStatusCode.Found);
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SendAsync_WithHeadAnd302_DuplicatesRequest()
         {
             await SendAsync_WithRedirect_DuplicatesRequest(HttpMethod.Head, null, HttpStatusCode.Found);
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SendAsync_WithPostAnd303_MakesGetRequest()
         {
             await SendAsync_WithRedirect_MakesSubsequentRequest(
@@ -305,7 +304,7 @@ namespace Knapcode.SocketToMe.Tests.Http
                 null);
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SendAsync_WithPutAnd303_MakesGetRequest()
         {
             await SendAsync_WithRedirect_MakesSubsequentRequest(
@@ -316,7 +315,7 @@ namespace Knapcode.SocketToMe.Tests.Http
                 null);
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SendAsync_WithDeleteAnd303_MakesGetRequest()
         {
             await SendAsync_WithRedirect_MakesSubsequentRequest(
@@ -327,73 +326,73 @@ namespace Knapcode.SocketToMe.Tests.Http
                 null);
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SendAsync_WithGetAnd303_DuplicatesRequest()
         {
             await SendAsync_WithRedirect_DuplicatesRequest(HttpMethod.Get, null, HttpStatusCode.SeeOther);
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SendAsync_WithHeadAnd303_DuplicatesRequest()
         {
             await SendAsync_WithRedirect_DuplicatesRequest(HttpMethod.Head, null, HttpStatusCode.SeeOther);
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SendAsync_WithPostAnd307_DuplicatesRequest()
         {
             await SendAsync_WithRedirect_DuplicatesRequest(HttpMethod.Post, "foo", HttpStatusCode.TemporaryRedirect);
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SendAsync_WithPutAnd307_DuplicatesRequest()
         {
             await SendAsync_WithRedirect_DuplicatesRequest(HttpMethod.Put, "foo", HttpStatusCode.TemporaryRedirect);
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SendAsync_WithDeleteAnd307_DuplicatesRequest()
         {
             await SendAsync_WithRedirect_DuplicatesRequest(HttpMethod.Delete, "foo", HttpStatusCode.TemporaryRedirect);
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SendAsync_WithGetAnd307_DuplicatesRequest()
         {
             await SendAsync_WithRedirect_DuplicatesRequest(HttpMethod.Get, null, HttpStatusCode.TemporaryRedirect);
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SendAsync_WithHeadAnd307_DuplicatesRequest()
         {
             await SendAsync_WithRedirect_DuplicatesRequest(HttpMethod.Head, null, HttpStatusCode.TemporaryRedirect);
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SendAsync_WithPostAnd308_DuplicatesRequest()
         {
             await SendAsync_WithRedirect_DuplicatesRequest(HttpMethod.Post, "foo", (HttpStatusCode)308);
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SendAsync_WithPutAnd308_DuplicatesRequest()
         {
             await SendAsync_WithRedirect_DuplicatesRequest(HttpMethod.Put, "foo", (HttpStatusCode)308);
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SendAsync_WithDeleteAnd308_DuplicatesRequest()
         {
             await SendAsync_WithRedirect_DuplicatesRequest(HttpMethod.Delete, "foo", (HttpStatusCode)308);
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SendAsync_WithGetAnd308_DuplicatesRequest()
         {
             await SendAsync_WithRedirect_DuplicatesRequest(HttpMethod.Get, null, (HttpStatusCode)308);
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SendAsync_WithHeadAnd308_DuplicatesRequest()
         {
             await SendAsync_WithRedirect_DuplicatesRequest(HttpMethod.Head, null, (HttpStatusCode)308);

@@ -3,28 +3,27 @@ using System.Linq;
 using System.Net.Http;
 using FluentAssertions;
 using Knapcode.SocketToMe.Http;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Knapcode.SocketToMe.Tests.Http
 {
-    [TestClass]
     public class ExtensionsTests
     {
         private delegate bool TryGetHttpRequestMessageProperty<T>(HttpRequestMessage request, out T value);
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public void TryGetRedirectHistory_WithValue_ReturnsTrue()
         {
             TryGetHttpRequestMessageProperty_WithValue_ReturnsTrue(Extensions.TryGetRedirectHistory, RedirectingHandler.RedirectHistoryKey, Enumerable.Empty<HttpResponseMessage>());
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public void TryGetRedirectHistory_WithWrongType_ReturnsFalse()
         {
             TryGetHttpRequestMessageProperty_WithWrongType_ReturnsFalse<IEnumerable<HttpResponseMessage>>(Extensions.TryGetRedirectHistory, RedirectingHandler.RedirectHistoryKey);
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public void TryGetRedirectHistory_WithNoValue_ReturnsFalse()
         {
             TryGetHttpRequestMessageProperty_WithNoValue_ReturnsFalse<IEnumerable<HttpResponseMessage>>(Extensions.TryGetRedirectHistory);

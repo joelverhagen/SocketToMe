@@ -4,14 +4,13 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Knapcode.SocketToMe.Support;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Knapcode.SocketToMe.Tests.Support
 {
-    [TestClass]
     public class LimitedStreamTests
     {
-        [TestMethod]
+        [Fact]
         public void Limits_Synchronously()
         {
             // ARRANGE
@@ -25,7 +24,7 @@ namespace Knapcode.SocketToMe.Tests.Support
             actual.Should().Be("foo");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task Limits_Asynchronously()
         {
             // ARRANGE

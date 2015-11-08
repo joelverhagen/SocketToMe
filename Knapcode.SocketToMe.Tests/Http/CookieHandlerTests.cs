@@ -7,15 +7,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Knapcode.SocketToMe.Http;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
+using Xunit;
 
 namespace Knapcode.SocketToMe.Tests.Http
 {
-    [TestClass]
     public class CookieHandlerTests
     {
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task NoCookies()
         {
             // ARRANGE
@@ -28,7 +26,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             ts.VerifyEmptyCookieContainer();
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task CookiesOnTheRequestButNotInTheContainer()
         {
             // ARRANGE
@@ -54,7 +52,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             ts.VerifyEmptyCookieContainer();
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task CookiesOnTheRequestAndInTheContainer()
         {
             // ARRANGE
@@ -81,7 +79,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             ts.VerifyRequestCookie("a=1; b=2; c=3; d=4; e=5; f=6; g=7");
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task CookiesInTheContainerButNotOnTheRequest()
         {
             // ARRANGE
@@ -96,7 +94,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             ts.VerifyRequestCookie("a=1; b=2");
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task CookiesInTheContainerOnADifferentUri()
         {
             // ARRANGE
@@ -111,7 +109,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             ts.Request.Headers.Where(h => string.Equals(h.Key, "Cookie", StringComparison.OrdinalIgnoreCase)).Should().BeEmpty();
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SetCookies()
         {
             // ARRANGE

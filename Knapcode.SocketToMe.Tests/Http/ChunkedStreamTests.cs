@@ -4,14 +4,13 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Knapcode.SocketToMe.Http;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Knapcode.SocketToMe.Tests.Http
 {
-    [TestClass]
     public class ChunkedStreamTests
     {
-        [TestMethod]
+        [Fact]
         public void It_Reads_Multiple_Chunks_With_A_Small_Buffer_Synchronously()
         {
             // ARRANGE
@@ -21,7 +20,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             ts.ReadAndVerify(ts.MultipleChunks);
         }
 
-        [TestMethod]
+        [Fact]
         public void It_Reads_Multiple_Chunks_With_A_Large_Buffer_Synchronously()
         {
             // ARRANGE
@@ -31,7 +30,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             ts.ReadAndVerify(ts.MultipleChunks);
         }
 
-        [TestMethod]
+        [Fact]
         public void It_Reads_One_Chunk_Synchronously()
         {
             // ARRANGE
@@ -41,7 +40,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             ts.ReadAndVerify(ts.MultipleChunks);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task It_Reads_Multiple_Chunks_With_A_Small_Buffer_Asynchronously()
         {
             // ARRANGE
@@ -51,7 +50,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             await ts.ReadAndVerifyAsync(ts.MultipleChunks);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task It_Reads_Multiple_Chunks_With_A_Large_Buffer_Asynchronously()
         {
             // ARRANGE
@@ -61,7 +60,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             await ts.ReadAndVerifyAsync(ts.MultipleChunks);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task It_Reads_One_Chunk_Asynchronously()
         {
             // ARRANGE

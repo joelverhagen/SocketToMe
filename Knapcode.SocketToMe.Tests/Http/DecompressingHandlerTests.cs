@@ -11,48 +11,47 @@ using ICSharpCode.SharpZipLib.GZip;
 using ICSharpCode.SharpZipLib.Zip.Compression;
 using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 using Knapcode.SocketToMe.Http;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Moq.Protected;
+using Xunit;
 
 namespace Knapcode.SocketToMe.Tests.Http
 {
-    [TestClass]
     public class DecompressingHandlerTests
     {
         private const string OriginalContent = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet.";
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SendAsync_WithBclRawDeflate_DecodesResponse()
         {
             await SendAsync_WithMockedInnerHandler_DecodesResponse(DecompressionMethods.Deflate, GetBclRawDeflateHandler);
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SendAsync_WithSharpZipLibRawDeflate_DecodesResponse()
         {
             await SendAsync_WithMockedInnerHandler_DecodesResponse(DecompressionMethods.Deflate, GetSharpZipLibRawDeflateHandler);
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SendAsync_WithSharpZipLibZlibDeflate_DecodesResponse()
         {
             await SendAsync_WithMockedInnerHandler_DecodesResponse(DecompressionMethods.Deflate, GetSharpZipLibZlibDeflateHandler);
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SendAsync_WithBclGzip_DecodesResponse()
         {
             await SendAsync_WithMockedInnerHandler_DecodesResponse(DecompressionMethods.GZip, GetBclGzipHandler);
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SendAsync_WithSharpZipLibGzip_DecodesResponse()
         {
             await SendAsync_WithMockedInnerHandler_DecodesResponse(DecompressionMethods.GZip, GetSharpZipLibGzipHandler);
         }
 
-        [TestMethod, TestCategory("Unit")]
+        [Fact]
         public async Task SendAsync_WithIdentity_ReturnsOriginalResponse()
         {
             await SendAsync_WithMockedInnerHandler_DecodesResponse(DecompressionMethods.None, GetIdentityHandler);
