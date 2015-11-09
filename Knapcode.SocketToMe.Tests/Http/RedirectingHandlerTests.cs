@@ -67,7 +67,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             // ARRANGE
             const HttpStatusCode statusCode = HttpStatusCode.TemporaryRedirect;
             var client = GetHttpClient(
-                redirectUri: new Uri(string.Empty, UriKind.Relative),
+                redirectUri: string.Empty,
                 statusCode: statusCode);
             var request = GetRequest();
 
@@ -177,7 +177,7 @@ namespace Knapcode.SocketToMe.Tests.Http
         public async Task SendAsync_WithNoSchemeInRedirect_UsesRequestUriScheme()
         {
             // ARRANGE
-            var client = GetHttpClient(redirectUri: new Uri("//www.example.com/2", UriKind.Relative));
+            var client = GetHttpClient(redirectUri: "//www.example.com/2");
             var request = GetRequest();
             request.RequestUri = new Uri("https://www.example.com/1");
 
@@ -192,7 +192,7 @@ namespace Knapcode.SocketToMe.Tests.Http
         public async Task SendAsync_WithRelativeRedirect_ResolvedAgainstRequestUri()
         {
             // ARRANGE
-            var client = GetHttpClient(redirectUri: new Uri("../c/e/../d.txt", UriKind.Relative));
+            var client = GetHttpClient(redirectUri: "../c/e/../d.txt");
             var request = GetRequest();
             request.RequestUri = new Uri("https://www.example.com/1/2/3/4.txt");
 
@@ -458,10 +458,10 @@ namespace Knapcode.SocketToMe.Tests.Http
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
-        private static HttpResponseMessage GetRedirectHttpResponseMessage(HttpStatusCode statusCode, Uri redirectUri)
+        private static HttpResponseMessage GetRedirectHttpResponseMessage(HttpStatusCode statusCode, string redirectUri)
         {
             var response = new HttpResponseMessage(statusCode);
-            response.Headers.Location = redirectUri;
+            response.Headers.TryAddWithoutValidation("Location", redirectUri);
             return response;
         }
 
@@ -487,11 +487,11 @@ namespace Knapcode.SocketToMe.Tests.Http
             return new HttpRequestMessage(HttpMethod.Get, "http://www.example.com/1");
         }
 
-        private static HttpClient GetHttpClient(HttpStatusCode statusCode = HttpStatusCode.Moved, Uri redirectUri = null, int redirectCount = 1, Action<RedirectingHandler> configure = null)
+        private static HttpClient GetHttpClient(HttpStatusCode statusCode = HttpStatusCode.Moved, string redirectUri = null, int redirectCount = 1, Action<RedirectingHandler> configure = null)
         {
             if (redirectUri == null)
             {
-                redirectUri = new Uri("http://www.example.com/2", UriKind.Absolute);
+                redirectUri = "http://www.example.com/2";
             }
 
             var responses = Enumerable
