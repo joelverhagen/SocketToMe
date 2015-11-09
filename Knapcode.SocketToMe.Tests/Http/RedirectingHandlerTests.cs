@@ -48,7 +48,7 @@ namespace Knapcode.SocketToMe.Tests.Http
                         .Returns<HttpRequestMessage, CancellationToken>((request, token) =>
                         {
                             var response = new HttpResponseMessage(HttpStatusCode.Found);
-                            response.Headers.Location = new Uri("/", UriKind.Relative);
+                            response.Headers.TryAddWithoutValidation("Location", "/");
                             return Task.FromResult(response);
                         });
                     handler.InnerHandler = mock.Object;
