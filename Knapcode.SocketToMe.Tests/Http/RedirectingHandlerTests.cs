@@ -359,13 +359,13 @@ namespace Knapcode.SocketToMe.Tests.Http
         [Fact]
         public async Task SendAsync_WithGetAnd307_DuplicatesRequest()
         {
-            await SendAsync_WithRedirect_DuplicatesRequest(HttpMethod.Get, null, HttpStatusCode.TemporaryRedirect);
+            await SendAsync_WithRedirect_DuplicatesRequest(HttpMethod.Get, "foo", HttpStatusCode.TemporaryRedirect);
         }
 
         [Fact]
         public async Task SendAsync_WithHeadAnd307_DuplicatesRequest()
         {
-            await SendAsync_WithRedirect_DuplicatesRequest(HttpMethod.Head, null, HttpStatusCode.TemporaryRedirect);
+            await SendAsync_WithRedirect_DuplicatesRequest(HttpMethod.Head, "foo", HttpStatusCode.TemporaryRedirect);
         }
 
         [Fact]
@@ -389,13 +389,13 @@ namespace Knapcode.SocketToMe.Tests.Http
         [Fact]
         public async Task SendAsync_WithGetAnd308_DuplicatesRequest()
         {
-            await SendAsync_WithRedirect_DuplicatesRequest(HttpMethod.Get, null, (HttpStatusCode)308);
+            await SendAsync_WithRedirect_DuplicatesRequest(HttpMethod.Get, "foo", (HttpStatusCode)308);
         }
 
         [Fact]
         public async Task SendAsync_WithHeadAnd308_DuplicatesRequest()
         {
-            await SendAsync_WithRedirect_DuplicatesRequest(HttpMethod.Head, null, (HttpStatusCode)308);
+            await SendAsync_WithRedirect_DuplicatesRequest(HttpMethod.Head, "foo", (HttpStatusCode)308);
         }
 
         private static async Task SendAsync_WithRedirect_DuplicatesRequest(HttpMethod httpMethod, string content, HttpStatusCode httpStatusCode)
