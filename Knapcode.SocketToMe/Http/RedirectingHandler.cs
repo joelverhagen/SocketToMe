@@ -131,11 +131,7 @@ namespace Knapcode.SocketToMe.Http
 
                 // allow relative redirects
                 Uri nextRequestUri;
-                if (locationString.ToLower().StartsWith("http://") || locationString.ToLower().StartsWith("https://"))
-                {
-                    nextRequestUri = new Uri(locationString);
-                }
-                else
+                if (locationString.StartsWith("/") || !Uri.TryCreate(locationString, UriKind.Absolute, out nextRequestUri))
                 {
                     nextRequestUri = new Uri(previousRequestUri, locationString);
                 }
