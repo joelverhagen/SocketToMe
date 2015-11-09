@@ -437,7 +437,7 @@ namespace Knapcode.SocketToMe.Tests.Http
                 });
         }
 
-        private static async Task SendAsync_WithRedirect_MakesNewRequest(HttpMethod initialMethod, HttpContent content, HttpStatusCode statusCode, Action<HttpRequestMessage> validateRequest)
+        private static async Task SendAsync_WithRedirect_MakesNewRequest(HttpMethod initialMethod, HttpContent content, HttpStatusCode statusCode, Func<HttpRequestMessage, Task> validateRequestAsync)
         {
             // ARRANGE
             var client = GetHttpClient(statusCode);
@@ -450,7 +450,7 @@ namespace Knapcode.SocketToMe.Tests.Http
 
             // ASSERT
             httpResponseMessage.StatusCode.Should().Be(HttpStatusCode.OK);
-            validateRequest(httpResponseMessage.RequestMessage);
+            await validateRequestAsync(httpResponseMessage.RequestMessage);
         }
 
         private static HttpResponseMessage GetOkHttpResponseMessage()
