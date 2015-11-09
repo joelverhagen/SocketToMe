@@ -129,12 +129,14 @@ namespace Knapcode.SocketToMe.Tests.Http
                 var writer = new StreamWriter(stream, Encoding.ASCII, 4096, true);
                 foreach (var chunk in chunks)
                 {
-                    writer.WriteLine(chunk.Length.ToString("X"));
-                    writer.WriteLine(chunk);
+                    writer.Write(chunk.Length.ToString("X"));
+                    writer.Write("\r\n");
+                    writer.Write(chunk);
+                    writer.Write("\r\n");
                 }
 
-                writer.WriteLine("0");
-                writer.WriteLine();
+                writer.Write("0");
+                writer.Write("\r\n\r\n");
                 writer.Flush();
 
                 stream.Seek(0, SeekOrigin.Begin);
