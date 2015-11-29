@@ -13,12 +13,12 @@ namespace Knapcode.SocketToMe.Http
 
         public CookieHandler()
         {
-            this.CookieContainer = new CookieContainer();
+            CookieContainer = new CookieContainer();
         }
 
         public CookieContainer CookieContainer { get; set; }
 
-        protected async override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             // get headers from the request
             string manualCookieValues = null;
