@@ -146,11 +146,11 @@ namespace Knapcode.SocketToMe.Tests.Http
             // ASSERT
             httpResponseMessage.RequestMessage.Properties.ContainsKey(RedirectingHandler.RedirectHistoryKey).Should().BeTrue();
             object value = httpResponseMessage.RequestMessage.Properties[RedirectingHandler.RedirectHistoryKey];
-            value.Should().BeAssignableTo<IEnumerable<HttpResponseMessage>>();
-            HttpResponseMessage[] responses = ((IEnumerable<HttpResponseMessage>) value).ToArray();
+            value.Should().BeAssignableTo<IEnumerable<HttpMessageExchange>>();
+            HttpMessageExchange[] responses = ((IEnumerable<HttpMessageExchange>) value).ToArray();
             responses.Should().HaveCount(redirectCount + 1);
-            responses.Take(redirectCount).Should().OnlyContain(r => r.StatusCode == statusCode);
-            responses.Skip(redirectCount).Take(1).Should().OnlyContain(r => r.StatusCode == HttpStatusCode.OK);
+            responses.Take(redirectCount).Should().OnlyContain(e => e.Response.StatusCode == statusCode);
+            responses.Skip(redirectCount).Take(1).Should().OnlyContain(e => e.Response.StatusCode == HttpStatusCode.OK);
         }
 
         [Fact]

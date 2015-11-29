@@ -9,7 +9,7 @@ namespace Knapcode.SocketToMe.Http
         /// <param name="request">The request.</param>
         /// <param name="redirectHistory">The history.</param>
         /// <returns>Whether or not the history was found.</returns>
-        public static bool TryGetRedirectHistory(this HttpRequestMessage request, out IEnumerable<HttpResponseMessage> redirectHistory)
+        public static bool TryGetRedirectHistory(this HttpRequestMessage request, out IEnumerable<HttpMessageExchange> redirectHistory)
         {
             return TryGetHttpRequestMessageProperty(request, RedirectingHandler.RedirectHistoryKey, out redirectHistory);
         }

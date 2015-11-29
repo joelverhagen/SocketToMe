@@ -104,7 +104,7 @@ namespace Knapcode.SocketToMe.Http
 
             // send the initial request
             var response = await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
-            var responses = new List<HttpResponseMessage>();
+            var exchanges = new List<HttpMessageExchange>();
 
             var redirectCount = 0;
             string locationString;
@@ -171,21 +171,21 @@ namespace Knapcode.SocketToMe.Http
                 // keep a history all responses
                 if (KeepRedirectHistory)
                 {
-                    responses.Add(response);
+                    exchanges.Add(new HttpMessageExchange { Request = request, Response = response });
                 }
 
                 // send the next request
                 response = await base.SendAsync(nextRequest, cancellationToken).ConfigureAwait(false);
 
-                request = response.RequestMessage;
+                request = nextRequest;
                 redirectCount++;
             }
 
             // save the history to the request message properties
             if (KeepRedirectHistory && response.RequestMessage != null)
             {
-                responses.Add(response);
-                response.RequestMessage.Properties.Add(RedirectHistoryKey, responses);
+                exchanges.Add(new HttpMessageExchange { Request = request, Response = response });
+                response.RequestMessage.Properties.Add(RedirectHistoryKey, exchanges);
             }
 
             return response;

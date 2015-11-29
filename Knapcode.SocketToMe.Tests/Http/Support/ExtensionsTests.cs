@@ -14,19 +14,19 @@ namespace Knapcode.SocketToMe.Tests.Http
         [Fact]
         public void TryGetRedirectHistory_WithValue_ReturnsTrue()
         {
-            TryGetHttpRequestMessageProperty_WithValue_ReturnsTrue(Extensions.TryGetRedirectHistory, RedirectingHandler.RedirectHistoryKey, Enumerable.Empty<HttpResponseMessage>());
+            TryGetHttpRequestMessageProperty_WithValue_ReturnsTrue(Extensions.TryGetRedirectHistory, RedirectingHandler.RedirectHistoryKey, Enumerable.Empty<HttpMessageExchange>());
         }
 
         [Fact]
         public void TryGetRedirectHistory_WithWrongType_ReturnsFalse()
         {
-            TryGetHttpRequestMessageProperty_WithWrongType_ReturnsFalse<IEnumerable<HttpResponseMessage>>(Extensions.TryGetRedirectHistory, RedirectingHandler.RedirectHistoryKey);
+            TryGetHttpRequestMessageProperty_WithWrongType_ReturnsFalse<IEnumerable<HttpMessageExchange>>(Extensions.TryGetRedirectHistory, RedirectingHandler.RedirectHistoryKey);
         }
 
         [Fact]
         public void TryGetRedirectHistory_WithNoValue_ReturnsFalse()
         {
-            TryGetHttpRequestMessageProperty_WithNoValue_ReturnsFalse<IEnumerable<HttpResponseMessage>>(Extensions.TryGetRedirectHistory);
+            TryGetHttpRequestMessageProperty_WithNoValue_ReturnsFalse<IEnumerable<HttpMessageExchange>>(Extensions.TryGetRedirectHistory);
         }
 
         private static void TryGetHttpRequestMessageProperty_WithValue_ReturnsTrue<T>(TryGetHttpRequestMessageProperty<T> get, string key, T expected, object addedValue = null) where T : class
