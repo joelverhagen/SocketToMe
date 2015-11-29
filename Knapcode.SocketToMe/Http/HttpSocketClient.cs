@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Authentication;
@@ -148,8 +147,13 @@ namespace Knapcode.SocketToMe.Http
                     pieces[1] = pieces[1].Substring(1);
                 }
 
-                var headers = HttpHeaderCategories.IsContentHeader(pieces[0]) ? (HttpHeaders)response.Content.Headers : response.Headers;
-                headers.TryAddWithoutValidation(pieces[0], pieces[1]);
+                if (!response.Headers.TryAddWithoutValidation(pieces[0], pieces[1]))
+                {
+                    if (!response.Content.Headers.TryAddWithoutValidation(pieces[0], pieces[1]))
+                    {
+                        throw new InvalidOperationException($"The header '{pieces[0]}' could not be added to the response message or to the response content.");
+                    }
+                }
             }
 
             return response;
