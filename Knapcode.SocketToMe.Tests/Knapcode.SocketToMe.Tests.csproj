@@ -75,7 +75,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Http\Handlers\DecompressingHandlerTests.cs" />
-    <Compile Include="Http\Support\ExtensionsTests.cs" />
     <Compile Include="Http\Handlers\NetworkHandlerTests.cs" />
     <Compile Include="Http\Support\ChunkedStreamTests.cs" />
     <Compile Include="Http\Handlers\RedirectingHandlerTests.cs" />

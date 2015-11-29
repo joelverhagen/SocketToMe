@@ -96,20 +96,6 @@ namespace Knapcode.SocketToMe.Tests.Http
         }
 
         [Fact]
-        public async Task SendAsync_WithDisabledHistory_DoesKeepHistory()
-        {
-            // ARRANGE
-            var client = GetHttpClient(configure: handler => handler.KeepRedirectHistory = false);
-            var request = GetRequest();
-
-            // ACT
-            HttpResponseMessage httpResponseMessage = await client.SendAsync(request);
-
-            // ASSERT
-            httpResponseMessage.RequestMessage.Properties.ContainsKey(RedirectingHandler.RedirectHistoryKey).Should().BeFalse();
-        }
-
-        [Fact]
         public async Task SendAsync_WithContentHeaders_CopiesContentHeaders()
         {
             // ARRANGE
@@ -129,28 +115,6 @@ namespace Knapcode.SocketToMe.Tests.Http
             string[] values = httpResponseMessage.RequestMessage.Content.Headers.GetValues(headerKey).ToArray();
             values.Should().HaveCount(1);
             values.Should().BeEquivalentTo(headerValue);
-        }
-
-        [Fact]
-        public async Task SendAsync_WithRedirects_KeepsHistory()
-        {
-            // ARRANGE
-            const int redirectCount = 5;
-            const HttpStatusCode statusCode = HttpStatusCode.TemporaryRedirect;
-            var client = GetHttpClient(redirectCount: redirectCount, statusCode: statusCode, configure: h => h.KeepRedirectHistory = true);
-            var request = GetRequest();
-
-            // ACT
-            HttpResponseMessage httpResponseMessage = await client.SendAsync(request);
-
-            // ASSERT
-            httpResponseMessage.RequestMessage.Properties.ContainsKey(RedirectingHandler.RedirectHistoryKey).Should().BeTrue();
-            object value = httpResponseMessage.RequestMessage.Properties[RedirectingHandler.RedirectHistoryKey];
-            value.Should().BeAssignableTo<IEnumerable<HttpMessageExchange>>();
-            HttpMessageExchange[] exchanges = ((IEnumerable<HttpMessageExchange>) value).ToArray();
-            exchanges.Should().HaveCount(redirectCount + 1);
-            exchanges.Take(redirectCount).Should().OnlyContain(e => e.Response.StatusCode == statusCode);
-            exchanges.Skip(redirectCount).Take(1).Should().OnlyContain(e => e.Response.StatusCode == HttpStatusCode.OK);
         }
 
         [Fact]
@@ -188,11 +152,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             const int redirectCount = 5;
             const HttpStatusCode statusCode = HttpStatusCode.TemporaryRedirect;
             var events = new List<RedirectEventArgs>();
-            var client = GetHttpClient(redirectCount: redirectCount, statusCode: statusCode, configure: h =>
-            {
-                h.KeepRedirectHistory = true;
-                h.Event += (sender, args) => events.Add(args);
-            });
+            var client = GetHttpClient(redirectCount: redirectCount, statusCode: statusCode, configure: h => h.Event += (sender, args) => events.Add(args));
             var request = GetRequest();
 
             // ACT

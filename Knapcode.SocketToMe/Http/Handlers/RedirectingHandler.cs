@@ -11,9 +11,6 @@ namespace Knapcode.SocketToMe.Http
     /// <summary>A delegating handler that handles HTTP redirects (301, 302, 303, 307, and 308).</summary>
     public class RedirectingHandler : DelegatingHandler
     {
-        /// <summary>The property key used to access the list of responses in <see cref="HttpRequestMessage.Properties" />.</summary>
-        public const string RedirectHistoryKey = "Knapcode.SocketToMe.Http.RedirectingHandler.RedirectHistory";
-
         private static readonly ISet<HttpStatusCode> RedirectStatusCodes = new HashSet<HttpStatusCode>(new[]
         {
             HttpStatusCode.MovedPermanently,
@@ -36,7 +33,6 @@ namespace Knapcode.SocketToMe.Http
             MaxAutomaticRedirections = 50;
             DisableInnerAutoRedirect = true;
             DownloadContentOnRedirect = false;
-            KeepRedirectHistory = false;
         }
 
         /// <summary>Gets or sets a value that indicates whether the handler should follow redirection responses.</summary>
@@ -53,12 +49,6 @@ namespace Knapcode.SocketToMe.Http
         /// <see cref="RedirectingHandler" /> should be disabled.
         /// </summary>
         public bool DisableInnerAutoRedirect { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the response history should be saved to the
-        /// <see cref="HttpResponseMessage.RequestMessage" /> properties with the key of <see cref="RedirectHistoryKey" />.
-        /// </summary>
-        public bool KeepRedirectHistory { get; set; }
 
         public event EventHandler<RedirectEventArgs> Event;
 
@@ -111,7 +101,6 @@ namespace Knapcode.SocketToMe.Http
 
             // send the initial request
             var response = await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
-            var exchanges = new List<HttpMessageExchange>();
 
             var redirectCount = 0;
             string locationString;
@@ -177,12 +166,6 @@ namespace Knapcode.SocketToMe.Http
                     nextRequest.Properties.Add(pair.Key, pair.Value);
                 }
 
-                // keep a history all responses
-                if (KeepRedirectHistory)
-                {
-                    exchanges.Add(new HttpMessageExchange { Request = request, Response = response });
-                }
-
                 exchangId = Guid.NewGuid();
                 InvokeEvent(new RedirectEventArgs(RedirectEventType.RedirectRequest, redirectId, exchangId, request));
 
@@ -194,13 +177,6 @@ namespace Knapcode.SocketToMe.Http
             }
 
             InvokeEvent(new RedirectEventArgs(RedirectEventType.FinalResponse, redirectId, exchangId, response));
-
-            // save the history to the request message properties
-            if (KeepRedirectHistory && response.RequestMessage != null)
-            {
-                exchanges.Add(new HttpMessageExchange { Request = request, Response = response });
-                response.RequestMessage.Properties.Add(RedirectHistoryKey, exchanges);
-            }
 
             return response;
         }

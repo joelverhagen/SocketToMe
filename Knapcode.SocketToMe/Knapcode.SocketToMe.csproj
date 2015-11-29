@@ -48,7 +48,6 @@
     </Compile>
     <Compile Include="Http\Handlers\CookieHandler.cs" />
     <Compile Include="Http\Handlers\DecompressingHandler.cs" />
-    <Compile Include="Http\Support\Extensions.cs" />
     <Compile Include="Http\HttpSocketClient.cs" />
     <Compile Include="Http\Handlers\RedirectingHandler.cs" />
     <Compile Include="Support\ByteStreamReader.cs" />
