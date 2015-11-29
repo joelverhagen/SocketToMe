@@ -154,6 +154,66 @@ namespace Knapcode.SocketToMe.Tests.Http
         }
 
         [Fact]
+        public async Task SendAsync_WithDisabledRedirect_EmitsEvents()
+        {
+            // ARRANGE
+            const HttpStatusCode statusCode = HttpStatusCode.TemporaryRedirect;
+            var events = new List<RedirectEventArgs>();
+            var client = GetHttpClient(
+                configure: h =>
+                {
+                    h.AllowAutoRedirect = false;
+                    h.Event += (sender, args) => events.Add(args);
+                },
+                statusCode: statusCode);
+            var request = GetRequest();
+
+            // ACT
+            await client.SendAsync(request);
+
+            // ASSERT
+            events.Should().HaveCount(2);
+            events.First().Type.Should().Be(RedirectEventType.InitialRequest);
+            events.Last().Type.Should().Be(RedirectEventType.FinalResponse);
+            events.Last().RedirectId.Should().Be(events.First().RedirectId);
+            events.Last().ExchangeId.Should().Be(events.First().ExchangeId);
+            events.Should().NotContain(e => e.RedirectId == Guid.Empty);
+            events.Should().NotContain(e => e.ExchangeId == Guid.Empty);
+        }
+
+        [Fact]
+        public async Task SendAsync_WithRedirects_EmitsEvents()
+        {
+            // ARRANGE
+            const int redirectCount = 5;
+            const HttpStatusCode statusCode = HttpStatusCode.TemporaryRedirect;
+            var events = new List<RedirectEventArgs>();
+            var client = GetHttpClient(redirectCount: redirectCount, statusCode: statusCode, configure: h =>
+            {
+                h.KeepRedirectHistory = true;
+                h.Event += (sender, args) => events.Add(args);
+            });
+            var request = GetRequest();
+
+            // ACT
+            await client.SendAsync(request);
+
+            // ASSERT
+            events.Should().HaveCount((redirectCount + 1)*2);
+            events.First().Type.Should().Be(RedirectEventType.InitialRequest);
+            events.Last().Type.Should().Be(RedirectEventType.FinalResponse);
+            events.Where((e, i) => i%2 == 0).Skip(1).Should().OnlyContain(e => e.Type == RedirectEventType.RedirectRequest);
+            events.Where((e, i) => i%2 == 1).Take(redirectCount).Should().OnlyContain(e => e.Type == RedirectEventType.RedirectResponse);
+            events.Should().OnlyContain(e => e.RedirectId == events.First().RedirectId);
+            for (int i = 0; i < events.Count; i += 2)
+            {
+                events[i].ExchangeId.Should().Be(events[i + 1].ExchangeId);
+            }
+            events.Should().NotContain(e => e.RedirectId == Guid.Empty);
+            events.Should().NotContain(e => e.ExchangeId == Guid.Empty);
+        }
+
+        [Fact]
         public async Task SendAsync_WithHeaders_CopiesHeaders()
         {
             // ARRANGE

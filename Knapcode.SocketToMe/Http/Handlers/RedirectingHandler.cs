@@ -49,16 +49,18 @@ namespace Knapcode.SocketToMe.Http
         public bool DownloadContentOnRedirect { get; set; }
 
         /// <summary>
-        ///     Gets or sets a value indicating inner redirections on <see cref="HttpClientHandler" /> and
-        ///     <see cref="RedirectingHandler" /> should be disabled.
+        /// Gets or sets a value indicating inner redirections on <see cref="HttpClientHandler" /> and
+        /// <see cref="RedirectingHandler" /> should be disabled.
         /// </summary>
         public bool DisableInnerAutoRedirect { get; set; }
 
         /// <summary>
-        ///     Gets or sets a value indicating whether the response history should be saved to the
-        ///     <see cref="HttpResponseMessage.RequestMessage" /> properties with the key of <see cref="RedirectHistoryKey" />.
+        /// Gets or sets a value indicating whether the response history should be saved to the
+        /// <see cref="HttpResponseMessage.RequestMessage" /> properties with the key of <see cref="RedirectHistoryKey" />.
         /// </summary>
         public bool KeepRedirectHistory { get; set; }
+
+        public event EventHandler<RedirectEventArgs> Event;
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
@@ -83,6 +85,11 @@ namespace Knapcode.SocketToMe.Http
                     httpClientHandler.AllowAutoRedirect = false;
                 }
             }
+
+            // emit the first event
+            Guid redirectId = Guid.NewGuid();
+            Guid exchangId = Guid.NewGuid();
+            InvokeEvent(new RedirectEventArgs(RedirectEventType.InitialRequest, redirectId, exchangId, request));
 
             // buffer the request body, to allow re-use in redirects
             HttpContent requestBody = null;
@@ -110,6 +117,8 @@ namespace Knapcode.SocketToMe.Http
             string locationString;
             while (AllowAutoRedirect && redirectCount < MaxAutomaticRedirections && TryGetRedirectLocation(response, out locationString))
             {
+                InvokeEvent(new RedirectEventArgs(RedirectEventType.RedirectResponse, redirectId, exchangId, response));
+
                 if (DownloadContentOnRedirect && response.Content != null)
                 {
                     await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
@@ -174,12 +183,17 @@ namespace Knapcode.SocketToMe.Http
                     exchanges.Add(new HttpMessageExchange { Request = request, Response = response });
                 }
 
+                exchangId = Guid.NewGuid();
+                InvokeEvent(new RedirectEventArgs(RedirectEventType.RedirectRequest, redirectId, exchangId, request));
+
                 // send the next request
                 response = await base.SendAsync(nextRequest, cancellationToken).ConfigureAwait(false);
 
                 request = nextRequest;
                 redirectCount++;
             }
+
+            InvokeEvent(new RedirectEventArgs(RedirectEventType.FinalResponse, redirectId, exchangId, response));
 
             // save the history to the request message properties
             if (KeepRedirectHistory && response.RequestMessage != null)
@@ -206,6 +220,11 @@ namespace Knapcode.SocketToMe.Http
 
             location = null;
             return false;
+        }
+
+        private void InvokeEvent(RedirectEventArgs e)
+        {
+            Event?.Invoke(this, e);
         }
     }
 }
