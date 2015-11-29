@@ -13,7 +13,7 @@ namespace Knapcode.SocketToMe.Support
     #>
         public <#=(isAsync ? "async Task<" : "")#>string<#=(isAsync ? ">" : "")#> ReadLine<#=(isAsync ? "Async" : "")#>()
         {
-            <#=(isAsync ? "await " : "")#>EnsureFirstRead<#=(isAsync ? "Async" : "")#>();
+            <#=(isAsync ? "await " : "")#>EnsureFirstRead<#=(isAsync ? "Async" : "")#>()<#=(isAsync ? ".ConfigureAwait(false)" : "")#>;
 
             if (_bufferSize == 0)
             {
@@ -49,7 +49,7 @@ namespace Knapcode.SocketToMe.Support
 
                 if (endPosition == _bufferSize && !lineFinished)
                 {
-                    _bufferSize = <#=(isAsync ? "await " : "")#>_stream.Read<#=(isAsync ? "Async" : "")#>(_buffer, 0, _buffer.Length);
+                    _bufferSize = <#=(isAsync ? "await " : "")#>_stream.Read<#=(isAsync ? "Async" : "")#>(_buffer, 0, _buffer.Length)<#=(isAsync ? ".ConfigureAwait(false)" : "")#>;
                     _position = 0;
                 }
             }
@@ -82,7 +82,7 @@ namespace Knapcode.SocketToMe.Support
 
             if (count != 0)
             {
-                read += <#=(isAsync ? "await " : "")#>_stream.Read<#=(isAsync ? "Async" : "")#>(buffer, offset, count);
+                read += <#=(isAsync ? "await " : "")#>_stream.Read<#=(isAsync ? "Async" : "")#>(buffer, offset, count)<#=(isAsync ? ".ConfigureAwait(false)" : "")#>;
             }
 
             return read;
@@ -92,7 +92,7 @@ namespace Knapcode.SocketToMe.Support
         {
             if (_bufferSize < 0)
             {
-                _bufferSize = <#=(isAsync ? "await " : "")#>_stream.Read<#=(isAsync ? "Async" : "")#>(_buffer, 0, _buffer.Length);
+                _bufferSize = <#=(isAsync ? "await " : "")#>_stream.Read<#=(isAsync ? "Async" : "")#>(_buffer, 0, _buffer.Length)<#=(isAsync ? ".ConfigureAwait(false)" : "")#>;
             }
         }<#=(isAsync ? "" : "\r\n")#>
 <#

@@ -88,7 +88,7 @@ namespace Knapcode.SocketToMe.Http
             HttpContent requestBody = null;
             if (AllowAutoRedirect && request.Content != null)
             {
-                var buffer = await request.Content.ReadAsByteArrayAsync();
+                var buffer = await request.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
                 requestBody = new ByteArrayContent(buffer);
                 foreach (var header in request.Content.Headers)
                 {
@@ -103,7 +103,7 @@ namespace Knapcode.SocketToMe.Http
                 .ToArray();
 
             // send the initial request
-            var response = await base.SendAsync(request, cancellationToken);
+            var response = await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
             var responses = new List<HttpResponseMessage>();
 
             var redirectCount = 0;
@@ -112,7 +112,7 @@ namespace Knapcode.SocketToMe.Http
             {
                 if (DownloadContentOnRedirect && response.Content != null)
                 {
-                    await response.Content.ReadAsByteArrayAsync();
+                    await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
                 }
 
                 if (response.RequestMessage == null)
@@ -175,7 +175,7 @@ namespace Knapcode.SocketToMe.Http
                 }
 
                 // send the next request
-                response = await base.SendAsync(nextRequest, cancellationToken);
+                response = await base.SendAsync(nextRequest, cancellationToken).ConfigureAwait(false);
 
                 request = response.RequestMessage;
                 redirectCount++;

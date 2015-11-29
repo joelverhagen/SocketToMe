@@ -54,7 +54,7 @@ namespace Knapcode.SocketToMe.Http
             }
 
             // get the response
-            var response = await base.SendAsync(request, cancellationToken);
+            var response = await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
 
             // immediately return when the response body is empty or not compressed
             if (response.Content == null || !response.Content.Headers.ContentEncoding.Any())
@@ -63,12 +63,12 @@ namespace Knapcode.SocketToMe.Http
             }
 
             // read the header
-            var responseStream = await response.Content.ReadAsStreamAsync();
+            var responseStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
             var header = new byte[2];
-            var headerLength = await responseStream.ReadAsync(header, 0, 2, cancellationToken);
+            var headerLength = await responseStream.ReadAsync(header, 0, 2, cancellationToken).ConfigureAwait(false);
             if (headerLength == 1)
             {
-                headerLength += await responseStream.ReadAsync(header, 1, 2, cancellationToken);
+                headerLength += await responseStream.ReadAsync(header, 1, 2, cancellationToken).ConfigureAwait(false);
             }
             
             if (headerLength < 2)

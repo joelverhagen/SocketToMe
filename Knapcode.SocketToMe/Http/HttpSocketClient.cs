@@ -29,11 +29,13 @@ namespace Knapcode.SocketToMe.Http
             {
                 var httpsStream = new SslStream(networkStream);
 
-                await httpsStream.AuthenticateAsClientAsync(
-                    request.RequestUri.DnsSafeHost,
-                    new X509CertificateCollection(),
-                    SslProtocols.Ssl3 | SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12,
-                    true);
+                await httpsStream
+                    .AuthenticateAsClientAsync(
+                        request.RequestUri.DnsSafeHost,
+                        new X509CertificateCollection(),
+                        SslProtocols.Ssl3 | SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12,
+                        true)
+                    .ConfigureAwait(false);
 
                 networkStream = httpsStream;
             }
@@ -45,14 +47,14 @@ namespace Knapcode.SocketToMe.Http
         {
             ValidateRequest(request);
 
-            await WriteRequestAsync(stream, request);
+            await WriteRequestAsync(stream, request).ConfigureAwait(false);
         }
 
         public async Task<HttpResponseMessage> ReceiveResponseAsync(Stream stream, HttpRequestMessage request)
         {
             ByteStreamReader reader = new ByteStreamReader(stream, BufferSize, false);
 
-            var response = await ReadResponseHeadAsync(reader, request);
+            var response = await ReadResponseHeadAsync(reader, request).ConfigureAwait(false);
 
             if (!MethodsWithoutResponseBody.Contains(request.Method))
             {
@@ -81,39 +83,39 @@ namespace Knapcode.SocketToMe.Http
             using (var writer = new StreamWriter(stream, new UTF8Encoding(false, true), BufferSize, true))
             {
                 var location = request.Method != ConnectMethod ? request.RequestUri.PathAndQuery : $"{request.RequestUri.DnsSafeHost}:{request.RequestUri.Port}";
-                await writer.WriteLineAsync($"{request.Method.Method} {location} HTTP/{request.Version}");
+                await writer.WriteLineAsync($"{request.Method.Method} {location} HTTP/{request.Version}").ConfigureAwait(false);
                 
                 if (!request.Headers.Contains("Host") && !MethodsWithoutHostHeader.Contains(request.Method))
                 {
-                    await writer.WriteLineAsync($"Host: {request.RequestUri.Host}");
+                    await writer.WriteLineAsync($"Host: {request.RequestUri.Host}").ConfigureAwait(false);
                 }
 
                 foreach (var header in request.Headers)
                 {
-                    await writer.WriteLineAsync(GetHeader(header));
+                    await writer.WriteLineAsync(GetHeader(header)).ConfigureAwait(false);
                 }
 
                 if (request.Content != null && !MethodsWithoutRequestBody.Contains(request.Method))
                 {
-                    bytes = await request.Content.ReadAsByteArrayAsync();
+                    bytes = await request.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
                     request.Content.Headers.ContentLength = bytes.Length;
 
                     foreach (var header in request.Content.Headers)
                     {
-                        await writer.WriteLineAsync(GetHeader(header));
+                        await writer.WriteLineAsync(GetHeader(header)).ConfigureAwait(false);
                     }
                 }
 
-                await writer.WriteLineAsync();
-                await writer.FlushAsync();
+                await writer.WriteLineAsync().ConfigureAwait(false);
+                await writer.FlushAsync().ConfigureAwait(false);
             }
 
             if (bytes != null)
             {
-                await new MemoryStream(bytes).CopyToAsync(stream);
+                await new MemoryStream(bytes).CopyToAsync(stream).ConfigureAwait(false);
             }
 
-            await stream.FlushAsync();
+            await stream.FlushAsync().ConfigureAwait(false);
         }
 
         private string GetHeader(KeyValuePair<string, IEnumerable<string>> header)
@@ -127,7 +129,7 @@ namespace Knapcode.SocketToMe.Http
             var response = new HttpResponseMessage { RequestMessage = request };
 
             // read the first line of the response
-            string line = await reader.ReadLineAsync();
+            string line = await reader.ReadLineAsync().ConfigureAwait(false);
             string[] pieces = line.Split(new[] { ' ' }, 3);
             if (pieces[0] != "HTTP/1.1")
             {
@@ -139,7 +141,7 @@ namespace Knapcode.SocketToMe.Http
 
             // read the headers
             response.Content = new ByteArrayContent(new byte[0]);
-            while ((line = await reader.ReadLineAsync()) != null && line != string.Empty)
+            while ((line = await reader.ReadLineAsync().ConfigureAwait(false)) != null && line != string.Empty)
             {
                 pieces = line.Split(new[] { ":" }, 2, StringSplitOptions.None);
                 if (pieces[1].StartsWith(" "))

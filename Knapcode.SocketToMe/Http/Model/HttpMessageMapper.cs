@@ -63,7 +63,7 @@ namespace Knapcode.SocketToMe.Http
                 Version = request.Version.ToString()
             };
 
-            await MapContentAndHeadersAsync(request.Headers, request.Content, output);
+            await MapContentAndHeadersAsync(request.Headers, request.Content, output).ConfigureAwait(false);
 
             return output;
         }
@@ -77,7 +77,7 @@ namespace Knapcode.SocketToMe.Http
                 ReasonPhrease = response.ReasonPhrase
             };
 
-            await MapContentAndHeadersAsync(response.Headers, response.Content, output);
+            await MapContentAndHeadersAsync(response.Headers, response.Content, output).ConfigureAwait(false);
 
             return output;
         }
@@ -116,7 +116,7 @@ namespace Knapcode.SocketToMe.Http
                     headersList.AddRange(header.Value.Select(value => new KeyValuePair<string, string>(header.Key, value)));
                 }
 
-                httpMessage.Content = await content.ReadAsStreamAsync();
+                httpMessage.Content = await content.ReadAsStreamAsync().ConfigureAwait(false);
             }
 
             httpMessage.Headers = headersList;

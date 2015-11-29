@@ -46,18 +46,18 @@ namespace Knapcode.SocketToMe.Http
             Socket socket;
             if (_getSocketAsync != null)
             {
-                socket = await _getSocketAsync(request);
+                socket = await _getSocketAsync(request).ConfigureAwait(false);
             }
             else
             {
-                socket = await Tcp.ConnectToServerAsync(request.RequestUri.DnsSafeHost, request.RequestUri.Port);
+                socket = await Tcp.ConnectToServerAsync(request.RequestUri.DnsSafeHost, request.RequestUri.Port).ConfigureAwait(false);
             }
 
-            var stream = await _httpSocketClient.GetStreamAsync(socket, request);
+            var stream = await _httpSocketClient.GetStreamAsync(socket, request).ConfigureAwait(false);
 
-            await _httpSocketClient.SendRequestAsync(stream, request);
+            await _httpSocketClient.SendRequestAsync(stream, request).ConfigureAwait(false);
 
-            return await _httpSocketClient.ReceiveResponseAsync(stream, request);
+            return await _httpSocketClient.ReceiveResponseAsync(stream, request).ConfigureAwait(false);
         }
     }
 }

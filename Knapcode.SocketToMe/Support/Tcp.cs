@@ -34,7 +34,7 @@ namespace Knapcode.SocketToMe.Support
         public static async Task<Socket> ConnectToServerAsync(string hostname, int port)
         {
             var tcpClient = new TcpClient();
-            await tcpClient.ConnectAsync(hostname, port);
+            await tcpClient.ConnectAsync(hostname, port).ConfigureAwait(false);
             return tcpClient.Client;
         }
 
@@ -42,7 +42,7 @@ namespace Knapcode.SocketToMe.Support
         {
             ValidateEndpoint(endpoint, addressFamilies);
             var tcpClient = new TcpClient();
-            await tcpClient.ConnectAsync(endpoint.Address, endpoint.Port);
+            await tcpClient.ConnectAsync(endpoint.Address, endpoint.Port).ConfigureAwait(false);
             return tcpClient.Client;
         }
 

@@ -44,7 +44,7 @@ namespace Knapcode.SocketToMe.Http
                 }
             }
 
-            var response = await base.SendAsync(request, cancellationToken);
+            var response = await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
 
             // part the response cookies
             if (CookieContainer != null && response.Headers.Contains(SetCookieKey))

@@ -18,7 +18,7 @@ namespace Knapcode.SocketToMe.Support
                 return read;
             }
 
-            return <#=(isAsync ? "await " : "")#>_innerStream.Read<#=(isAsync ? "Async" : "")#>(buffer, offset, count<#=(isAsync ? ", cancellationToken" : "")#>);
+            return <#=(isAsync ? "await " : "")#>_innerStream.Read<#=(isAsync ? "Async" : "")#>(buffer, offset, count<#=(isAsync ? ", cancellationToken" : "")#>)<#=(isAsync ? ".ConfigureAwait(false)" : "")#>;
         }<#=(isAsync ? "" : "\r\n")#>
 <#
     }

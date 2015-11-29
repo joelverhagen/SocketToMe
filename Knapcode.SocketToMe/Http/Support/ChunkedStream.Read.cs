@@ -35,7 +35,7 @@ namespace Knapcode.SocketToMe.Http
         {
             if (_remaining <= 0)
             {
-                var line = await _byteStreamReader.ReadLineAsync();
+                var line = await _byteStreamReader.ReadLineAsync().ConfigureAwait(false);
                 _chunkSize = (int)Convert.ToUInt32(line, 16);
                 _remaining = _chunkSize;
             }
@@ -44,13 +44,13 @@ namespace Knapcode.SocketToMe.Http
             if(_remaining > 0)
             {
                 int actualCount = Math.Min(count, _remaining);
-                read = await _byteStreamReader.ReadAsync(buffer, offset, actualCount);
+                read = await _byteStreamReader.ReadAsync(buffer, offset, actualCount).ConfigureAwait(false);
                 _remaining -= read;
             }
 
             if (_remaining == 0)
             {
-                await _byteStreamReader.ReadLineAsync();
+                await _byteStreamReader.ReadLineAsync().ConfigureAwait(false);
             }
 
             return read;

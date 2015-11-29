@@ -93,7 +93,7 @@ namespace Knapcode.SocketToMe.Support
 
         public async Task<string> ReadLineAsync()
         {
-            await EnsureFirstReadAsync();
+            await EnsureFirstReadAsync().ConfigureAwait(false);
 
             if (_bufferSize == 0)
             {
@@ -129,7 +129,7 @@ namespace Knapcode.SocketToMe.Support
 
                 if (endPosition == _bufferSize && !lineFinished)
                 {
-                    _bufferSize = await _stream.ReadAsync(_buffer, 0, _buffer.Length);
+                    _bufferSize = await _stream.ReadAsync(_buffer, 0, _buffer.Length).ConfigureAwait(false);
                     _position = 0;
                 }
             }
@@ -162,7 +162,7 @@ namespace Knapcode.SocketToMe.Support
 
             if (count != 0)
             {
-                read += await _stream.ReadAsync(buffer, offset, count);
+                read += await _stream.ReadAsync(buffer, offset, count).ConfigureAwait(false);
             }
 
             return read;
@@ -172,7 +172,7 @@ namespace Knapcode.SocketToMe.Support
         {
             if (_bufferSize < 0)
             {
-                _bufferSize = await _stream.ReadAsync(_buffer, 0, _buffer.Length);
+                _bufferSize = await _stream.ReadAsync(_buffer, 0, _buffer.Length).ConfigureAwait(false);
             }
         }
     }

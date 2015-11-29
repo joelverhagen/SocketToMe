@@ -15,7 +15,7 @@ namespace Knapcode.SocketToMe.Http
         {
             if (_remaining <= 0)
             {
-                var line = <#=(isAsync ? "await " : "")#>_byteStreamReader.ReadLine<#=(isAsync ? "Async" : "")#>();
+                var line = <#=(isAsync ? "await " : "")#>_byteStreamReader.ReadLine<#=(isAsync ? "Async" : "")#>()<#=(isAsync ? ".ConfigureAwait(false)" : "")#>;
                 _chunkSize = (int)Convert.ToUInt32(line, 16);
                 _remaining = _chunkSize;
             }
@@ -24,13 +24,13 @@ namespace Knapcode.SocketToMe.Http
             if(_remaining > 0)
             {
                 int actualCount = Math.Min(count, _remaining);
-                read = <#=(isAsync ? "await " : "")#>_byteStreamReader.Read<#=(isAsync ? "Async" : "")#>(buffer, offset, actualCount);
+                read = <#=(isAsync ? "await " : "")#>_byteStreamReader.Read<#=(isAsync ? "Async" : "")#>(buffer, offset, actualCount)<#=(isAsync ? ".ConfigureAwait(false)" : "")#>;
                 _remaining -= read;
             }
 
             if (_remaining == 0)
             {
-                <#=(isAsync ? "await " : "")#>_byteStreamReader.ReadLine<#=(isAsync ? "Async" : "")#>();
+                <#=(isAsync ? "await " : "")#>_byteStreamReader.ReadLine<#=(isAsync ? "Async" : "")#>()<#=(isAsync ? ".ConfigureAwait(false)" : "")#>;
             }
 
             return read;

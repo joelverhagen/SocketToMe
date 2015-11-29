@@ -19,7 +19,7 @@ namespace Knapcode.SocketToMe.Support
                 return 0;
             }
 
-            var read = <#=(isAsync ? "await " : "")#>_innerStream.Read<#=(isAsync ? "Async" : "")#>(buffer, offset, limitedCount<#=(isAsync ? ", cancellationToken" : "")#>);
+            var read = <#=(isAsync ? "await " : "")#>_innerStream.Read<#=(isAsync ? "Async" : "")#>(buffer, offset, limitedCount<#=(isAsync ? ", cancellationToken" : "")#>)<#=(isAsync ? ".ConfigureAwait(false)" : "")#>;
             _length -= read;
             return read;
         }<#=(isAsync ? "" : "\r\n")#>
