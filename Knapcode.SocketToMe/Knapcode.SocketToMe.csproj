@@ -34,6 +34,9 @@
     <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Http\Model\HttpMessageMapper.cs" />
+    <Compile Include="Http\Model\HttpRequest.cs" />
+    <Compile Include="Http\Model\HttpResponse.cs" />
     <Compile Include="Http\Support\ChunkedStream.cs" />
     <Compile Include="Http\Support\ChunkedStream.Read.cs">
       <AutoGen>True</AutoGen>
