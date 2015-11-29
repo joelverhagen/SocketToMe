@@ -74,12 +74,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Http\DecompressingHandlerTests.cs" />
+    <Compile Include="Http\Handlers\DecompressingHandlerTests.cs" />
     <Compile Include="Http\ExtensionsTests.cs" />
-    <Compile Include="Http\NetworkHandlerTests.cs" />
+    <Compile Include="Http\Handlers\NetworkHandlerTests.cs" />
     <Compile Include="Http\ChunkedStreamTests.cs" />
-    <Compile Include="Http\RedirectingHandlerTests.cs" />
-    <Compile Include="Http\CookieHandlerTests.cs" />
+    <Compile Include="Http\Handlers\RedirectingHandlerTests.cs" />
+    <Compile Include="Http\Handlers\CookieHandlerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Support\ByteStreamReaderTests.cs" />
     <Compile Include="Support\PartiallyBufferedStreamTests.cs" />

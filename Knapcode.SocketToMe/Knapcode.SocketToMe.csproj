@@ -34,20 +34,20 @@
     <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Http\ChunkedStream.cs" />
-    <Compile Include="Http\ChunkedStream.Read.cs">
+    <Compile Include="Http\Support\ChunkedStream.cs" />
+    <Compile Include="Http\Support\ChunkedStream.Read.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>ChunkedStream.Read.tt</DependentUpon>
     </Compile>
-    <Compile Include="Http\CookieHandler.cs" />
-    <Compile Include="Http\DecompressingHandler.cs" />
-    <Compile Include="Http\Extensions.cs" />
-    <Compile Include="Http\HttpHeaderCategories.cs" />
+    <Compile Include="Http\Handlers\CookieHandler.cs" />
+    <Compile Include="Http\Handlers\DecompressingHandler.cs" />
+    <Compile Include="Http\Support\Extensions.cs" />
+    <Compile Include="Http\Support\HttpHeaderCategories.cs" />
     <Compile Include="Http\HttpSocketClient.cs" />
-    <Compile Include="Http\RedirectingHandler.cs" />
+    <Compile Include="Http\Handlers\RedirectingHandler.cs" />
     <Compile Include="Support\ByteStreamReader.cs" />
-    <Compile Include="Http\NetworkHandler.cs" />
+    <Compile Include="Http\Handlers\NetworkHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Socks\Socks4Client.cs" />
     <Compile Include="Socks\Socks5Client.cs" />
@@ -74,7 +74,7 @@
     <None Include="Knapcode.SocketToMe.nuspec" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Http\ChunkedStream.Read.tt">
+    <None Include="Http\Support\ChunkedStream.Read.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>ChunkedStream.Read.cs</LastGenOutput>
     </None>
