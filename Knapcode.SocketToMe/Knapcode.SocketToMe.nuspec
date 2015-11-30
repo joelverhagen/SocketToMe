@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Knapcode.SocketToMe</id>
-    <version>0.6.2</version>
+    <version>0.7.0</version>
     <title>Knapcode.SocketToMe</title>
     <authors>Joel Verhagen</authors>
     <licenseUrl>https://raw.githubusercontent.com/joelverhagen/SocketToMe/master/LICENSE</licenseUrl>
@@ -10,6 +10,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Fun with sockets in C#.</description>
     <releaseNotes>
+* 0.7.0 Add LoggingHandler and remove redirect history.
 * 0.6.2 Add .ConfigureAwait(false) to library awaits.
 * 0.6.1 Fix RedirectingHandler on Mono.
 * 0.6.0 Add support for HTTP CONNECT and have better SSL protocol support.
