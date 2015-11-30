@@ -34,8 +34,10 @@
     <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Http\Support\IHttpMessageLogger.cs" />
+    <Compile Include="Http\Handlers\LoggingHandler.cs" />
     <Compile Include="Http\Model\HttpExchange.cs" />
-    <Compile Include="Http\Model\HttpMessageMapper.cs" />
+    <Compile Include="Http\Support\HttpMessageMapper.cs" />
     <Compile Include="Http\Model\HttpMessageExchange.cs" />
     <Compile Include="Http\Model\HttpRequest.cs" />
     <Compile Include="Http\Model\HttpResponse.cs" />
