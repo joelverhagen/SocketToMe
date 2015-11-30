@@ -50,8 +50,6 @@ namespace Knapcode.SocketToMe.Http
         /// </summary>
         public bool DisableInnerAutoRedirect { get; set; }
 
-        public event EventHandler<RedirectEventArgs> Event;
-
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             if (DisableInnerAutoRedirect)
@@ -75,11 +73,6 @@ namespace Knapcode.SocketToMe.Http
                     httpClientHandler.AllowAutoRedirect = false;
                 }
             }
-
-            // emit the first event
-            Guid redirectId = Guid.NewGuid();
-            Guid exchangId = Guid.NewGuid();
-            InvokeEvent(new RedirectEventArgs(RedirectEventType.InitialRequest, redirectId, exchangId, request));
 
             // buffer the request body, to allow re-use in redirects
             HttpContent requestBody = null;
@@ -106,8 +99,6 @@ namespace Knapcode.SocketToMe.Http
             string locationString;
             while (AllowAutoRedirect && redirectCount < MaxAutomaticRedirections && TryGetRedirectLocation(response, out locationString))
             {
-                InvokeEvent(new RedirectEventArgs(RedirectEventType.RedirectResponse, redirectId, exchangId, response));
-
                 if (DownloadContentOnRedirect && response.Content != null)
                 {
                     await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
@@ -166,17 +157,12 @@ namespace Knapcode.SocketToMe.Http
                     nextRequest.Properties.Add(pair.Key, pair.Value);
                 }
 
-                exchangId = Guid.NewGuid();
-                InvokeEvent(new RedirectEventArgs(RedirectEventType.RedirectRequest, redirectId, exchangId, request));
-
                 // send the next request
                 response = await base.SendAsync(nextRequest, cancellationToken).ConfigureAwait(false);
 
                 request = nextRequest;
                 redirectCount++;
             }
-
-            InvokeEvent(new RedirectEventArgs(RedirectEventType.FinalResponse, redirectId, exchangId, response));
 
             return response;
         }
@@ -196,11 +182,6 @@ namespace Knapcode.SocketToMe.Http
 
             location = null;
             return false;
-        }
-
-        private void InvokeEvent(RedirectEventArgs e)
-        {
-            Event?.Invoke(this, e);
         }
     }
 }

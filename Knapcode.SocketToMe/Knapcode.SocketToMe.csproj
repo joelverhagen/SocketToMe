@@ -34,7 +34,6 @@
     <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Http\Model\RedirectEventArgs.cs" />
     <Compile Include="Http\Model\HttpExchange.cs" />
     <Compile Include="Http\Model\HttpMessageMapper.cs" />
     <Compile Include="Http\Model\HttpMessageExchange.cs" />
