@@ -77,6 +77,7 @@
     <Compile Include="Http\Handlers\DecompressingHandlerTests.cs" />
     <Compile Include="Http\Handlers\LoggingHandlerTests.cs" />
     <Compile Include="Http\Handlers\NetworkHandlerTests.cs" />
+    <Compile Include="Http\Mapping\HttpMessageMapperTests.cs" />
     <Compile Include="Http\Support\ChunkedStreamTests.cs" />
     <Compile Include="Http\Handlers\RedirectingHandlerTests.cs" />
     <Compile Include="Http\Handlers\CookieHandlerTests.cs" />

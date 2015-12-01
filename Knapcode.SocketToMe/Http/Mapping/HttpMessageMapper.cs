@@ -84,7 +84,11 @@ namespace Knapcode.SocketToMe.Http
 
         private HttpContent MapContentAndHeaders(IHttpMessage message, HttpHeaders httpHeaders, string responseOrRequest)
         {
-            var contentHeaders = message.Headers.Where(pair => !httpHeaders.TryAddWithoutValidation(pair.Key, pair.Value)).ToArray();
+            var contentHeaders = message
+                .Headers?
+                .Where(pair => !httpHeaders.TryAddWithoutValidation(pair.Key, pair.Value))
+                .ToArray() ?? Enumerable.Empty<KeyValuePair<string, string>>();
+
             HttpContent content = null;
             if (message.Content != null)
             {
