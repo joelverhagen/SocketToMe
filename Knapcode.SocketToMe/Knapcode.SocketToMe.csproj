@@ -34,6 +34,7 @@
     <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Http\Serializing\BlobStoreEntry.cs" />
     <Compile Include="Http\Serializing\FileSystemBlobStore.cs" />
     <Compile Include="Http\Serializing\IBlobStore.cs" />
     <Compile Include="Http\Support\IHttpMessageLogger.cs" />
