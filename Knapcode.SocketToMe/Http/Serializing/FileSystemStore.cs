@@ -1,19 +1,20 @@
 ﻿using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Knapcode.SocketToMe.Http
 {
-    public class FileSystemBlobStore : IBlobStore
+    public class FileSystemStore : IStore
     {
         private const int BufferSize = 4096;
         private readonly string _directory;
 
-        public FileSystemBlobStore(string directory)
+        public FileSystemStore(string directory)
         {
             _directory = directory;
         }
 
-        public Task<Stream> GetAsync(string key)
+        public Task<Stream> GetAsync(string key, CancellationToken cancellationToken)
         {
             var path = GetPath(key);
             try
@@ -31,12 +32,12 @@ namespace Knapcode.SocketToMe.Http
             }
         }
 
-        public async Task SetAsync(string key, Stream stream)
+        public async Task SetAsync(string key, Stream stream, CancellationToken cancellationToken)
         {
             var path = GetPath(key);
             using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.Write, BufferSize, FileOptions.Asynchronous))
             {
-                await stream.CopyToAsync(fileStream, BufferSize);
+                await stream.CopyToAsync(fileStream, BufferSize, cancellationToken);
             }
         }
 
