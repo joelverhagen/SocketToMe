@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Knapcode.SocketToMe.Http;
@@ -69,7 +70,7 @@ namespace Knapcode.SocketToMe.Tests.Http.Mapping
             var mapper = new HttpMessageMapper();
 
             // ACT
-            var output = await mapper.ToHttpRequestAsync(input);
+            var output = await mapper.ToHttpRequestAsync(input, CancellationToken.None);
 
             // ASSERT
             output.Method.Should().Be("GET");
@@ -94,7 +95,7 @@ namespace Knapcode.SocketToMe.Tests.Http.Mapping
             var mapper = new HttpMessageMapper();
 
             // ACT
-            var output = await mapper.ToHttpResponseAsync(input);
+            var output = await mapper.ToHttpResponseAsync(input, CancellationToken.None);
 
             // ASSERT
             output.Version.Should().Be("1.1");
@@ -154,7 +155,7 @@ namespace Knapcode.SocketToMe.Tests.Http.Mapping
             var mapper = new HttpMessageMapper();
 
             // ACT
-            var output = await mapper.ToHttpRequestAsync(input);
+            var output = await mapper.ToHttpRequestAsync(input, CancellationToken.None);
 
             // ASSERT
             output.Content.Should().BeNull();
@@ -173,7 +174,7 @@ namespace Knapcode.SocketToMe.Tests.Http.Mapping
             var mapper = new HttpMessageMapper();
 
             // ACT
-            var output = await mapper.ToHttpResponseAsync(input);
+            var output = await mapper.ToHttpResponseAsync(input, CancellationToken.None);
 
             // ASSERT
             output.Content.Should().BeNull();

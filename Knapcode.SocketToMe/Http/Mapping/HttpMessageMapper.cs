@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Knapcode.SocketToMe.Http
@@ -20,8 +21,8 @@ namespace Knapcode.SocketToMe.Http
     {
         HttpRequestMessage ToHttpRequestMessage(HttpRequest request);
         HttpResponseMessage ToHttpResponseMessage(HttpResponse response);
-        Task<HttpRequest> ToHttpRequestAsync(HttpRequestMessage request);
-        Task<HttpResponse> ToHttpResponseAsync(HttpResponseMessage response);
+        Task<HttpRequest> ToHttpRequestAsync(HttpRequestMessage request, CancellationToken cancellationToken);
+        Task<HttpResponse> ToHttpResponseAsync(HttpResponseMessage response, CancellationToken cancellationToken);
     }
 
     public class HttpMessageMapper : IHttpMessageMapper
@@ -54,7 +55,7 @@ namespace Knapcode.SocketToMe.Http
             return output;
         }
 
-        public async Task<HttpRequest> ToHttpRequestAsync(HttpRequestMessage request)
+        public async Task<HttpRequest> ToHttpRequestAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             var output = new HttpRequest
             {
@@ -68,7 +69,7 @@ namespace Knapcode.SocketToMe.Http
             return output;
         }
 
-        public async Task<HttpResponse> ToHttpResponseAsync(HttpResponseMessage response)
+        public async Task<HttpResponse> ToHttpResponseAsync(HttpResponseMessage response, CancellationToken cancellationToken)
         {
             var output = new HttpResponse
             {
