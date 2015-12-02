@@ -40,7 +40,6 @@
     <Compile Include="Http\Serializing\HttpMessageStoreLogger.cs" />
     <Compile Include="Http\Serializing\IStore.cs" />
     <Compile Include="Http\Serializing\IHttpMessageSerializer.cs" />
-    <Compile Include="Http\Serializing\XmlHttpMessageSerializer.cs" />
     <Compile Include="Http\Support\IHttpMessageLogger.cs" />
     <Compile Include="Http\Handlers\LoggingHandler.cs" />
     <Compile Include="Http\Mapping\HttpExchange.cs" />
