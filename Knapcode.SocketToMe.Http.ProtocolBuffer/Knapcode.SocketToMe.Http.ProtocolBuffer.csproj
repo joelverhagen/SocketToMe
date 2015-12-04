@@ -42,6 +42,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HttpMessageLogger.cs" />
+    <Compile Include="HttpMessageStore.cs" />
+    <Compile Include="HttpResponseMessageOrException.cs" />
+    <Compile Include="HttpResponseOrException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

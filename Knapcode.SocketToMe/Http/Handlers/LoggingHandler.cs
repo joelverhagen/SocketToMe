@@ -7,16 +7,26 @@ namespace Knapcode.SocketToMe.Http
 {
     public class LoggingHandler : DelegatingHandler
     {
+        public const string ExchangeIdPropertyKey = "Knapcode.SocketToMe.Http.LoggingHandler.ExchangeId";
         private readonly IHttpMessageLogger _logger;
 
         public LoggingHandler(IHttpMessageLogger logger)
         {
             _logger = logger;
+            StoreExchangeId = true;
         }
+
+        public bool StoreExchangeId { get; set; }
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             Guid exchangeId = Guid.NewGuid();
+
+            if (StoreExchangeId)
+            {
+                request.Properties[ExchangeIdPropertyKey] = exchangeId;
+            }
+
             await _logger.LogAsync(exchangeId, request, cancellationToken).ConfigureAwait(false);
 
             HttpResponseMessage response;

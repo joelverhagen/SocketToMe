@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 using Knapcode.SocketToMe.Http;
 using Knapcode.SocketToMe.Http.ProtocolBuffer;
@@ -128,21 +128,19 @@ namespace Knapcode.SocketToMe.Sandbox
             Directory.CreateDirectory(storeDirectory);
 
             var networkHandler = new NetworkHandler();
-            var logger = new HttpMessageLogger(new FileSystemStore(storeDirectory), new HttpMessageMapper());
+            var messageStore = new HttpMessageStore(new FileSystemStore(storeDirectory), new HttpMessageMapper());
+            var logger = new HttpMessageLogger(messageStore);
             var loggingHandler = new LoggingHandler(logger) { InnerHandler = networkHandler };
-
             using (var httpClient = new HttpClient(loggingHandler))
             {
-                var requestContent = new FormUrlEncodedContent(new Dictionary<string, string> {{"foo", "1"}, {"bar", "2"}});
-                var responseFromPost = await httpClient.PostAsync("http://httpbin.org/post", requestContent);
-                var contentFromPost = await responseFromPost.Content.ReadAsStringAsync();
-                Console.WriteLine("POST response:");
-                Console.WriteLine(contentFromPost);
+                var responseFromClient = httpClient.GetAsync("http://httpbin.org/ip").Result;
+                Console.WriteLine("Response from client:");
+                Console.WriteLine(await responseFromClient.Content.ReadAsStringAsync());
 
-                var responseFromGet = httpClient.GetAsync("http://httpbin.org/ip").Result;
-                var contentFromGet = await responseFromGet.Content.ReadAsStringAsync();
-                Console.WriteLine("GET1 response:");
-                Console.WriteLine(contentFromGet);
+                Guid exchangeId = responseFromClient.RequestMessage.GetExchangeId();
+                var responseOrExceptionFromStore = await messageStore.GetResponseOrExceptionAsync(exchangeId, CancellationToken.None);
+                Console.WriteLine("Response from store:");
+                Console.WriteLine(await responseOrExceptionFromStore.Response.Content.ReadAsStringAsync());
             }
         }
     }
