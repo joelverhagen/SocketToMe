@@ -11,15 +11,15 @@ namespace Knapcode.SocketToMe.Http
 {
     public interface IHttpMessageMapper
     {
-        HttpRequestMessage ToHttpRequestMessage(HttpRequest request);
-        HttpResponseMessage ToHttpResponseMessage(HttpResponse response);
-        Task<HttpRequest> ToHttpRequestAsync(HttpRequestMessage request, CancellationToken cancellationToken);
-        Task<HttpResponse> ToHttpResponseAsync(HttpResponseMessage response, CancellationToken cancellationToken);
+        HttpRequestMessage ToHttpMessage(HttpRequest request);
+        HttpResponseMessage ToHttpMessage(HttpResponse response);
+        Task<HttpRequest> ToHttpAsync(HttpRequestMessage request, CancellationToken cancellationToken);
+        Task<HttpResponse> ToHttpAsync(HttpResponseMessage response, CancellationToken cancellationToken);
     }
 
     public class HttpMessageMapper : IHttpMessageMapper
     {
-        public HttpRequestMessage ToHttpRequestMessage(HttpRequest request)
+        public HttpRequestMessage ToHttpMessage(HttpRequest request)
         {
             var output = new HttpRequestMessage
             {
@@ -33,7 +33,7 @@ namespace Knapcode.SocketToMe.Http
             return output;
         }
 
-        public HttpResponseMessage ToHttpResponseMessage(HttpResponse response)
+        public HttpResponseMessage ToHttpMessage(HttpResponse response)
         {
             var output = new HttpResponseMessage
             {
@@ -47,7 +47,7 @@ namespace Knapcode.SocketToMe.Http
             return output;
         }
 
-        public async Task<HttpRequest> ToHttpRequestAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        public async Task<HttpRequest> ToHttpAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             var output = new HttpRequest
             {
@@ -61,7 +61,7 @@ namespace Knapcode.SocketToMe.Http
             return output;
         }
 
-        public async Task<HttpResponse> ToHttpResponseAsync(HttpResponseMessage response, CancellationToken cancellationToken)
+        public async Task<HttpResponse> ToHttpAsync(HttpResponseMessage response, CancellationToken cancellationToken)
         {
             var output = new HttpResponse
             {

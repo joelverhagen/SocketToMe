@@ -48,10 +48,10 @@ namespace Knapcode.SocketToMe.Http.ProtocolBuffer
             _mapper = mapper;
         }
 
-        public async Task LogRequestAsync(Guid exchangeId, HttpRequestMessage request, CancellationToken cancellationToken)
+        public async Task LogAsync(Guid exchangeId, HttpRequestMessage request, CancellationToken cancellationToken)
         {
             // write the model
-            var model = await _mapper.ToHttpRequestAsync(request, cancellationToken).ConfigureAwait(false);
+            var model = await _mapper.ToHttpAsync(request, cancellationToken).ConfigureAwait(false);
             var modelKey = GetKey(exchangeId, "request");
             await SetModelAsync(modelKey, model, cancellationToken).ConfigureAwait(false);
             
@@ -63,10 +63,10 @@ namespace Knapcode.SocketToMe.Http.ProtocolBuffer
             }
         }
 
-        public async Task LogResponseAsync(Guid exchangeId, HttpResponseMessage response, CancellationToken cancellationToken)
+        public async Task LogAsync(Guid exchangeId, HttpResponseMessage response, CancellationToken cancellationToken)
         {
             // write the model
-            var model = await _mapper.ToHttpResponseAsync(response, cancellationToken).ConfigureAwait(false);
+            var model = await _mapper.ToHttpAsync(response, cancellationToken).ConfigureAwait(false);
             var modelKey = GetKey(exchangeId, "response");
             await SetModelAsync(modelKey, model, cancellationToken).ConfigureAwait(false);
 
@@ -78,7 +78,7 @@ namespace Knapcode.SocketToMe.Http.ProtocolBuffer
             }
         }
 
-        public async Task LogExceptionAsync(Guid exchangeId, Exception exception, CancellationToken cancellationToken)
+        public async Task LogAsync(Guid exchangeId, Exception exception, CancellationToken cancellationToken)
         {
             var exceptionString = exception.ToString();
             var modelStream = new MemoryStream(new UTF8Encoding(false).GetBytes(exceptionString));

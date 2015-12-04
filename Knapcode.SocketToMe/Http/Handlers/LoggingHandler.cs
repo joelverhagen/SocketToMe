@@ -17,7 +17,7 @@ namespace Knapcode.SocketToMe.Http
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             Guid exchangeId = Guid.NewGuid();
-            await _logger.LogRequestAsync(exchangeId, request, cancellationToken).ConfigureAwait(false);
+            await _logger.LogAsync(exchangeId, request, cancellationToken).ConfigureAwait(false);
 
             HttpResponseMessage response;
             try
@@ -26,11 +26,11 @@ namespace Knapcode.SocketToMe.Http
             }
             catch(Exception e)
             {
-                await _logger.LogExceptionAsync(exchangeId, e, cancellationToken).ConfigureAwait(false);
+                await _logger.LogAsync(exchangeId, e, cancellationToken).ConfigureAwait(false);
                 throw;
             }
             
-            await _logger.LogResponseAsync(exchangeId, response, cancellationToken).ConfigureAwait(false);
+            await _logger.LogAsync(exchangeId, response, cancellationToken).ConfigureAwait(false);
             return response;
         }
     }

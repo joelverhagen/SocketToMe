@@ -25,9 +25,9 @@ namespace Knapcode.SocketToMe.Tests.Http.Handlers
 
             // ASSERT
             response.Should().BeSameAs(ts.Response);
-            ts.Logger.Verify(x => x.LogRequestAsync(It.Is<Guid>(g => g != Guid.Empty), ts.Request, It.IsAny<CancellationToken>()), Times.Once);
-            ts.Logger.Verify(x => x.LogExceptionAsync(It.IsAny<Guid>(), It.IsAny<Exception>(), It.IsAny<CancellationToken>()), Times.Never);
-            ts.Logger.Verify(x => x.LogResponseAsync(It.Is<Guid>(g => g != Guid.Empty), ts.Response, It.IsAny<CancellationToken>()), Times.Once);
+            ts.Logger.Verify(x => x.LogAsync(It.Is<Guid>(g => g != Guid.Empty), ts.Request, It.IsAny<CancellationToken>()), Times.Once);
+            ts.Logger.Verify(x => x.LogAsync(It.IsAny<Guid>(), It.IsAny<Exception>(), It.IsAny<CancellationToken>()), Times.Never);
+            ts.Logger.Verify(x => x.LogAsync(It.Is<Guid>(g => g != Guid.Empty), ts.Response, It.IsAny<CancellationToken>()), Times.Once);
             ts.ExchangeIds.Should().HaveCount(2);
             ts.ExchangeIds[0].Should().Be(ts.ExchangeIds[1]);
         }
@@ -42,9 +42,9 @@ namespace Knapcode.SocketToMe.Tests.Http.Handlers
 
             // ACT, ASSERT
             actionAsync.ShouldThrow<Exception>().Which.Should().BeSameAs(ts.Exception);
-            ts.Logger.Verify(x => x.LogRequestAsync(It.Is<Guid>(g => g != Guid.Empty), ts.Request, It.IsAny<CancellationToken>()), Times.Once);
-            ts.Logger.Verify(x => x.LogExceptionAsync(It.Is<Guid>(g => g != Guid.Empty), ts.Exception, It.IsAny<CancellationToken>()), Times.Once);
-            ts.Logger.Verify(x => x.LogResponseAsync(It.IsAny<Guid>(), It.IsAny<HttpResponseMessage>(), It.IsAny<CancellationToken>()), Times.Never);
+            ts.Logger.Verify(x => x.LogAsync(It.Is<Guid>(g => g != Guid.Empty), ts.Request, It.IsAny<CancellationToken>()), Times.Once);
+            ts.Logger.Verify(x => x.LogAsync(It.Is<Guid>(g => g != Guid.Empty), ts.Exception, It.IsAny<CancellationToken>()), Times.Once);
+            ts.Logger.Verify(x => x.LogAsync(It.IsAny<Guid>(), It.IsAny<HttpResponseMessage>(), It.IsAny<CancellationToken>()), Times.Never);
             ts.ExchangeIds.Should().HaveCount(2);
             ts.ExchangeIds[0].Should().Be(ts.ExchangeIds[1]);
         }
@@ -65,15 +65,15 @@ namespace Knapcode.SocketToMe.Tests.Http.Handlers
 
                 // setup
                 Logger
-                    .Setup(x => x.LogRequestAsync(It.IsAny<Guid>(), It.IsAny<HttpRequestMessage>(), It.IsAny<CancellationToken>()))
+                    .Setup(x => x.LogAsync(It.IsAny<Guid>(), It.IsAny<HttpRequestMessage>(), It.IsAny<CancellationToken>()))
                     .Returns(Task.FromResult((object)null))
                     .Callback<Guid, HttpRequestMessage, CancellationToken>((e, m, c) => ExchangeIds.Add(e));
                 Logger
-                    .Setup(x => x.LogExceptionAsync(It.IsAny<Guid>(), It.IsAny<Exception>(), It.IsAny<CancellationToken>()))
+                    .Setup(x => x.LogAsync(It.IsAny<Guid>(), It.IsAny<Exception>(), It.IsAny<CancellationToken>()))
                     .Returns(Task.FromResult((object)null))
                     .Callback<Guid, Exception, CancellationToken>((e, m, c) => ExchangeIds.Add(e));
                 Logger
-                    .Setup(x => x.LogResponseAsync(It.IsAny<Guid>(), It.IsAny<HttpResponseMessage>(), It.IsAny<CancellationToken>()))
+                    .Setup(x => x.LogAsync(It.IsAny<Guid>(), It.IsAny<HttpResponseMessage>(), It.IsAny<CancellationToken>()))
                     .Returns(Task.FromResult((object)null))
                     .Callback<Guid, HttpResponseMessage, CancellationToken>((e, m, c) => ExchangeIds.Add(e));
 
