@@ -37,7 +37,7 @@ namespace Knapcode.SocketToMe.Http
             var path = GetPath(key);
             using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.Write, BufferSize, FileOptions.Asynchronous))
             {
-                await stream.CopyToAsync(fileStream, BufferSize, cancellationToken);
+                await stream.CopyToAsync(fileStream, BufferSize, cancellationToken).ConfigureAwait(false);
             }
         }
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -10,13 +9,6 @@ using System.Threading.Tasks;
 
 namespace Knapcode.SocketToMe.Http
 {
-    public interface IHttpMessage
-    {
-        string Version { get; set; }
-        IEnumerable<KeyValuePair<string, string>> Headers { get; set; }
-        Stream Content { get; set; }
-    }
-
     public interface IHttpMessageMapper
     {
         HttpRequestMessage ToHttpRequestMessage(HttpRequest request);
@@ -87,8 +79,8 @@ namespace Knapcode.SocketToMe.Http
         {
             var contentHeaders = message
                 .Headers?
-                .Where(pair => !httpHeaders.TryAddWithoutValidation(pair.Key, pair.Value))
-                .ToArray() ?? Enumerable.Empty<KeyValuePair<string, string>>();
+                .Where(pair => !httpHeaders.TryAddWithoutValidation(pair.Name, pair.Value))
+                .ToArray() ?? Enumerable.Empty<HttpHeader>();
 
             HttpContent content = null;
             if (message.Content != null)
@@ -96,9 +88,9 @@ namespace Knapcode.SocketToMe.Http
                 content = new StreamContent(message.Content);
                 foreach (var header in contentHeaders)
                 {
-                    if (!content.Headers.TryAddWithoutValidation(header.Key, header.Value))
+                    if (!content.Headers.TryAddWithoutValidation(header.Name, header.Value))
                     {
-                        throw new InvalidOperationException($"The header '{header.Key}' could not be added to the {responseOrRequest} message or to the {responseOrRequest} content.");
+                        throw new InvalidOperationException($"The header '{header.Name}' could not be added to the {responseOrRequest} message or to the {responseOrRequest} content.");
                     }
                 }
             }
@@ -108,20 +100,25 @@ namespace Knapcode.SocketToMe.Http
 
         private async Task MapContentAndHeadersAsync(HttpHeaders httpHeaders, HttpContent content, IHttpMessage httpMessage)
         {
-            var headersList = new List<KeyValuePair<string, string>>();
+            var headersList = new List<HttpHeader>();
             foreach (var header in httpHeaders)
             {
-                headersList.AddRange(header.Value.Select(value => new KeyValuePair<string, string>(header.Key, value)));
+                headersList.AddRange(header.Value.Select(value => new HttpHeader { Name = header.Key, Value = value }));
             }
 
             if (content != null)
             {
                 foreach (var header in content.Headers)
                 {
-                    headersList.AddRange(header.Value.Select(value => new KeyValuePair<string, string>(header.Key, value)));
+                    headersList.AddRange(header.Value.Select(value => new HttpHeader {Name = header.Key, Value = value}));
                 }
 
+                httpMessage.HasContent = true;
                 httpMessage.Content = await content.ReadAsStreamAsync().ConfigureAwait(false);
+            }
+            else
+            {
+                httpMessage.HasContent = false;
             }
 
             httpMessage.Headers = headersList;

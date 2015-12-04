@@ -79,9 +79,9 @@ namespace Knapcode.SocketToMe.Tests.Http.Mapping
             output.Headers.ShouldBeEquivalentTo(
                 new[]
                 {
-                    new KeyValuePair<string, string>("User-Agent", "HttpMessageMapper/2.0"),
-                    new KeyValuePair<string, string>("Content-Type", "application/json"),
-                    new KeyValuePair<string, string>("Content-Length", "99") 
+                    new HttpHeader { Name = "User-Agent", Value = "HttpMessageMapper/2.0" },
+                    new HttpHeader { Name = "Content-Type", Value = "application/json" },
+                    new HttpHeader { Name = "Content-Length", Value = "99" }
                 },
                 o => o.WithStrictOrdering());
             (await new StreamReader(output.Content).ReadToEndAsync()).Should().Be("foobar");
@@ -104,9 +104,9 @@ namespace Knapcode.SocketToMe.Tests.Http.Mapping
             output.Headers.ShouldBeEquivalentTo(
                 new[]
                 {
-                    new KeyValuePair<string, string>("Server", "HttpMessageMapper/2.0"),
-                    new KeyValuePair<string, string>("Content-Type", "application/json"),
-                    new KeyValuePair<string, string>("Content-Length", "99")
+                    new HttpHeader { Name = "Server", Value = "HttpMessageMapper/2.0" },
+                    new HttpHeader { Name = "Content-Type", Value = "application/json" },
+                    new HttpHeader { Name = "Content-Length", Value = "99" }
                 },
                 o => o.WithStrictOrdering());
             (await new StreamReader(output.Content).ReadToEndAsync()).Should().Be("foobar");
@@ -161,7 +161,7 @@ namespace Knapcode.SocketToMe.Tests.Http.Mapping
             output.Content.Should().BeNull();
             output.Headers.Should().HaveCount(1);
             output.Headers.ShouldBeEquivalentTo(
-                new[] { new KeyValuePair<string, string>("User-Agent", "HttpMessageMapper/2.0") },
+                new[] { new HttpHeader { Name = "User-Agent", Value = "HttpMessageMapper/2.0" } },
                 o => o.WithStrictOrdering());
         }
 
@@ -180,10 +180,9 @@ namespace Knapcode.SocketToMe.Tests.Http.Mapping
             output.Content.Should().BeNull();
             output.Headers.Should().HaveCount(1);
             output.Headers.ShouldBeEquivalentTo(
-                new[] { new KeyValuePair<string, string>("Server", "HttpMessageMapper/2.0") },
+                new[] { new HttpHeader { Name = "Server", Value = "HttpMessageMapper/2.0" } },
                 o => o.WithStrictOrdering());
         }
-
 
         [Fact]
         public void AllowsNullHeadersOnRequest()
@@ -222,11 +221,11 @@ namespace Knapcode.SocketToMe.Tests.Http.Mapping
                 Method = "GET",
                 Url = "http://example/path",
                 Version = "1.1",
-                Headers = new List<KeyValuePair<string, string>>
+                Headers = new List<HttpHeader>
                 {
-                    new KeyValuePair<string, string>("User-Agent", "HttpMessageMapper"),
-                    new KeyValuePair<string, string>("Content-Type", "application/json"),
-                    new KeyValuePair<string, string>("Content-Length", "99")
+                    new HttpHeader { Name = "User-Agent", Value = "HttpMessageMapper" },
+                    new HttpHeader { Name = "Content-Type", Value = "application/json" },
+                    new HttpHeader { Name = "Content-Length", Value = "99" }
                 },
                 Content = new MemoryStream(Encoding.ASCII.GetBytes("foobar"))
             };
@@ -239,11 +238,11 @@ namespace Knapcode.SocketToMe.Tests.Http.Mapping
                 Version = "1.1",
                 StatusCode = 404,
                 ReasonPhrease = "Not Found",
-                Headers = new List<KeyValuePair<string, string>>
+                Headers = new List<HttpHeader>
                 {
-                    new KeyValuePair<string, string>("Server", "HttpMessageMapper"),
-                    new KeyValuePair<string, string>("Content-Type", "application/json"),
-                    new KeyValuePair<string, string>("Content-Length", "99")
+                    new HttpHeader { Name = "Server", Value = "HttpMessageMapper" },
+                    new HttpHeader { Name = "Content-Type", Value = "application/json" },
+                    new HttpHeader { Name = "Content-Length", Value = "99" }
                 },
                 Content = new MemoryStream(Encoding.ASCII.GetBytes("foobar"))
             };

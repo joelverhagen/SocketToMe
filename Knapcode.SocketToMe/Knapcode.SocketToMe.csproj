@@ -35,16 +35,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Http\Mapping\HttpHeader.cs" />
+    <Compile Include="Http\Mapping\IHttpMessage.cs" />
     <Compile Include="Http\Serializing\StoreEntry.cs" />
     <Compile Include="Http\Serializing\FileSystemStore.cs" />
-    <Compile Include="Http\Serializing\HttpMessageStoreLogger.cs" />
     <Compile Include="Http\Serializing\IStore.cs" />
-    <Compile Include="Http\Serializing\IHttpMessageSerializer.cs" />
-    <Compile Include="Http\Support\IHttpMessageLogger.cs" />
+    <Compile Include="Http\Serializing\IHttpMessageLogger.cs" />
     <Compile Include="Http\Handlers\LoggingHandler.cs" />
-    <Compile Include="Http\Mapping\HttpExchange.cs" />
     <Compile Include="Http\Mapping\HttpMessageMapper.cs" />
-    <Compile Include="Http\Support\HttpMessageExchange.cs" />
     <Compile Include="Http\Mapping\HttpRequest.cs" />
     <Compile Include="Http\Mapping\HttpResponse.cs" />
     <Compile Include="Http\Support\ChunkedStream.cs" />

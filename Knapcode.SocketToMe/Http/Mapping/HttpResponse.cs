@@ -8,7 +8,8 @@ namespace Knapcode.SocketToMe.Http
         public string Version { get; set; }
         public int StatusCode { get; set; }
         public string ReasonPhrease { get; set; }
-        public IEnumerable<KeyValuePair<string, string>> Headers { get; set; }
+        public IList<HttpHeader> Headers { get; set; }
+        public bool HasContent { get; set; }
         public Stream Content { get; set; }
     }
 }
