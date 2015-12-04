@@ -154,11 +154,6 @@ namespace Knapcode.SocketToMe.Http.ProtocolBuffer
             return new HttpResponseMessageOrException {Response = response, ExceptionString = null};
         }
 
-        public Task<string> GetExceptionStringAsync(Guid exchangeId, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
         private string GetKey(Guid exchangeId, params string[] inputPieces)
         {
             var allPieces = new[] { exchangeId.ToString("N") }.Concat(inputPieces);
