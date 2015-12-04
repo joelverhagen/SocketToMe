@@ -5,8 +5,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
-using ProtoBuf;
-using ProtoBuf.Meta;
 
 namespace Knapcode.SocketToMe.Http.ProtocolBuffer
 {
@@ -21,44 +19,15 @@ namespace Knapcode.SocketToMe.Http.ProtocolBuffer
 
     public class HttpMessageStore : IHttpMessageStore
     {
-        public static readonly TypeModel TypeModel;
-
-        static HttpMessageStore()
-        {
-            var runtimeTypeModel = TypeModel.Create();
-
-            var headerType = runtimeTypeModel.Add(typeof(HttpHeader), false);
-            headerType.AddField(1, nameof(HttpHeader.Name)).IsRequired = true;
-            headerType.AddField(2, nameof(HttpHeader.Value)).IsRequired = true;
-
-            var requestType = runtimeTypeModel.Add(typeof(HttpRequest), false);
-            requestType.AddField(1, nameof(HttpRequest.Method)).IsRequired = true;
-            requestType.AddField(2, nameof(HttpRequest.Url)).IsRequired = true;
-            requestType.AddField(3, nameof(HttpRequest.Version)).IsRequired = true;
-            requestType.AddField(4, nameof(HttpRequest.Headers)).IsRequired = true;
-            requestType.AddField(5, nameof(HttpRequest.HasContent)).IsRequired = true;
-
-            var responseType = runtimeTypeModel.Add(typeof(HttpResponse), false);
-            responseType.AddField(1, nameof(HttpResponse.Version)).IsRequired = true;
-            responseType.AddField(2, nameof(HttpResponse.StatusCode)).IsRequired = true;
-            responseType.AddField(3, nameof(HttpResponse.ReasonPhrease)).IsRequired = true;
-            responseType.AddField(4, nameof(HttpResponse.Headers)).IsRequired = true;
-            responseType.AddField(5, nameof(HttpResponse.HasContent)).IsRequired = true;
-
-            var responseOrExceptionType = runtimeTypeModel.Add(typeof(HttpResponseOrException), false);
-            responseOrExceptionType.AddField(1, nameof(HttpResponseOrException.Response)).IsRequired = false;
-            responseOrExceptionType.AddField(2, nameof(HttpResponseOrException.ExceptionString)).IsRequired = false;
-
-            TypeModel = runtimeTypeModel.Compile();
-        }
-
         private readonly IStore _store;
         private readonly IHttpMessageMapper _mapper;
+        private readonly IProtocolBufferSerializer _serializer;
 
-        public HttpMessageStore(IStore store, IHttpMessageMapper mapper)
+        public HttpMessageStore(IStore store, IHttpMessageMapper mapper, IProtocolBufferSerializer serializer)
         {
             _store = store;
             _mapper = mapper;
+            _serializer = serializer;
         }
 
         public async Task SetAsync(Guid exchangeId, HttpRequestMessage request, CancellationToken cancellationToken)
@@ -69,7 +38,6 @@ namespace Knapcode.SocketToMe.Http.ProtocolBuffer
             // write the content
             if (storedModel.HasContent)
             {
-                
                 var contentKey = GetRequestContentKey(exchangeId);
                 request.Content = await SetAndGetContentAsync(contentKey, storedModel.Content, request.Content.Headers, cancellationToken).ConfigureAwait(false);
             }
@@ -163,7 +131,7 @@ namespace Knapcode.SocketToMe.Http.ProtocolBuffer
         private async Task SetModelAsync<T>(string key, T model, CancellationToken cancellationToken)
         {
             var modelStream = new MemoryStream();
-            TypeModel.SerializeWithLengthPrefix(modelStream, model, model.GetType(), PrefixStyle.Fixed32BigEndian, -1);
+            _serializer.Serialize(modelStream, model);
             modelStream.Seek(0, SeekOrigin.Begin);
             await _store.SetAsync(key, modelStream, cancellationToken).ConfigureAwait(false);
         }
@@ -176,7 +144,7 @@ namespace Knapcode.SocketToMe.Http.ProtocolBuffer
                 return default(T);
             }
 
-            return (T)TypeModel.DeserializeWithLengthPrefix(modelStream, null, typeof(T), PrefixStyle.Fixed32BigEndian, -1);
+            return _serializer.Deserialize<T>(modelStream);
         }
 
         private async Task<HttpContent> SetAndGetContentAsync(string key, Stream content, HttpHeaders contentHeaders, CancellationToken cancellationToken)

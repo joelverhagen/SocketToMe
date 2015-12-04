@@ -46,6 +46,7 @@
     <Compile Include="HttpResponseMessageOrException.cs" />
     <Compile Include="HttpResponseOrException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ProtocolBufferSerializer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
