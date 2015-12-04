@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using Knapcode.SocketToMe.Http;
+using Knapcode.SocketToMe.Http.ProtocolBuffer;
 using Knapcode.SocketToMe.Socks;
 using Knapcode.SocketToMe.Support;
 using Knapcode.TorSharp;
@@ -39,6 +41,10 @@ namespace Knapcode.SocketToMe.Sandbox
 
             Console.WriteLine("## HTTP CONNECT ##");
             await HttpConnectExampleAsync();
+            Console.WriteLine();
+
+            Console.WriteLine("## SERIALIZER ##");
+            await SerializerExampleAsync();
             Console.WriteLine();
         }
 
@@ -114,6 +120,30 @@ namespace Knapcode.SocketToMe.Sandbox
             var getResponse = await httpSocketClient.ReceiveResponseAsync(getStream, getRequest);
             Console.WriteLine("{0} {1}", (int)getResponse.StatusCode, getResponse.ReasonPhrase);
             Console.WriteLine((await getResponse.Content.ReadAsStringAsync()).Trim());
+        }
+
+        private static async Task SerializerExampleAsync()
+        {
+            var storeDirectory = Path.Combine(Directory.GetCurrentDirectory(), "ProtocolBuffer");
+            Directory.CreateDirectory(storeDirectory);
+
+            var networkHandler = new NetworkHandler();
+            var logger = new ProtocolBufferLogger(new FileSystemStore(storeDirectory), new HttpMessageMapper());
+            var loggingHandler = new LoggingHandler(logger) { InnerHandler = networkHandler };
+
+            using (var httpClient = new HttpClient(loggingHandler))
+            {
+                var requestContent = new FormUrlEncodedContent(new Dictionary<string, string> {{"foo", "1"}, {"bar", "2"}});
+                var responseFromPost = await httpClient.PostAsync("http://httpbin.org/post", requestContent);
+                var contentFromPost = await responseFromPost.Content.ReadAsStringAsync();
+                Console.WriteLine("POST response:");
+                Console.WriteLine(contentFromPost);
+
+                var responseFromGet = httpClient.GetAsync("http://httpbin.org/ip").Result;
+                var contentFromGet = await responseFromGet.Content.ReadAsStringAsync();
+                Console.WriteLine("GET1 response:");
+                Console.WriteLine(contentFromGet);
+            }
         }
     }
 }
