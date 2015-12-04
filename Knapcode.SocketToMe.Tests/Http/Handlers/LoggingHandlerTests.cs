@@ -10,7 +10,7 @@ using Knapcode.SocketToMe.Http;
 using Moq;
 using Xunit;
 
-namespace Knapcode.SocketToMe.Tests.Http.Handlers
+namespace Knapcode.SocketToMe.Tests.Http
 {
     public class LoggingHandlerTests
     {

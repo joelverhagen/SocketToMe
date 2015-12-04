@@ -12,7 +12,7 @@ using FluentAssertions;
 using Knapcode.SocketToMe.Http;
 using Xunit;
 
-namespace Knapcode.SocketToMe.Tests.Http.Mapping
+namespace Knapcode.SocketToMe.Tests.Http
 {
     public class HttpMessageMapperTests
     {

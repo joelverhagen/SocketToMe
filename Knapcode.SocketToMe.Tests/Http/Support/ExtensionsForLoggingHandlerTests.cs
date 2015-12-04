@@ -5,7 +5,7 @@ using FluentAssertions;
 using Knapcode.SocketToMe.Http;
 using Xunit;
 
-namespace Knapcode.SocketToMe.Tests.Http.Support
+namespace Knapcode.SocketToMe.Tests.Http
 {
     public class ExtensionsForLoggingHandlerTests
     {
