@@ -91,13 +91,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Knapcode.SocketToMe.Sandbox\Knapcode.SocketToMe.Sandbox.csproj">
+    <ProjectReference Include="..\SocketToMe.Sandbox\SocketToMe.Sandbox.csproj">
       <Project>{3DD11E6D-DC48-42FD-A7DE-2861FDD98C58}</Project>
-      <Name>Knapcode.SocketToMe.Sandbox</Name>
+      <Name>SocketToMe.Sandbox</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Knapcode.SocketToMe\Knapcode.SocketToMe.csproj">
+    <ProjectReference Include="..\SocketToMe\SocketToMe.csproj">
       <Project>{0AA78D19-E02B-4600-AB98-C05C04DFC2FA}</Project>
-      <Name>Knapcode.SocketToMe</Name>
+      <Name>SocketToMe</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

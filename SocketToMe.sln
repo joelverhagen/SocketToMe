@@ -3,20 +3,20 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Knapcode.SocketToMe.Tests", "Knapcode.SocketToMe.Tests\Knapcode.SocketToMe.Tests.csproj", "{02CFC114-C5C2-495A-8DEC-AF697BD467B2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketToMe.Tests", "SocketToMe.Tests\SocketToMe.Tests.csproj", "{02CFC114-C5C2-495A-8DEC-AF697BD467B2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Knapcode.SocketToMe", "Knapcode.SocketToMe\Knapcode.SocketToMe.csproj", "{0AA78D19-E02B-4600-AB98-C05C04DFC2FA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketToMe", "SocketToMe\SocketToMe.csproj", "{0AA78D19-E02B-4600-AB98-C05C04DFC2FA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{04EE196B-95CE-4618-B425-2605A2253AE8}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Knapcode.SocketToMe.Sandbox", "Knapcode.SocketToMe.Sandbox\Knapcode.SocketToMe.Sandbox.csproj", "{3DD11E6D-DC48-42FD-A7DE-2861FDD98C58}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketToMe.Sandbox", "SocketToMe.Sandbox\SocketToMe.Sandbox.csproj", "{3DD11E6D-DC48-42FD-A7DE-2861FDD98C58}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Knapcode.SocketToMe.Http.ProtocolBuffer", "Knapcode.SocketToMe.Http.ProtocolBuffer\Knapcode.SocketToMe.Http.ProtocolBuffer.csproj", "{958E9799-6935-4EA2-8DEF-F9C548617D59}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketToMe.Http.ProtocolBuffer", "SocketToMe.Http.ProtocolBuffer\SocketToMe.Http.ProtocolBuffer.csproj", "{958E9799-6935-4EA2-8DEF-F9C548617D59}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Knapcode.SocketToMe.Http.ProtocolBuffer.Tests", "Knapcode.SocketToMe.Http.ProtocolBuffer.Tests\Knapcode.SocketToMe.Http.ProtocolBuffer.Tests.csproj", "{447A2954-F5F2-42EB-9E22-C3005D5FE7F8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketToMe.Http.ProtocolBuffer.Tests", "SocketToMe.Http.ProtocolBuffer.Tests\SocketToMe.Http.ProtocolBuffer.Tests.csproj", "{447A2954-F5F2-42EB-9E22-C3005D5FE7F8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,19 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{3DD11E6D-DC48-42FD-A7DE-2861FDD98C58}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{958E9799-6935-4EA2-8DEF-F9C548617D59}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Knapcode.SocketToMe.Sandbox</RootNamespace>
-    <AssemblyName>Knapcode.SocketToMe.Sandbox</AssemblyName>
+    <RootNamespace>Knapcode.SocketToMe.Http.ProtocolBuffer</RootNamespace>
+    <AssemblyName>Knapcode.SocketToMe.Http.ProtocolBuffer</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -23,7 +23,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -32,38 +31,29 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Knapcode.TorSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Knapcode.TorSharp.1.3.1\lib\net45\Knapcode.TorSharp.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="protobuf-net, Version=2.0.0.668, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
       <HintPath>..\packages\protobuf-net.2.0.0.668\lib\net40\protobuf-net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Net.Http.WebRequest" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="HttpMessageLogger.cs" />
+    <Compile Include="HttpMessageStore.cs" />
+    <Compile Include="HttpResponseMessageOrException.cs" />
+    <Compile Include="HttpResponseOrException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Knapcode.SocketToMe.Http.ProtocolBuffer\Knapcode.SocketToMe.Http.ProtocolBuffer.csproj">
-      <Project>{958e9799-6935-4ea2-8def-f9c548617d59}</Project>
-      <Name>Knapcode.SocketToMe.Http.ProtocolBuffer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Knapcode.SocketToMe\Knapcode.SocketToMe.csproj">
-      <Project>{0AA78D19-E02B-4600-AB98-C05C04DFC2FA}</Project>
-      <Name>Knapcode.SocketToMe</Name>
+    <ProjectReference Include="..\SocketToMe\SocketToMe.csproj">
+      <Project>{0aa78d19-e02b-4600-ab98-c05c04dfc2fa}</Project>
+      <Name>SocketToMe</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
