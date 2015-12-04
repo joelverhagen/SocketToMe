@@ -128,7 +128,7 @@ namespace Knapcode.SocketToMe.Sandbox
             Directory.CreateDirectory(storeDirectory);
 
             var networkHandler = new NetworkHandler();
-            var logger = new ProtocolBufferLogger(new FileSystemStore(storeDirectory), new HttpMessageMapper());
+            var logger = new HttpMessageLogger(new FileSystemStore(storeDirectory), new HttpMessageMapper());
             var loggingHandler = new LoggingHandler(logger) { InnerHandler = networkHandler };
 
             using (var httpClient = new HttpClient(loggingHandler))

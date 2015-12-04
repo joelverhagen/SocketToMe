@@ -10,11 +10,11 @@ using ProtoBuf.Meta;
 
 namespace Knapcode.SocketToMe.Http.ProtocolBuffer
 {
-    public class ProtocolBufferLogger : IHttpMessageLogger
+    public class HttpMessageLogger : IHttpMessageLogger
     {
         public static readonly TypeModel TypeModel;
         
-        static ProtocolBufferLogger()
+        static HttpMessageLogger()
         {
             var runtimeTypeModel = TypeModel.Create();
 
@@ -42,7 +42,7 @@ namespace Knapcode.SocketToMe.Http.ProtocolBuffer
         private readonly IStore _store;
         private readonly IHttpMessageMapper _mapper;
 
-        public ProtocolBufferLogger(IStore store, IHttpMessageMapper mapper)
+        public HttpMessageLogger(IStore store, IHttpMessageMapper mapper)
         {
             _store = store;
             _mapper = mapper;
