@@ -409,9 +409,9 @@ namespace Knapcode.SocketToMe.ProtocolBuffer.Tests.Http
             public string ReadStream(Stream stream)
             {
                 var memoryStream = stream.Should().BeOfType<MemoryStream>().Which;
-                memoryStream.Seek(0, SeekOrigin.Begin);
+                var copiedMemoryStream = new MemoryStream(memoryStream.ToArray());
 
-                var reader = new StreamReader(stream, Encoding.UTF8);
+                var reader = new StreamReader(copiedMemoryStream, Encoding.UTF8);
                 return reader.ReadToEnd();
             }
 
