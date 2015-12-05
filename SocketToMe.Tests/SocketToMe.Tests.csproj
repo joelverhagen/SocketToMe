@@ -78,6 +78,7 @@
     <Compile Include="Http\Handlers\LoggingHandlerTests.cs" />
     <Compile Include="Http\Handlers\NetworkHandlerTests.cs" />
     <Compile Include="Http\Mapping\HttpMessageMapperTests.cs" />
+    <Compile Include="Http\Serializing\GzipStoreTests.cs" />
     <Compile Include="Http\Support\ChunkedStreamTests.cs" />
     <Compile Include="Http\Handlers\RedirectingHandlerTests.cs" />
     <Compile Include="Http\Handlers\CookieHandlerTests.cs" />
@@ -88,6 +89,7 @@
     <Compile Include="Support\InvertedStreamTests.cs" />
     <Compile Include="Support\PartiallyBufferedStreamTests.cs" />
     <Compile Include="Support\LimitedStreamTests.cs" />
+    <Compile Include="TestSupport\InMemoryStore.cs" />
     <Compile Include="TestSupport\MapStream.cs" />
   </ItemGroup>
   <ItemGroup>
