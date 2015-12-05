@@ -72,6 +72,7 @@
   <ItemGroup>
     <Compile Include="HttpMessageStoreTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ProtocolBufferSerializerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
