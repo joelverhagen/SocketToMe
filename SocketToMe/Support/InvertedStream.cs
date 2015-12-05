@@ -11,6 +11,8 @@ namespace Knapcode.SocketToMe.Support
     /// </summary>
     public class InvertedStream : Stream
     {
+        private const string NotSupportMessage = "This operation is not supported.";
+
         private readonly BufferStream _bufferStream;
         private readonly bool _leaveOpen;
         private readonly Stream _sourceStream;
@@ -36,13 +38,13 @@ namespace Knapcode.SocketToMe.Support
 
         public override long Length
         {
-            get { throw new NotSupportedException("This operation is not supported."); }
+            get { throw new NotSupportedException(NotSupportMessage); }
         }
 
         public override long Position
         {
-            get { throw new NotSupportedException("This operation is not supported."); }
-            set { throw new NotSupportedException("This operation is not supported."); }
+            get { throw new NotSupportedException(NotSupportMessage); }
+            set { throw new NotSupportedException(NotSupportMessage); }
         }
 
         protected override void Dispose(bool disposing)
@@ -57,17 +59,17 @@ namespace Knapcode.SocketToMe.Support
 
         public override void Flush()
         {
-            throw new NotSupportedException("This operation is not supported.");
+            throw new NotSupportedException(NotSupportMessage);
         }
 
         public override long Seek(long offset, SeekOrigin origin)
         {
-            throw new NotSupportedException("This operation is not supported.");
+            throw new NotSupportedException(NotSupportMessage);
         }
 
         public override void SetLength(long value)
         {
-            throw new NotSupportedException("This operation is not supported.");
+            throw new NotSupportedException(NotSupportMessage);
         }
 
         public override int Read(byte[] buffer, int offset, int count)
@@ -102,7 +104,7 @@ namespace Knapcode.SocketToMe.Support
 
         public override void Write(byte[] buffer, int offset, int count)
         {
-            throw new NotSupportedException("This operation is not supported.");
+            throw new NotSupportedException(NotSupportMessage);
         }
 
         private class BufferStream : MemoryStream
