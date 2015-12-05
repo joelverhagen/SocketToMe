@@ -105,5 +105,31 @@ namespace Knapcode.SocketToMe.Tests.Http
             exchangeId.When.Should().BeOnOrBefore(after);
             exchangeId.Unique.Should().NotBeEmpty();
         }
+
+        [Fact]
+        public void ToAscendingString()
+        {
+            // ARRANGE
+            var before = new ExchangeId(new DateTimeOffset(2000, 1, 1, 0, 0, 0, TimeSpan.Zero), new Guid("DACD1424-DAA5-485B-81A4-E99C2BD66F1E"));
+            var after = new ExchangeId(new DateTimeOffset(2000, 1, 2, 0, 0, 0, TimeSpan.Zero), new Guid("DACD1424-DAA5-485B-81A4-E99C2BD66F1E"));
+
+            // ACT
+            var beforeString = before.ToString("A");
+            var afterString = after.ToString("A");
+            string.Compare(beforeString, afterString, StringComparison.Ordinal).Should().BeNegative();
+        }
+
+        [Fact]
+        public void ToDescendingString()
+        {
+            // ARRANGE
+            var before = new ExchangeId(new DateTimeOffset(2000, 1, 1, 0, 0, 0, TimeSpan.Zero), new Guid("DACD1424-DAA5-485B-81A4-E99C2BD66F1E"));
+            var after = new ExchangeId(new DateTimeOffset(2000, 1, 2, 0, 0, 0, TimeSpan.Zero), new Guid("DACD1424-DAA5-485B-81A4-E99C2BD66F1E"));
+
+            // ACT
+            var beforeString = before.ToString("D");
+            var afterString = after.ToString("D");
+            string.Compare(beforeString, afterString, StringComparison.Ordinal).Should().BePositive();
+        }
     }
 };
