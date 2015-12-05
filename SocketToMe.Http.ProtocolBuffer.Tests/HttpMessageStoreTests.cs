@@ -13,24 +13,130 @@ namespace Knapcode.SocketToMe.Http.ProtocolBuffer.Tests
     public class HttpMessageStoreTests
     {
         [Fact]
-        public async Task Sandbox()
+        public async Task StoresRequestsWithContent()
         {
             // Arrange
             var ts = new TestState();
-            
+            var originalContent = ts.RequestMessage.Content;
+
             // Act
             await ts.Target.SetAsync(ts.ExchangeId, ts.RequestMessage, ts.CancellationToken);
 
             // Assert
             ts.Mapper.Verify(x => x.ToHttpAsync(ts.RequestMessage, ts.CancellationToken), Times.Once);
+
             ts.Store.Verify(x => x.SetAsync($"{ts.ExchangeId:N}-request-content", ts.Request.Content, ts.CancellationToken), Times.Once);
             ts.Store.Verify(x => x.GetAsync($"{ts.ExchangeId:N}-request-content", ts.CancellationToken), Times.Once);
             ts.Store.Verify(x => x.SetAsync($"{ts.ExchangeId:N}-request", It.Is<Stream>(s => ts.MatchingStream(ts.SerializedContent, s)), ts.CancellationToken), Times.Once);
+            ts.Store.Verify(x => x.SetAsync(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
+            ts.Store.Verify(x => x.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Exactly(1));
 
+            ts.Serializer.Verify(x => x.Serialize(It.IsAny<MemoryStream>(), It.Is<HttpRequest>(m => m == ts.Request)), Times.Once);
+            ts.Serializer.Verify(x => x.Serialize(It.IsAny<Stream>(), It.IsAny<HttpResponseOrException>()), Times.Never);
+
+            ts.RequestMessage.Content.Should().NotBe(originalContent);
             (await ts.RequestMessage.Content.ReadAsStringAsync()).Should().Be("store-request");
             ts.RequestMessage.Content.Headers.Should().HaveCount(2);
             ts.RequestMessage.Content.Headers.ContentType.ToString().Should().Be("text/plain");
             ts.RequestMessage.Content.Headers.ContentLength.Should().Be(7);
+        }
+
+        [Fact]
+        public async Task StoresRequestsWithoutContent()
+        {
+            // Arrange
+            var ts = new TestState();
+            ts.RequestMessage.Content = null;
+            ts.Request.HasContent = false;
+
+            // Act
+            await ts.Target.SetAsync(ts.ExchangeId, ts.RequestMessage, ts.CancellationToken);
+
+            // Assert
+            ts.Mapper.Verify(x => x.ToHttpAsync(ts.RequestMessage, ts.CancellationToken), Times.Once);
+            
+            ts.Store.Verify(x => x.SetAsync($"{ts.ExchangeId:N}-request", It.Is<Stream>(s => ts.MatchingStream(ts.SerializedContent, s)), ts.CancellationToken), Times.Once);
+            ts.Store.Verify(x => x.SetAsync(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<CancellationToken>()), Times.Exactly(1));
+            ts.Store.Verify(x => x.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+
+            ts.Serializer.Verify(x => x.Serialize(It.IsAny<MemoryStream>(), It.Is<HttpRequest>(m => m == ts.Request)), Times.Once);
+            ts.Serializer.Verify(x => x.Serialize(It.IsAny<Stream>(), It.IsAny<HttpResponseOrException>()), Times.Never);
+
+            ts.RequestMessage.Content.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task StoresResponsesWithContent()
+        {
+            // Arrange
+            var ts = new TestState();
+            var originalContent = ts.ResponseMessage.Content;
+
+            // Act
+            await ts.Target.SetAsync(ts.ExchangeId, ts.ResponseMessage, ts.CancellationToken);
+
+            // Assert
+            ts.Mapper.Verify(x => x.ToHttpAsync(ts.ResponseMessage, ts.CancellationToken), Times.Once);
+
+            ts.Store.Verify(x => x.SetAsync($"{ts.ExchangeId:N}-response-content", ts.Response.Content, ts.CancellationToken), Times.Once);
+            ts.Store.Verify(x => x.GetAsync($"{ts.ExchangeId:N}-response-content", ts.CancellationToken), Times.Once);
+            ts.Store.Verify(x => x.SetAsync($"{ts.ExchangeId:N}-response", It.Is<Stream>(s => ts.MatchingStream(ts.SerializedContent, s)), ts.CancellationToken), Times.Once);
+            ts.Store.Verify(x => x.SetAsync(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
+            ts.Store.Verify(x => x.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Exactly(1));
+
+            ts.Serializer.Verify(x => x.Serialize(It.IsAny<Stream>(), It.IsAny<HttpRequest>()), Times.Never);
+            ts.Serializer.Verify(x => x.Serialize(It.IsAny<MemoryStream>(), It.Is<HttpResponseOrException>(m => m.Response == ts.Response && m.ExceptionString == null)), Times.Once);
+
+            ts.ResponseMessage.Content.Should().NotBe(originalContent);
+            (await ts.ResponseMessage.Content.ReadAsStringAsync()).Should().Be("store-response");
+            ts.ResponseMessage.Content.Headers.Should().HaveCount(2);
+            ts.ResponseMessage.Content.Headers.ContentType.ToString().Should().Be("text/plain");
+            ts.ResponseMessage.Content.Headers.ContentLength.Should().Be(8);
+        }
+
+        [Fact]
+        public async Task StoresResponsesWithoutContent()
+        {
+            // Arrange
+            var ts = new TestState();
+            ts.ResponseMessage.Content = null;
+            ts.Response.HasContent = false;
+
+            // Act
+            await ts.Target.SetAsync(ts.ExchangeId, ts.ResponseMessage, ts.CancellationToken);
+
+            // Assert
+            ts.Mapper.Verify(x => x.ToHttpAsync(ts.ResponseMessage, ts.CancellationToken), Times.Once);
+
+            ts.Store.Verify(x => x.SetAsync($"{ts.ExchangeId:N}-response", It.Is<Stream>(s => ts.MatchingStream(ts.SerializedContent, s)), ts.CancellationToken), Times.Once);
+            ts.Store.Verify(x => x.SetAsync(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<CancellationToken>()), Times.Exactly(1));
+            ts.Store.Verify(x => x.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+
+            ts.Serializer.Verify(x => x.Serialize(It.IsAny<Stream>(), It.IsAny<HttpRequest>()), Times.Never);
+            ts.Serializer.Verify(x => x.Serialize(It.IsAny<MemoryStream>(), It.Is<HttpResponseOrException>(m => m.Response == ts.Response && m.ExceptionString == null)), Times.Once);
+
+            ts.ResponseMessage.Content.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task StoresExceptions()
+        {
+            // Arrange
+            var ts = new TestState();
+
+            // Act
+            await ts.Target.SetAsync(ts.ExchangeId, ts.Exception, ts.CancellationToken);
+
+            // Assert
+            ts.Mapper.Verify(x => x.ToHttpAsync(It.IsAny<HttpRequestMessage>(), It.IsAny<CancellationToken>()), Times.Never);
+            ts.Mapper.Verify(x => x.ToHttpAsync(It.IsAny<HttpResponseMessage>(), It.IsAny<CancellationToken>()), Times.Never);
+
+            ts.Store.Verify(x => x.SetAsync($"{ts.ExchangeId:N}-response", It.Is<Stream>(s => ts.MatchingStream(ts.SerializedContent, s)), ts.CancellationToken), Times.Once);
+            ts.Store.Verify(x => x.SetAsync(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<CancellationToken>()), Times.Exactly(1));
+            ts.Store.Verify(x => x.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+
+            ts.Serializer.Verify(x => x.Serialize(It.IsAny<Stream>(), It.IsAny<HttpRequest>()), Times.Never);
+            ts.Serializer.Verify(x => x.Serialize(It.IsAny<MemoryStream>(), It.Is<HttpResponseOrException>(m => m.Response == null && m.ExceptionString == ts.Exception.ToString())), Times.Once);
         }
 
         private class TestState
@@ -96,6 +202,7 @@ namespace Knapcode.SocketToMe.Http.ProtocolBuffer.Tests
                     Content = GetStream("original-response")
                 };
                 SerializedContent = "serialized";
+                Exception = new Exception("some exception");
 
                 // setup
                 Store
@@ -120,6 +227,7 @@ namespace Knapcode.SocketToMe.Http.ProtocolBuffer.Tests
                 Target = new HttpMessageStore(Store.Object, Mapper.Object, Serializer.Object);
             }
 
+            public Exception Exception { get; set; }
             public string SerializedContent { get; set; }
             public Mock<IProtocolBufferSerializer> Serializer { get; set; }
             public CancellationToken CancellationToken { get; set; }
