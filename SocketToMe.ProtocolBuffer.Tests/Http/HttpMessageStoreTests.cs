@@ -27,9 +27,9 @@ namespace Knapcode.SocketToMe.ProtocolBuffer.Tests.Http
             // Assert
             ts.Mapper.Verify(x => x.ToHttpAsync(ts.RequestMessage, ts.CancellationToken), Times.Once);
 
-            ts.Store.Verify(x => x.SetAsync($"{ts.ExchangeId:N}-request-content", ts.Request.Content, ts.CancellationToken), Times.Once);
-            ts.Store.Verify(x => x.GetAsync($"{ts.ExchangeId:N}-request-content", ts.CancellationToken), Times.Once);
-            ts.Store.Verify(x => x.SetAsync($"{ts.ExchangeId:N}-request", It.Is<Stream>(s => ts.MatchingStream("serialized", s)), ts.CancellationToken), Times.Once);
+            ts.Store.Verify(x => x.SetAsync($"{ts.ExchangeId:D}-request-content", ts.Request.Content, ts.CancellationToken), Times.Once);
+            ts.Store.Verify(x => x.GetAsync($"{ts.ExchangeId:D}-request-content", ts.CancellationToken), Times.Once);
+            ts.Store.Verify(x => x.SetAsync($"{ts.ExchangeId:D}-request", It.Is<Stream>(s => ts.MatchingStream("serialized", s)), ts.CancellationToken), Times.Once);
             ts.Store.Verify(x => x.SetAsync(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
             ts.Store.Verify(x => x.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Exactly(1));
 
@@ -57,7 +57,7 @@ namespace Knapcode.SocketToMe.ProtocolBuffer.Tests.Http
             // Assert
             ts.Mapper.Verify(x => x.ToHttpAsync(ts.RequestMessage, ts.CancellationToken), Times.Once);
             
-            ts.Store.Verify(x => x.SetAsync($"{ts.ExchangeId:N}-request", It.Is<Stream>(s => ts.MatchingStream("serialized", s)), ts.CancellationToken), Times.Once);
+            ts.Store.Verify(x => x.SetAsync($"{ts.ExchangeId:D}-request", It.Is<Stream>(s => ts.MatchingStream("serialized", s)), ts.CancellationToken), Times.Once);
             ts.Store.Verify(x => x.SetAsync(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<CancellationToken>()), Times.Exactly(1));
             ts.Store.Verify(x => x.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
 
@@ -80,9 +80,9 @@ namespace Knapcode.SocketToMe.ProtocolBuffer.Tests.Http
             // Assert
             ts.Mapper.Verify(x => x.ToHttpAsync(ts.ResponseMessage, ts.CancellationToken), Times.Once);
 
-            ts.Store.Verify(x => x.SetAsync($"{ts.ExchangeId:N}-response-content", ts.Response.Content, ts.CancellationToken), Times.Once);
-            ts.Store.Verify(x => x.GetAsync($"{ts.ExchangeId:N}-response-content", ts.CancellationToken), Times.Once);
-            ts.Store.Verify(x => x.SetAsync($"{ts.ExchangeId:N}-response", It.Is<Stream>(s => ts.MatchingStream("serialized", s)), ts.CancellationToken), Times.Once);
+            ts.Store.Verify(x => x.SetAsync($"{ts.ExchangeId:D}-response-content", ts.Response.Content, ts.CancellationToken), Times.Once);
+            ts.Store.Verify(x => x.GetAsync($"{ts.ExchangeId:D}-response-content", ts.CancellationToken), Times.Once);
+            ts.Store.Verify(x => x.SetAsync($"{ts.ExchangeId:D}-response", It.Is<Stream>(s => ts.MatchingStream("serialized", s)), ts.CancellationToken), Times.Once);
             ts.Store.Verify(x => x.SetAsync(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
             ts.Store.Verify(x => x.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Exactly(1));
 
@@ -110,7 +110,7 @@ namespace Knapcode.SocketToMe.ProtocolBuffer.Tests.Http
             // Assert
             ts.Mapper.Verify(x => x.ToHttpAsync(ts.ResponseMessage, ts.CancellationToken), Times.Once);
 
-            ts.Store.Verify(x => x.SetAsync($"{ts.ExchangeId:N}-response", It.Is<Stream>(s => ts.MatchingStream("serialized", s)), ts.CancellationToken), Times.Once);
+            ts.Store.Verify(x => x.SetAsync($"{ts.ExchangeId:D}-response", It.Is<Stream>(s => ts.MatchingStream("serialized", s)), ts.CancellationToken), Times.Once);
             ts.Store.Verify(x => x.SetAsync(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<CancellationToken>()), Times.Exactly(1));
             ts.Store.Verify(x => x.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
 
@@ -133,7 +133,7 @@ namespace Knapcode.SocketToMe.ProtocolBuffer.Tests.Http
             ts.Mapper.Verify(x => x.ToHttpAsync(It.IsAny<HttpRequestMessage>(), It.IsAny<CancellationToken>()), Times.Never);
             ts.Mapper.Verify(x => x.ToHttpAsync(It.IsAny<HttpResponseMessage>(), It.IsAny<CancellationToken>()), Times.Never);
 
-            ts.Store.Verify(x => x.SetAsync($"{ts.ExchangeId:N}-response", It.Is<Stream>(s => ts.MatchingStream("serialized", s)), ts.CancellationToken), Times.Once);
+            ts.Store.Verify(x => x.SetAsync($"{ts.ExchangeId:D}-response", It.Is<Stream>(s => ts.MatchingStream("serialized", s)), ts.CancellationToken), Times.Once);
             ts.Store.Verify(x => x.SetAsync(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<CancellationToken>()), Times.Exactly(1));
             ts.Store.Verify(x => x.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
 
@@ -151,8 +151,8 @@ namespace Knapcode.SocketToMe.ProtocolBuffer.Tests.Http
             var actual = await ts.Target.GetRequestAsync(ts.ExchangeId, ts.CancellationToken);
 
             // Assert
-            ts.Store.Verify(x => x.GetAsync($"{ts.ExchangeId:N}-request", ts.CancellationToken), Times.Once);
-            ts.Store.Verify(x => x.GetAsync($"{ts.ExchangeId:N}-request-content", ts.CancellationToken), Times.Once);
+            ts.Store.Verify(x => x.GetAsync($"{ts.ExchangeId:D}-request", ts.CancellationToken), Times.Once);
+            ts.Store.Verify(x => x.GetAsync($"{ts.ExchangeId:D}-request-content", ts.CancellationToken), Times.Once);
 
             ts.Serializer.Verify(x => x.Deserialize<HttpRequest>(It.Is<Stream>(s => ts.MatchingStream("store-request", s))), Times.Once);
 
@@ -174,7 +174,7 @@ namespace Knapcode.SocketToMe.ProtocolBuffer.Tests.Http
             var actual = await ts.Target.GetRequestAsync(ts.ExchangeId, ts.CancellationToken);
 
             // Assert
-            ts.Store.Verify(x => x.GetAsync($"{ts.ExchangeId:N}-request", ts.CancellationToken), Times.Once);
+            ts.Store.Verify(x => x.GetAsync($"{ts.ExchangeId:D}-request", ts.CancellationToken), Times.Once);
             ts.Store.Verify(x => x.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
 
             ts.Serializer.Verify(x => x.Deserialize<HttpRequest>(It.Is<Stream>(s => ts.MatchingStream("store-request", s))), Times.Once);
@@ -195,7 +195,7 @@ namespace Knapcode.SocketToMe.ProtocolBuffer.Tests.Http
             var actual = await ts.Target.GetRequestAsync(ts.ExchangeId, ts.CancellationToken);
 
             // Assert
-            ts.Store.Verify(x => x.GetAsync($"{ts.ExchangeId:N}-request", ts.CancellationToken), Times.Once);
+            ts.Store.Verify(x => x.GetAsync($"{ts.ExchangeId:D}-request", ts.CancellationToken), Times.Once);
             ts.Store.Verify(x => x.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
 
             ts.Serializer.Verify(x => x.Deserialize<HttpRequest>(It.IsAny<Stream>()), Times.Never);
@@ -215,8 +215,8 @@ namespace Knapcode.SocketToMe.ProtocolBuffer.Tests.Http
             var actual = await ts.Target.GetResponseOrExceptionAsync(ts.ExchangeId, ts.CancellationToken);
 
             // Assert
-            ts.Store.Verify(x => x.GetAsync($"{ts.ExchangeId:N}-response", ts.CancellationToken), Times.Once);
-            ts.Store.Verify(x => x.GetAsync($"{ts.ExchangeId:N}-response-content", ts.CancellationToken), Times.Once);
+            ts.Store.Verify(x => x.GetAsync($"{ts.ExchangeId:D}-response", ts.CancellationToken), Times.Once);
+            ts.Store.Verify(x => x.GetAsync($"{ts.ExchangeId:D}-response-content", ts.CancellationToken), Times.Once);
 
             ts.Serializer.Verify(x => x.Deserialize<HttpResponseOrException>(It.Is<Stream>(s => ts.MatchingStream("store-response", s))), Times.Once);
 
@@ -239,7 +239,7 @@ namespace Knapcode.SocketToMe.ProtocolBuffer.Tests.Http
             var actual = await ts.Target.GetResponseOrExceptionAsync(ts.ExchangeId, ts.CancellationToken);
 
             // Assert
-            ts.Store.Verify(x => x.GetAsync($"{ts.ExchangeId:N}-response", ts.CancellationToken), Times.Once);
+            ts.Store.Verify(x => x.GetAsync($"{ts.ExchangeId:D}-response", ts.CancellationToken), Times.Once);
             ts.Store.Verify(x => x.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
 
             ts.Serializer.Verify(x => x.Deserialize<HttpResponseOrException>(It.Is<Stream>(s => ts.MatchingStream("store-response", s))), Times.Once);
@@ -263,7 +263,7 @@ namespace Knapcode.SocketToMe.ProtocolBuffer.Tests.Http
             var actual = await ts.Target.GetResponseOrExceptionAsync(ts.ExchangeId, ts.CancellationToken);
 
             // Assert
-            ts.Store.Verify(x => x.GetAsync($"{ts.ExchangeId:N}-response", ts.CancellationToken), Times.Once);
+            ts.Store.Verify(x => x.GetAsync($"{ts.ExchangeId:D}-response", ts.CancellationToken), Times.Once);
             ts.Store.Verify(x => x.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
 
             ts.Serializer.Verify(x => x.Deserialize<HttpResponseOrException>(It.Is<Stream>(s => ts.MatchingStream("store-response", s))), Times.Once);
@@ -285,7 +285,7 @@ namespace Knapcode.SocketToMe.ProtocolBuffer.Tests.Http
 
                 // data
                 CancellationToken = new CancellationToken();
-                ExchangeId = new Guid("4ae0fbbaaeba4db1bd98d106ece1a6e0");
+                ExchangeId = new ExchangeId(new DateTimeOffset(2000, 1, 1, 0, 0, 0, TimeSpan.Zero), new Guid("4ae0fbbaaeba4db1bd98d106ece1a6e0"));
                 RequestMessage = new HttpRequestMessage
                 {
                     Content = new StreamContent(Stream.Null)
@@ -386,7 +386,7 @@ namespace Knapcode.SocketToMe.ProtocolBuffer.Tests.Http
             public CancellationToken CancellationToken { get; set; }
             public HttpResponseMessage ResponseMessage { get; set; }
             public HttpRequestMessage RequestMessage { get; set; }
-            public Guid ExchangeId { get; set; }
+            public ExchangeId ExchangeId { get; set; }
             public HttpResponse Response { get; set; }
             public HttpMessageStore Target { get; set; }
             public Mock<IHttpMessageMapper> Mapper { get; set; }

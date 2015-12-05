@@ -15,17 +15,17 @@ namespace Knapcode.SocketToMe.ProtocolBuffer.Http
             _store = store;
         }
 
-        public Task LogAsync(Guid exchangeId, HttpRequestMessage request, CancellationToken cancellationToken)
+        public Task LogAsync(ExchangeId exchangeId, HttpRequestMessage request, CancellationToken cancellationToken)
         {
             return _store.SetAsync(exchangeId, request, cancellationToken);
         }
 
-        public Task LogAsync(Guid exchangeId, HttpResponseMessage response, CancellationToken cancellationToken)
+        public Task LogAsync(ExchangeId exchangeId, HttpResponseMessage response, CancellationToken cancellationToken)
         {
             return _store.SetAsync(exchangeId, response, cancellationToken);
         }
 
-        public Task LogAsync(Guid exchangeId, Exception exception, CancellationToken cancellationToken)
+        public Task LogAsync(ExchangeId exchangeId, Exception exception, CancellationToken cancellationToken)
         {
             return _store.SetAsync(exchangeId, exception, cancellationToken);
         }

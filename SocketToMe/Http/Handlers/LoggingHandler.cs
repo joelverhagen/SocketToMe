@@ -20,7 +20,7 @@ namespace Knapcode.SocketToMe.Http
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            Guid exchangeId = Guid.NewGuid();
+            ExchangeId exchangeId = ExchangeId.NewExchangeId();
 
             if (StoreExchangeId)
             {

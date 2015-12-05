@@ -41,7 +41,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             Action action = () => ts.Request.GetExchangeId();
 
             // ACT, ASSERT
-            action.ShouldThrow<InvalidOperationException>().Which.Message.Should().Be("The exchange ID found in the request is not a GUID.");
+            action.ShouldThrow<InvalidOperationException>().Which.Message.Should().Be("The exchange ID value found in the request is not the correct type.");
         }
 
         [Fact]
@@ -69,7 +69,7 @@ namespace Knapcode.SocketToMe.Tests.Http
 
             // ASSERT
             actual.Should().Be(false);
-            ts.OutExchangeId.Should().Be(default(Guid));
+            ts.OutExchangeId.Should().Be(default(ExchangeId));
         }
 
         [Fact]
@@ -83,7 +83,7 @@ namespace Knapcode.SocketToMe.Tests.Http
 
             // ASSERT
             actual.Should().Be(false);
-            ts.OutExchangeId.Should().Be(default(Guid));
+            ts.OutExchangeId.Should().Be(default(ExchangeId));
         }
 
         private class TestState
@@ -92,15 +92,15 @@ namespace Knapcode.SocketToMe.Tests.Http
             {
                 // data
                 Request = new HttpRequestMessage();
-                ExchangeId = new Guid("E63B6D2C-BD08-4BCD-849E-67E929E1147D");
+                ExchangeId = new ExchangeId(new DateTimeOffset(2000, 1, 1, 0, 0, 0, TimeSpan.Zero), new Guid("E63B6D2C-BD08-4BCD-849E-67E929E1147D"));
 
                 // setup
                 Request.Properties[LoggingHandler.ExchangeIdPropertyKey] = ExchangeId;
             }
 
-            public Guid OutExchangeId;
+            public ExchangeId OutExchangeId;
 
-            public Guid ExchangeId { get; set; }
+            public ExchangeId ExchangeId { get; set; }
 
             public HttpRequestMessage Request { get; set; }
 

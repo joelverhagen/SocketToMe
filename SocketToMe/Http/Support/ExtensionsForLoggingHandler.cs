@@ -6,30 +6,30 @@ namespace Knapcode.SocketToMe.Http
 {
     public static class ExtensionsForLoggingHandler
     {
-        public static bool TryGetExchangeId(this HttpRequestMessage request, out Guid exchangeId)
+        public static bool TryGetExchangeId(this HttpRequestMessage request, out ExchangeId exchangeId)
         {
             object value;
-            if (request.Properties.TryGetValue(LoggingHandler.ExchangeIdPropertyKey, out value) && value is Guid)
+            if (request.Properties.TryGetValue(LoggingHandler.ExchangeIdPropertyKey, out value) && value is ExchangeId)
             {
-                exchangeId = (Guid) value;
+                exchangeId = (ExchangeId) value;
                 return true;
             }
 
-            exchangeId = default(Guid);
+            exchangeId = default(ExchangeId);
             return false;
         }
 
-        public static Guid GetExchangeId(this HttpRequestMessage request)
+        public static ExchangeId GetExchangeId(this HttpRequestMessage request)
         {
             object value;
             if (request.Properties.TryGetValue(LoggingHandler.ExchangeIdPropertyKey, out value))
             {
-                if (value is Guid)
+                if (value is ExchangeId)
                 {
-                    return (Guid) value;
+                    return (ExchangeId) value;
                 }
 
-                throw new InvalidOperationException("The exchange ID found in the request is not a GUID.");
+                throw new InvalidOperationException("The exchange ID value found in the request is not the correct type.");
             }
 
             throw new KeyNotFoundException("The exchange ID could not be found on the request.");

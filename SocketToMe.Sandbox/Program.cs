@@ -133,14 +133,20 @@ namespace Knapcode.SocketToMe.Sandbox
             var loggingHandler = new LoggingHandler(logger) { InnerHandler = networkHandler };
             using (var httpClient = new HttpClient(loggingHandler))
             {
-                var responseFromClient = httpClient.GetAsync("http://httpbin.org/ip").Result;
-                Console.WriteLine("Response from client:");
-                Console.WriteLine(await responseFromClient.Content.ReadAsStringAsync());
-
-                Guid exchangeId = responseFromClient.RequestMessage.GetExchangeId();
+                var responseFromClient = await httpClient.GetAsync("http://httpbin.org/ip");
+                using (responseFromClient)
+                {
+                    Console.WriteLine("Response from client:");
+                    Console.WriteLine(await responseFromClient.Content.ReadAsStringAsync());
+                }
+                    
+                ExchangeId exchangeId = responseFromClient.RequestMessage.GetExchangeId();
                 var responseOrExceptionFromStore = await messageStore.GetResponseOrExceptionAsync(exchangeId, CancellationToken.None);
-                Console.WriteLine("Response from store:");
-                Console.WriteLine(await responseOrExceptionFromStore.Response.Content.ReadAsStringAsync());
+                using (responseOrExceptionFromStore.Response)
+                {
+                    Console.WriteLine("Response from store:");
+                    Console.WriteLine(await responseOrExceptionFromStore.Response.Content.ReadAsStringAsync());
+                }
             }
         }
     }

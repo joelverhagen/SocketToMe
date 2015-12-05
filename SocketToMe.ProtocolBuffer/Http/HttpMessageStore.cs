@@ -11,11 +11,11 @@ namespace Knapcode.SocketToMe.ProtocolBuffer.Http
 {
     public interface IHttpMessageStore
     {
-        Task SetAsync(Guid exchangeId, HttpRequestMessage request, CancellationToken cancellationToken);
-        Task SetAsync(Guid exchangeId, HttpResponseMessage response, CancellationToken cancellationToken);
-        Task SetAsync(Guid exchangeId, Exception exception, CancellationToken cancellationToken);
-        Task<HttpRequestMessage> GetRequestAsync(Guid exchangeId, CancellationToken cancellationToken);
-        Task<HttpResponseMessageOrException> GetResponseOrExceptionAsync(Guid exchangeId, CancellationToken cancellationToken);
+        Task SetAsync(ExchangeId exchangeId, HttpRequestMessage request, CancellationToken cancellationToken);
+        Task SetAsync(ExchangeId exchangeId, HttpResponseMessage response, CancellationToken cancellationToken);
+        Task SetAsync(ExchangeId exchangeId, Exception exception, CancellationToken cancellationToken);
+        Task<HttpRequestMessage> GetRequestAsync(ExchangeId exchangeId, CancellationToken cancellationToken);
+        Task<HttpResponseMessageOrException> GetResponseOrExceptionAsync(ExchangeId exchangeId, CancellationToken cancellationToken);
     }
 
     public class HttpMessageStore : IHttpMessageStore
@@ -31,7 +31,7 @@ namespace Knapcode.SocketToMe.ProtocolBuffer.Http
             _serializer = serializer;
         }
 
-        public async Task SetAsync(Guid exchangeId, HttpRequestMessage request, CancellationToken cancellationToken)
+        public async Task SetAsync(ExchangeId exchangeId, HttpRequestMessage request, CancellationToken cancellationToken)
         {
             // map to a simpler model
             var storedModel = await _mapper.ToHttpAsync(request, cancellationToken).ConfigureAwait(false);
@@ -48,7 +48,7 @@ namespace Knapcode.SocketToMe.ProtocolBuffer.Http
             await SetModelAsync(modelKey, storedModel, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task SetAsync(Guid exchangeId, HttpResponseMessage response, CancellationToken cancellationToken)
+        public async Task SetAsync(ExchangeId exchangeId, HttpResponseMessage response, CancellationToken cancellationToken)
         {
             // map to a simpler model
             var responseModel = await _mapper.ToHttpAsync(response, cancellationToken).ConfigureAwait(false);
@@ -66,7 +66,7 @@ namespace Knapcode.SocketToMe.ProtocolBuffer.Http
             await SetModelAsync(modelKey, storedModel, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task SetAsync(Guid exchangeId, Exception exception, CancellationToken cancellationToken)
+        public async Task SetAsync(ExchangeId exchangeId, Exception exception, CancellationToken cancellationToken)
         {
             // write the model
             var exceptionString = exception.ToString();
@@ -75,7 +75,7 @@ namespace Knapcode.SocketToMe.ProtocolBuffer.Http
             await SetModelAsync(modelKey, storedModel, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<HttpRequestMessage> GetRequestAsync(Guid exchangeId, CancellationToken cancellationToken)
+        public async Task<HttpRequestMessage> GetRequestAsync(ExchangeId exchangeId, CancellationToken cancellationToken)
         {
             // get the model
             var modelKey = GetRequestKey(exchangeId);
@@ -96,7 +96,7 @@ namespace Knapcode.SocketToMe.ProtocolBuffer.Http
             return _mapper.ToHttpMessage(storedModel);
         }
 
-        public async Task<HttpResponseMessageOrException> GetResponseOrExceptionAsync(Guid exchangeId, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessageOrException> GetResponseOrExceptionAsync(ExchangeId exchangeId, CancellationToken cancellationToken)
         {
             // get the model
             var modelKey = GetResponseOrExceptionKey(exchangeId);
@@ -123,9 +123,9 @@ namespace Knapcode.SocketToMe.ProtocolBuffer.Http
             return new HttpResponseMessageOrException {Response = response, ExceptionString = null};
         }
 
-        private string GetKey(Guid exchangeId, params string[] inputPieces)
+        private string GetKey(ExchangeId exchangeId, params string[] inputPieces)
         {
-            var allPieces = new[] { exchangeId.ToString("N") }.Concat(inputPieces);
+            var allPieces = new[] { exchangeId.ToString("D") }.Concat(inputPieces);
             return string.Join("-", allPieces);
         }
 
@@ -137,7 +137,7 @@ namespace Knapcode.SocketToMe.ProtocolBuffer.Http
             await _store.SetAsync(key, modelStream, cancellationToken).ConfigureAwait(false);
         }
 
-        private async Task<T> GetModelAsync<T>(string key, CancellationToken cancellationToken) 
+        private async Task<T> GetModelAsync<T>(string key, CancellationToken cancellationToken)
         {
             var modelStream = await _store.GetAsync(key, cancellationToken).ConfigureAwait(false);
             if (modelStream == null)
@@ -170,22 +170,22 @@ namespace Knapcode.SocketToMe.ProtocolBuffer.Http
             return streamContent;
         }
 
-        private string GetRequestKey(Guid exchangeId)
+        private string GetRequestKey(ExchangeId exchangeId)
         {
             return GetKey(exchangeId, "request");
         }
 
-        private string GetRequestContentKey(Guid exchangeId)
+        private string GetRequestContentKey(ExchangeId exchangeId)
         {
             return GetKey(exchangeId, "request", "content");
         }
 
-        private string GetResponseOrExceptionKey(Guid exchangeId)
+        private string GetResponseOrExceptionKey(ExchangeId exchangeId)
         {
             return GetKey(exchangeId, "response");
         }
 
-        private string GetResponseContentKey(Guid exchangeId)
+        private string GetResponseContentKey(ExchangeId exchangeId)
         {
             return GetKey(exchangeId, "response", "content");
         }

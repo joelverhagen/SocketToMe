@@ -7,8 +7,8 @@ namespace Knapcode.SocketToMe.Http
 {
     public interface IHttpMessageLogger
     {
-        Task LogAsync(Guid exchangeId, HttpRequestMessage request, CancellationToken cancellationToken);
-        Task LogAsync(Guid exchangeId, HttpResponseMessage response, CancellationToken cancellationToken);
-        Task LogAsync(Guid exchangeId, Exception exception, CancellationToken cancellationToken);
+        Task LogAsync(ExchangeId exchangeId, HttpRequestMessage request, CancellationToken cancellationToken);
+        Task LogAsync(ExchangeId exchangeId, HttpResponseMessage response, CancellationToken cancellationToken);
+        Task LogAsync(ExchangeId exchangeId, Exception exception, CancellationToken cancellationToken);
     }
 }
