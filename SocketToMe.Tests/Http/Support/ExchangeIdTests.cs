@@ -91,5 +91,19 @@ namespace Knapcode.SocketToMe.Tests.Http
             // ACT, ASSERT
             exchangeId.Should().Be(ExchangeId.Empty);
         }
+
+        [Fact]
+        public void New()
+        {
+            // ARRANGE
+            var before = DateTimeOffset.UtcNow;
+            var exchangeId = ExchangeId.NewExchangeId();
+            var after = DateTimeOffset.UtcNow;
+
+            // ACT, ASSERT
+            exchangeId.When.Should().BeOnOrAfter(before);
+            exchangeId.When.Should().BeOnOrBefore(after);
+            exchangeId.Unique.Should().NotBeEmpty();
+        }
     }
 };

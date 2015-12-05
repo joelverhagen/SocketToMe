@@ -4,16 +4,21 @@ namespace Knapcode.SocketToMe.Http
 {
     public struct ExchangeId
     {
-        public static ExchangeId Empty => new ExchangeId(DateTimeOffset.MinValue, Guid.Empty);
-
         public ExchangeId(DateTimeOffset when, Guid unique)
         {
             When = when.ToUniversalTime();
             Unique = unique;
         }
 
+        public static ExchangeId Empty => new ExchangeId(DateTimeOffset.MinValue, Guid.Empty);
+
         public DateTimeOffset When { get; }
         public Guid Unique { get; }
+
+        public static ExchangeId NewExchangeId()
+        {
+            return new ExchangeId(DateTimeOffset.UtcNow, Guid.NewGuid());
+        }
 
         public override string ToString()
         {
