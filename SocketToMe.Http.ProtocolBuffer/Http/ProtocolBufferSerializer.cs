@@ -1,8 +1,9 @@
 using System.IO;
+using Knapcode.SocketToMe.Http;
 using ProtoBuf;
 using ProtoBuf.Meta;
 
-namespace Knapcode.SocketToMe.Http.ProtocolBuffer
+namespace Knapcode.SocketToMe.ProtocolBuffer.Http
 {
     public interface IProtocolBufferSerializer
     {

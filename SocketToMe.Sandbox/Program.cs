@@ -6,7 +6,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Knapcode.SocketToMe.Http;
-using Knapcode.SocketToMe.Http.ProtocolBuffer;
+using Knapcode.SocketToMe.ProtocolBuffer.Http;
 using Knapcode.SocketToMe.Socks;
 using Knapcode.SocketToMe.Support;
 using Knapcode.TorSharp;

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Knapcode.SocketToMe.ProtocolBuffer</id>
+    <version>0.1.0</version>
+    <title>Knapcode.SocketToMe.ProtocolBuffer</title>
+    <authors>Joel Verhagen</authors>
+    <licenseUrl>https://raw.githubusercontent.com/joelverhagen/SocketToMe/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/joelverhagen/SocketToMe</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Additional functionality for Knapcode.SocketToWith with Protocol Buffers.</description>
+    <releaseNotes>
+* 0.1.0 Initial release with serializing HTTP messages as protocol buffers.
+    </releaseNotes>
+    <copyright>Copyright (c) 2015 Joel Verhagen</copyright>
+    <tags>http protocol buffer socket</tags>
+  </metadata>
+</package>

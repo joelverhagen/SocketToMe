@@ -5,8 +5,9 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
+using Knapcode.SocketToMe.Http;
 
-namespace Knapcode.SocketToMe.Http.ProtocolBuffer
+namespace Knapcode.SocketToMe.ProtocolBuffer.Http
 {
     public interface IHttpMessageStore
     {

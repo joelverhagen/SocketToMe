@@ -1,4 +1,6 @@
-namespace Knapcode.SocketToMe.Http.ProtocolBuffer
+using Knapcode.SocketToMe.Http;
+
+namespace Knapcode.SocketToMe.ProtocolBuffer.Http
 {
     public class HttpResponseOrException
     {

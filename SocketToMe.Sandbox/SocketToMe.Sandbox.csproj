@@ -57,9 +57,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SocketToMe.Http.ProtocolBuffer\SocketToMe.Http.ProtocolBuffer.csproj">
+    <ProjectReference Include="..\SocketToMe.Http.ProtocolBuffer\SocketToMe.ProtocolBuffer.csproj">
       <Project>{958e9799-6935-4ea2-8def-f9c548617d59}</Project>
-      <Name>SocketToMe.Http.ProtocolBuffer</Name>
+      <Name>SocketToMe.ProtocolBuffer</Name>
     </ProjectReference>
     <ProjectReference Include="..\SocketToMe\SocketToMe.csproj">
       <Project>{0AA78D19-E02B-4600-AB98-C05C04DFC2FA}</Project>

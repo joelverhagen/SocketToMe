@@ -1,8 +1,10 @@
 ﻿using System.IO;
 using FluentAssertions;
+using Knapcode.SocketToMe.Http;
+using Knapcode.SocketToMe.ProtocolBuffer.Http;
 using Xunit;
 
-namespace Knapcode.SocketToMe.Http.ProtocolBuffer.Tests
+namespace Knapcode.SocketToMe.ProtocolBuffer.Tests.Http
 {
     public class ProtocolBufferSerializerTests
     {

@@ -7,8 +7,8 @@
     <ProjectGuid>{958E9799-6935-4EA2-8DEF-F9C548617D59}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Knapcode.SocketToMe.Http.ProtocolBuffer</RootNamespace>
-    <AssemblyName>Knapcode.SocketToMe.Http.ProtocolBuffer</AssemblyName>
+    <RootNamespace>Knapcode.SocketToMe.ProtocolBuffer</RootNamespace>
+    <AssemblyName>Knapcode.SocketToMe.ProtocolBuffer</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -41,14 +41,15 @@
     <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HttpMessageLogger.cs" />
-    <Compile Include="HttpMessageStore.cs" />
-    <Compile Include="HttpResponseMessageOrException.cs" />
-    <Compile Include="HttpResponseOrException.cs" />
+    <Compile Include="Http\HttpMessageLogger.cs" />
+    <Compile Include="Http\HttpMessageStore.cs" />
+    <Compile Include="Http\HttpResponseMessageOrException.cs" />
+    <Compile Include="Http\HttpResponseOrException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ProtocolBufferSerializer.cs" />
+    <Compile Include="Http\ProtocolBufferSerializer.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Knapcode.SocketToMe.ProtocolBuffer.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

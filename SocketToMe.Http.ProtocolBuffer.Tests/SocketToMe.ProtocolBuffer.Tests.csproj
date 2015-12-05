@@ -7,8 +7,8 @@
     <ProjectGuid>{447A2954-F5F2-42EB-9E22-C3005D5FE7F8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Knapcode.SocketToMe.Http.ProtocolBuffer.Tests</RootNamespace>
-    <AssemblyName>Knapcode.SocketToMe.Http.ProtocolBuffer.Tests</AssemblyName>
+    <RootNamespace>Knapcode.SocketToMe.ProtocolBuffer.Tests</RootNamespace>
+    <AssemblyName>Knapcode.SocketToMe.ProtocolBuffer.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -70,17 +70,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HttpMessageStoreTests.cs" />
+    <Compile Include="Http\HttpMessageStoreTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ProtocolBufferSerializerTests.cs" />
+    <Compile Include="Http\ProtocolBufferSerializerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SocketToMe.Http.ProtocolBuffer\SocketToMe.Http.ProtocolBuffer.csproj">
+    <ProjectReference Include="..\SocketToMe.Http.ProtocolBuffer\SocketToMe.ProtocolBuffer.csproj">
       <Project>{958e9799-6935-4ea2-8def-f9c548617d59}</Project>
-      <Name>SocketToMe.Http.ProtocolBuffer</Name>
+      <Name>SocketToMe.ProtocolBuffer</Name>
     </ProjectReference>
     <ProjectReference Include="..\SocketToMe\SocketToMe.csproj">
       <Project>{0aa78d19-e02b-4600-ab98-c05c04dfc2fa}</Project>

@@ -1,6 +1,6 @@
 using System.Net.Http;
 
-namespace Knapcode.SocketToMe.Http.ProtocolBuffer
+namespace Knapcode.SocketToMe.ProtocolBuffer.Http
 {
     public class HttpResponseMessageOrException
     {
