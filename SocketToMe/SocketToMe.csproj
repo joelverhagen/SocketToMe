@@ -68,6 +68,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ByteStreamReader.Read.tt</DependentUpon>
     </Compile>
+    <Compile Include="Support\HashingStream.cs" />
     <Compile Include="Support\InvertedStream.cs" />
     <Compile Include="Support\LimitedStream.cs" />
     <Compile Include="Support\LimitedStream.Read.cs">
