@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Knapcode.SocketToMe.Tests.Http
 {
-    public class GzipStoreTests
+    public class GZipStoreTests
     {
         private const string Key = nameof(Key);
         private const string InputText = "This is the long input text. This is the long input text. Repeated.";
@@ -29,11 +29,11 @@ namespace Knapcode.SocketToMe.Tests.Http
         {
             // Arrange
             var memoryStore = new InMemoryStore();
-            var gzipStore = new GzipStore(memoryStore, CompressionLevel.Optimal);
+            var gzipStore = new GZipStore(memoryStore, CompressionLevel.Optimal);
 
             // Act, Assert
             await gzipStore.SetAsync(Key, GetStream(InputText), CancellationToken.None);
-            VerifyStringAsync(gzipStore, Key, InputText);
+            await VerifyStringAsync(gzipStore, Key, InputText);
         }
 
         [Fact]
@@ -42,7 +42,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             // Arrange
             var memoryStore = new InMemoryStore();
             await memoryStore.SetAsync(Key, new MemoryStream(OptimalCompressInputText), CancellationToken.None);
-            var gzipStore = new GzipStore(memoryStore, CompressionLevel.Optimal);
+            var gzipStore = new GZipStore(memoryStore, CompressionLevel.Optimal);
 
             // Act, Assert
             await VerifyStringAsync(gzipStore, Key, InputText);
@@ -53,7 +53,7 @@ namespace Knapcode.SocketToMe.Tests.Http
         {
             // Arrange
             var memoryStore = new InMemoryStore();
-            var gzipStore = new GzipStore(memoryStore, CompressionLevel.Optimal);
+            var gzipStore = new GZipStore(memoryStore, CompressionLevel.Optimal);
 
             // Act
             await gzipStore.SetAsync(Key, GetStream(InputText), CancellationToken.None);
@@ -68,7 +68,7 @@ namespace Knapcode.SocketToMe.Tests.Http
             // Arrange
             var expected = Compress(InputText, compression);
             var memoryStore = new InMemoryStore();
-            var gzipStore = new GzipStore(memoryStore, compression);
+            var gzipStore = new GZipStore(memoryStore, compression);
 
             // Act
             await gzipStore.SetAsync(Key, GetStream(InputText), CancellationToken.None);

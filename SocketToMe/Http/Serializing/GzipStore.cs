@@ -6,12 +6,12 @@ using Knapcode.SocketToMe.Support;
 
 namespace Knapcode.SocketToMe.Http
 {
-    public class GzipStore : IStore
+    public class GZipStore : IStore
     {
         private readonly IStore _innerStore;
         private readonly CompressionLevel _compressionLevel;
 
-        public GzipStore(IStore innerStore, CompressionLevel compressionLevel)
+        public GZipStore(IStore innerStore, CompressionLevel compressionLevel)
         {
             _innerStore = innerStore;
             _compressionLevel = compressionLevel;
