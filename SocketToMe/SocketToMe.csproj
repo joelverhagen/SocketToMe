@@ -35,6 +35,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Http\Support\ExchangeId.cs" />
     <Compile Include="Http\Support\ExtensionsForLoggingHandler.cs" />
     <Compile Include="Http\Mapping\HttpHeader.cs" />
     <Compile Include="Http\Mapping\IHttpMessage.cs" />

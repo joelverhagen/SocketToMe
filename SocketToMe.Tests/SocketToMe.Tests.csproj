@@ -81,6 +81,7 @@
     <Compile Include="Http\Support\ChunkedStreamTests.cs" />
     <Compile Include="Http\Handlers\RedirectingHandlerTests.cs" />
     <Compile Include="Http\Handlers\CookieHandlerTests.cs" />
+    <Compile Include="Http\Support\ExchangeIdTests.cs" />
     <Compile Include="Http\Support\ExtensionsForLoggingHandlerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Support\ByteStreamReaderTests.cs" />
