@@ -145,7 +145,10 @@ namespace Knapcode.SocketToMe.ProtocolBuffer.Http
                 return default(T);
             }
 
-            return _serializer.Deserialize<T>(modelStream);
+            using (modelStream)
+            {
+                return _serializer.Deserialize<T>(modelStream);
+            }
         }
 
         private async Task<HttpContent> SetAndGetContentAsync(string key, Stream content, HttpHeaders contentHeaders, CancellationToken cancellationToken)
