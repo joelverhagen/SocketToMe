@@ -81,5 +81,15 @@ namespace Knapcode.SocketToMe.Tests.Http
             // ACT, ASSERT
             a.Should().NotBe(b);
         }
+
+        [Fact]
+        public void Empty()
+        {
+            // ARRANGE
+            var exchangeId = new ExchangeId();
+
+            // ACT, ASSERT
+            exchangeId.Should().Be(ExchangeId.Empty);
+        }
     }
 };
