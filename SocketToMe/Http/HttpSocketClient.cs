@@ -168,7 +168,7 @@ namespace Knapcode.SocketToMe.Http
             {
                 // read the body with chunked transfer encoding
                 var remainingStream = reader.GetRemainingStream();
-                var chunkedStream = new ChunkedStream(remainingStream);
+                var chunkedStream = new ReadsFromChunksStream(remainingStream);
                 content = new StreamContent(chunkedStream);
             }
             else if (response.Content.Headers.ContentLength.HasValue)

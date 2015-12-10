@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Knapcode.SocketToMe.Tests.Http
 {
-    public class ChunkedStreamTests
+    public class ReadsFromChunksStreamTests
     {
         [Fact]
         public void It_Reads_Multiple_Chunks_With_A_Small_Buffer_Synchronously()
@@ -88,11 +88,11 @@ namespace Knapcode.SocketToMe.Tests.Http
 
             public string[] MultipleChunks { get; set; }
 
-            public ChunkedStream Target { get; set; }
+            public ReadsFromChunksStream Target { get; set; }
 
             public void Setup(string[] chunks)
             {
-                Target = new ChunkedStream(GetStream(chunks));
+                Target = new ReadsFromChunksStream(GetStream(chunks));
             }
 
             public async Task ReadAndVerifyAsync(string[] chunks)

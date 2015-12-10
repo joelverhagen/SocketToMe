@@ -4,14 +4,14 @@ using Knapcode.SocketToMe.Support;
 
 namespace Knapcode.SocketToMe.Http
 {
-    public partial class ChunkedStream : Stream
+    public partial class ReadsFromChunksStream : Stream
     {
         private readonly ByteStreamReader _byteStreamReader;
         private bool _disposed;
         private int _chunkSize;
         private int _remaining;
 
-        public ChunkedStream(Stream innerStream)
+        public ReadsFromChunksStream(Stream innerStream)
         {
             _byteStreamReader = new ByteStreamReader(innerStream, 4096, false);
             _disposed = false;

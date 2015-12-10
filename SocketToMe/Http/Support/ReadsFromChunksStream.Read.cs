@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Knapcode.SocketToMe.Http
 {
-    public partial class ChunkedStream
+    public partial class ReadsFromChunksStream
     {
         public override int Read(byte[] buffer, int offset, int count)
         {

@@ -48,11 +48,11 @@
     <Compile Include="Http\Mapping\HttpMessageMapper.cs" />
     <Compile Include="Http\Mapping\HttpRequest.cs" />
     <Compile Include="Http\Mapping\HttpResponse.cs" />
-    <Compile Include="Http\Support\ChunkedStream.cs" />
-    <Compile Include="Http\Support\ChunkedStream.Read.cs">
+    <Compile Include="Http\Support\ReadsFromChunksStream.cs" />
+    <Compile Include="Http\Support\ReadsFromChunksStream.Read.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>ChunkedStream.Read.tt</DependentUpon>
+      <DependentUpon>ReadsFromChunksStream.Read.tt</DependentUpon>
     </Compile>
     <Compile Include="Http\Handlers\CookieHandler.cs" />
     <Compile Include="Http\Handlers\DecompressingHandler.cs" />
@@ -88,9 +88,9 @@
     <None Include="Knapcode.SocketToMe.nuspec" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Http\Support\ChunkedStream.Read.tt">
+    <None Include="Http\Support\ReadsFromChunksStream.Read.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>ChunkedStream.Read.cs</LastGenOutput>
+      <LastGenOutput>ReadsFromChunksStream.Read.cs</LastGenOutput>
     </None>
     <None Include="Support\ByteStreamReader.Read.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

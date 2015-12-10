@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Knapcode.SocketToMe.Http
 {
-    public partial class ChunkedStream
+    public partial class ReadsFromChunksStream
     {
 <# foreach(bool isAsync in new[] { false, true })
     {
