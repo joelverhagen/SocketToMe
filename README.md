@@ -11,7 +11,7 @@ Fun with sockets in C#.
   - Use the custom delegating handler `NetworkHandler` with `HttpClient`
   - HTTP/1.1
   - HTTPS
-  - Chunked responses
+  - Chunked requests and responses
   - Most of the features provided by `HttpClient`
   - Arbitrary sockets (e.g. connected to a SOCKS proxy server!)
   - Automatic redirects (with `RedirectingHandler`)
@@ -106,8 +106,8 @@ Console.WriteLine((await getResponse.Content.ReadAsStringAsync()).Trim());
 - HTTP
   - Client certificates
   - HTTP/1.0
-  - Chunked requests
   - HTTP and HTTPS proxies
-  - Connection pools (Keep-Alive)
+  - Connection pools (Keep-Alive
+  - HTTP 2
 - Everywhere
   - Better cancellation token support

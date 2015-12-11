@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Security;
@@ -9,6 +10,7 @@ using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using Knapcode.SocketToMe.Http.Support;
 using Knapcode.SocketToMe.Support;
 
 namespace Knapcode.SocketToMe.Http
@@ -16,10 +18,16 @@ namespace Knapcode.SocketToMe.Http
     public class HttpSocketClient
     {
         private const int BufferSize = 4096;
+        private const string HostHeader = "Host";
+        private const string ContentLengthHeader = "Content-Length";
+        private const string TransferEncodingHeader = "Transfer-Encoding";
+        private const string LineSeparator = "\r\n";
+
         private static readonly HttpMethod ConnectMethod = new HttpMethod("CONNECT");
         private static readonly ISet<HttpMethod> MethodsWithoutHostHeader = new HashSet<HttpMethod> { ConnectMethod };
         private static readonly ISet<HttpMethod> MethodsWithoutRequestBody = new HashSet<HttpMethod> { ConnectMethod, HttpMethod.Head };
         private static readonly ISet<HttpMethod> MethodsWithoutResponseBody = new HashSet<HttpMethod> { ConnectMethod, HttpMethod.Head };
+        private static readonly ISet<string> SpecialHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { HostHeader, ContentLengthHeader, TransferEncodingHeader }; 
 
         public async Task<Stream> GetStreamAsync(Socket socket, HttpRequestMessage request)
         {
@@ -43,11 +51,21 @@ namespace Knapcode.SocketToMe.Http
             return networkStream;
         }
 
-        public async Task SendRequestAsync(Stream stream, HttpRequestMessage request)
+        public async Task SendRequestAsync(Stream networkStream, HttpRequestMessage request)
         {
             ValidateRequest(request);
+           
+            Stream contentStream;
+            using (var writer = new StreamWriter(networkStream, new UTF8Encoding(false, true), BufferSize, true))
+            {
+                contentStream = await SendRequestHeadAsync(writer, request).ConfigureAwait(false);
+            }
 
-            await WriteRequestAsync(stream, request).ConfigureAwait(false);
+            if (contentStream != null)
+            {
+                await contentStream.CopyToAsync(networkStream).ConfigureAwait(false);
+                await networkStream.FlushAsync().ConfigureAwait(false);
+            }
         }
 
         public async Task<HttpResponseMessage> ReceiveResponseAsync(Stream stream, HttpRequestMessage request)
@@ -77,50 +95,66 @@ namespace Knapcode.SocketToMe.Http
             }
         }
 
-        private async Task WriteRequestAsync(Stream stream, HttpRequestMessage request)
+        private async Task<Stream> SendRequestHeadAsync(StreamWriter writer, HttpRequestMessage request)
         {
-            byte[] bytes = null;
-            using (var writer = new StreamWriter(stream, new UTF8Encoding(false, true), BufferSize, true))
+            var location = request.Method != ConnectMethod ? request.RequestUri.PathAndQuery : $"{request.RequestUri.DnsSafeHost}:{request.RequestUri.Port}";
+            await writer.WriteAsync($"{request.Method.Method} {location} HTTP/{request.Version}" + LineSeparator).ConfigureAwait(false);
+            
+            if (!MethodsWithoutHostHeader.Contains(request.Method))
             {
-                var location = request.Method != ConnectMethod ? request.RequestUri.PathAndQuery : $"{request.RequestUri.DnsSafeHost}:{request.RequestUri.Port}";
-                await writer.WriteLineAsync($"{request.Method.Method} {location} HTTP/{request.Version}").ConfigureAwait(false);
-                
-                if (!request.Headers.Contains("Host") && !MethodsWithoutHostHeader.Contains(request.Method))
-                {
-                    await writer.WriteLineAsync($"Host: {request.RequestUri.Host}").ConfigureAwait(false);
-                }
+                string host = request.Headers.Contains(HostHeader) ? request.Headers.Host : request.RequestUri.Host;
+                await WriteHeaderAsync(writer, HostHeader, host).ConfigureAwait(false);
+            }
 
-                foreach (var header in request.Headers)
-                {
-                    await writer.WriteLineAsync(GetHeader(header)).ConfigureAwait(false);
-                }
+            Stream contentStream = null;
+            if (request.Content != null && !MethodsWithoutRequestBody.Contains(request.Method))
+            {
+                contentStream = await request.Content.ReadAsStreamAsync().ConfigureAwait(false);
 
-                if (request.Content != null && !MethodsWithoutRequestBody.Contains(request.Method))
+                // determine whether to use chunked transfer encoding
+                long? contentLength = null;
+                if (!request.Headers.TransferEncodingChunked.GetValueOrDefault(false))
                 {
-                    bytes = await request.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
-                    request.Content.Headers.ContentLength = bytes.Length;
-
-                    foreach (var header in request.Content.Headers)
+                    try
                     {
-                        await writer.WriteLineAsync(GetHeader(header)).ConfigureAwait(false);
+                        contentLength = contentStream.Length;
+                    }
+                    catch (Exception)
+                    {
+                        // we cannot get the request content length, so fall back to chunking
                     }
                 }
 
-                await writer.WriteLineAsync().ConfigureAwait(false);
-                await writer.FlushAsync().ConfigureAwait(false);
+                // set the appropriate content transfer headers
+                if (contentLength.HasValue)
+                {
+                    // TODO: we are preferring the content length provided by the caller... is this right?
+                    contentLength = request.Content.Headers.ContentLength ?? contentLength;
+                    await WriteHeaderAsync(writer, ContentLengthHeader, contentLength.ToString()).ConfigureAwait(false);
+                }
+                else
+                {
+                    contentStream = new ReadsToChunksStream(contentStream);
+                    await WriteHeaderAsync(writer, TransferEncodingHeader, "chunked").ConfigureAwait(false);
+                }
+
+                // write all content headers
+                foreach (var header in request.Content.Headers.Where(p => !SpecialHeaders.Contains(p.Key)))
+                {
+                    await WriteHeaderAsync(writer, header).ConfigureAwait(false);
+                }
             }
 
-            if (bytes != null)
+            // writer the rest of the request headers
+            foreach (var header in request.Headers.Where(p => !SpecialHeaders.Contains(p.Key)))
             {
-                await new MemoryStream(bytes).CopyToAsync(stream).ConfigureAwait(false);
+                await WriteHeaderAsync(writer, header).ConfigureAwait(false);
             }
 
-            await stream.FlushAsync().ConfigureAwait(false);
-        }
+            await writer.WriteAsync(LineSeparator).ConfigureAwait(false);
+            await writer.FlushAsync().ConfigureAwait(false);
 
-        private string GetHeader(KeyValuePair<string, IEnumerable<string>> header)
-        {
-            return $"{header.Key}: {string.Join(",", header.Value)}";
+            return contentStream;
         }
 
         private async Task<HttpResponseMessage> ReadResponseHeadAsync(ByteStreamReader reader, HttpRequestMessage request)
@@ -178,6 +212,10 @@ namespace Knapcode.SocketToMe.Http
                 var limitedStream = new LimitedStream(remainingStream, response.Content.Headers.ContentLength.Value);
                 content = new StreamContent(limitedStream);
             }
+            else
+            {
+                // TODO: should we immediately close the connection in this case?
+            }
 
             if (content != null)
             {
@@ -189,6 +227,16 @@ namespace Knapcode.SocketToMe.Http
 
                 response.Content = content;
             }
+        }
+
+        private async Task WriteHeaderAsync(StreamWriter writer, string key, string value)
+        {
+            await WriteHeaderAsync(writer, new KeyValuePair<string, IEnumerable<string>>(key, new[] { value })).ConfigureAwait(false);
+        }
+
+        private async Task WriteHeaderAsync(StreamWriter writer, KeyValuePair<string, IEnumerable<string>> header)
+        {
+            await writer.WriteAsync($"{header.Key}: {string.Join(",", header.Value)}" + LineSeparator).ConfigureAwait(false);
         }
     }
 }

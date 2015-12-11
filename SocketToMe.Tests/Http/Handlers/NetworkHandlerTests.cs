@@ -392,6 +392,31 @@ namespace Knapcode.SocketToMe.Tests.Http
         }
 
         [Fact]
+        public async Task ChunkedRequest()
+        {
+            // ARRANGE
+            var ts = new TestState();
+            var form = new Dictionary<string, string>
+            {
+                {"foo", "7A0D6A40-8DCE-4F6F-B372-ADC12B7FB222"},
+                {"bar", "9C025D9D-9880-4C03-A251-A29D5EC4BF16"}
+            };
+            var request = new HttpRequestMessage(HttpMethod.Post, "http://httpbin.org/post")
+            {
+                Headers = { TransferEncodingChunked = true },
+                Content = new FormUrlEncodedContent(form)
+            };
+
+            // ACT
+            var o = await ts.GetJsonResponse<JObject>(request);
+
+            // ASSERT
+            o.Message.StatusCode.Should().Be(HttpStatusCode.OK);
+            o.Content.Should().ContainKey("form");
+            o.Content["form"].ToObject<IDictionary<string, string>>().ShouldBeEquivalentTo(form);
+        }
+
+        [Fact]
         public async Task Form()
         {
             // ARRANGE
